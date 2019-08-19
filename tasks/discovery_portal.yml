@@ -38,7 +38,7 @@
     image: "{{ image_versions.portal }}"
     restart_policy: unless-stopped
     exposed_ports:
-      - 80
+      - "80"
     env:
       VIRTUAL_HOST: "portal.{{ hub_configuration.hostname }}"
       LETSENCRYPT_HOST: "portal.{{ hub_configuration.hostname }}"

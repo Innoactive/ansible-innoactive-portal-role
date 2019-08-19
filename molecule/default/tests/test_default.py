@@ -28,7 +28,7 @@ def test_services_are_running(host):
             "molecule_test_hub_mq",
             "molecule_test_hub_db",
             "molecule_test_hub_portal",
-            #"molecule_test_hub_fluentd"
+            # "molecule_test_hub_fluentd"
         ]
         actual_service_names = [container.name for container in
                                 host.docker.get_containers(status="running")]
