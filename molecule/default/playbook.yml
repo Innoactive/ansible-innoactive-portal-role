@@ -4,6 +4,12 @@
   roles:
     - role: ../../../.
       vars:
+        # since we'll already have docker in our test environment, we skip the
+        # respective role
+        docker_service_state: stopped
+        docker_service_enabled: false
+        docker_install_compose: false
+        # main configuration parameters
         registry_username: "{{ lookup('env','DOCKER_REGISTRY_USERNAME') }}"
         registry_password: "{{ lookup('env','DOCKER_REGISTRY_PASSWORD') }}"
         setup_database: true
@@ -12,3 +18,5 @@
         secret_key: not-secret-at-all-but-okay-for-tests
         hostname: localhost
         admin_email: admin@innoactive.de
+        # change the default prefix to easily identify test containers / services
+        hub_service_prefix: molecule_test_hub

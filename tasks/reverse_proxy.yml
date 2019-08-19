@@ -1,7 +1,7 @@
 ---
 - name: Start Reverse Proxy (nginx)
   docker_container:
-    name: nginx
+    name: "{{ container_names.reverse_proxy }}"
     image: "{{ image_versions.reverse_proxy }}"
     restart_policy: unless-stopped
     published_ports:
@@ -18,9 +18,10 @@
     networks:
       - name: "{{ network_names.main }}"
 
+
 - name: Start Reverse Proxy Auto-Configuration-Service
   docker_container:
-    name: nginx-gen
+    name: "{{ container_names.reverse_proxy_config_generator }}"
     image: "{{ image_versions.reverse_proxy_config_generator }}"
     restart_policy: unless-stopped
     command: >-

@@ -18,15 +18,18 @@ def test_docker_python_package_installed(host):
     assert pip_package_docker
 
 
-def test_accepts_connections(host):
-    assert host.socket("tcp://127.0.0.1:80").is_listening
-
-
 def test_services_are_running(host):
     with host.sudo():
-        expected_service_names = ["hub_web", "hub_channels", "nginx",
-                                  "nginx-gen", "hub_mq", "hub_db",
-                                  "hub_portal", "hub_fluentd"]
+        expected_service_names = [
+            "molecule_test_hub_web",
+            "molecule_test_hub_channels",
+            "nginx",
+            "nginx-gen",
+            "molecule_test_hub_mq",
+            "molecule_test_hub_db",
+            "molecule_test_hub_portal",
+            #"molecule_test_hub_fluentd"
+        ]
         actual_service_names = [container.name for container in
                                 host.docker.get_containers(status="running")]
         for expected_service_name in expected_service_names:

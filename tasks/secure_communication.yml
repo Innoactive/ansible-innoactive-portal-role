@@ -1,7 +1,7 @@
 ---
 - name: Start Letsencrypt Proxy Companion for nginx
   docker_container:
-    name: hub_letsencrypt
+    name: "{{ container_names.letsencrypt_proxy_companion }}"
     image: "{{ image_versions.letsencrypt_proxy_companion }}"
     restart_policy: unless-stopped
     env:

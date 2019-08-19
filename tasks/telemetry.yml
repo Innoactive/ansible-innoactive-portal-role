@@ -1,7 +1,7 @@
 ---
 - name: Start Fluentd Service
   docker_container:
-    name: hub_fluentd
+    name: "{{ container_names.fluentd }}"
     image: "{{ image_versions.fluentd }}"
     restart_policy: unless-stopped
     exposed_ports:

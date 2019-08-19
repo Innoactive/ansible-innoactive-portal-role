@@ -5,7 +5,7 @@
     image: "{{ image_versions.hub }}"
     restart_policy: unless-stopped
     exposed_ports:
-      - 8000
+      - "8000"
     volumes:
       - "{{ volume_names.media }}:/media"
       - "{{ volume_names.static }}:/static"
@@ -31,7 +31,7 @@
   docker_container:
     <<: *webservice
     command: supervisord -n -c /etc/supervisor/conf.d/supervisord.channels.conf
-    name: hub_channels
+    name: "{{ container_names.realtime }}"
     env:
       <<: *webservice_env
       VIRTUAL_HOST: channels

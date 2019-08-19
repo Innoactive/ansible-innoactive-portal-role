@@ -1,7 +1,7 @@
 ---
 - name: Start Mailserver
   docker_container:
-    name: hub_mailer
+    name: "{{ container_names.mailserver }}"
     image: "{{ image_versions.mailserver }}"
     restart_policy: unless-stopped
     env:
@@ -16,7 +16,7 @@
 
 - name: Start Database
   docker_container:
-    name: hub_db
+    name: "{{ container_names.database }}"
     image: "{{ image_versions.database }}"
     restart_policy: unless-stopped
     networks:
@@ -26,7 +26,7 @@
 
 - name: Start Message Queue
   docker_container:
-    name: hub_mq
+    name: "{{ container_names.message_queue }}"
     image: "{{ image_versions.message_queue }}"
     restart_policy: unless-stopped
     networks:

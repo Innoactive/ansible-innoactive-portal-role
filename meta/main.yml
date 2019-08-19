@@ -39,6 +39,7 @@ galaxy_info:
 
 dependencies:
   - role: geerlingguy.docker
+    when: install_docker
     become: true
   - role: geerlingguy.pip
     become: true

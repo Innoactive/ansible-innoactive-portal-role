@@ -52,6 +52,6 @@
   import_tasks: discovery_portal.yml
   when: hub_configuration.setup_database
 
-- name: Setup Telemetry Service
-  become: true
-  import_tasks: telemetry.yml
+# - name: Setup Telemetry Service
+#   become: true
+#   import_tasks: telemetry.yml

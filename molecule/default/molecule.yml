@@ -2,18 +2,16 @@
 dependency:
   name: galaxy
 driver:
-  name: vagrant
-  provider:
-    name: virtualbox
+  name: docker
 lint:
   name: yamllint
 platforms:
-  - name: vagrant-ubuntu
-    box: ubuntu/bionic64
-    memory: 2048
-    cpus: 1
-    provider_raw_config_args:
-      - "customize [ 'modifyvm', :id, '--uartmode1', 'disconnected' ]"
+  - name: molecule-docker
+    image: debian:stretch-slim
+    privileged: true
+    volumes:
+      # mount the docker.sock so that we can start other docker containers
+      - /var/run/docker.sock:/var/run/docker.sock:rw
 provisioner:
   name: ansible
   env:

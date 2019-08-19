@@ -1,4 +1,7 @@
 ---
+# whether or not to install docker on the machine
+install_docker: true
+
 # Docker Registry to pull images from
 registry_hostname: registry.docker.innoactive.de
 registry_username:
@@ -64,12 +67,23 @@ mail_configuration:
 
 
 # defaults file for hub
+hub_service_prefix: hub
+
 volume_names:
-  media: hub_media
-  static: hub_static
+  media: "{{hub_service_prefix}}_media"
+  static: "{{hub_service_prefix}}_static"
 
 network_names:
-  main: hub
+  main: "{{hub_service_prefix}}_network"
 
 container_names:
-  main: hub_web
+  main: "{{hub_service_prefix}}_web"
+  realtime: "{{hub_service_prefix}}_channels"
+  database: "{{hub_service_prefix}}_db"
+  message_queue: "{{hub_service_prefix}}_mq"
+  mailserver: "{{hub_service_prefix}}_mailer"
+  reverse_proxy: nginx
+  reverse_proxy_config_generator: nginx-gen
+  letsencrypt_proxy_companion: "{{hub_service_prefix}}_letsencrypt"
+  discovery_portal: "{{hub_service_prefix}}_portal"
+  fluentd: "{{hub_service_prefix}}_fluentd"

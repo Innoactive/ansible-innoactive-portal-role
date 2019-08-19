@@ -23,7 +23,7 @@
         updated = True
 
     print(json.dumps({
-        "changed": created or updated
+        "changed": created or updated,
         "client_id": discovery_portal_client.client_id,
         "client_secret": discovery_portal_client.client_secret
     }))
@@ -34,7 +34,7 @@
 
 - name: Start Discovery Portal Service
   docker_container:
-    name: hub_portal
+    name: "{{ container_names.discovery_portal }}"
     image: "{{ image_versions.portal }}"
     restart_policy: unless-stopped
     exposed_ports:
