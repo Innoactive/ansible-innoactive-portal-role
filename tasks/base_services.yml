@@ -1,0 +1,35 @@
+---
+- name: Start Mailserver
+  docker_container:
+    name: hub_mailer
+    image: "{{ image_versions.mailserver }}"
+    restart_policy: unless-stopped
+    env:
+      GMAIL_USER: "{{ mail_configuration.gmail.user }}"
+      GMAIL_PASSWORD: "{{ mail_configuration.gmail.password }}"
+      MAILNAME: "{{ hub_configuration.hostname }}"
+      PORT: "1025"
+    networks:
+      - name: "{{ network_names.main }}"
+        aliases:
+          - mailserver
+
+- name: Start Database
+  docker_container:
+    name: hub_db
+    image: "{{ image_versions.database }}"
+    restart_policy: unless-stopped
+    networks:
+      - name: "{{ network_names.main }}"
+        aliases:
+          - db
+
+- name: Start Message Queue
+  docker_container:
+    name: hub_mq
+    image: "{{ image_versions.message_queue }}"
+    restart_policy: unless-stopped
+    networks:
+      - name: "{{ network_names.main }}"
+        aliases:
+          - redis

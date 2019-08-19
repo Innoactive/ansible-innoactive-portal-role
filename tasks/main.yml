@@ -1,0 +1,57 @@
+---
+- name: Install setuptools as dependency
+  import_tasks: setuptools.yml
+  become: true
+
+- name: Login to docker registry
+  become: true
+  docker_login:
+    registry: "{{ docker_registry.hostname }}"
+    username: "{{ docker_registry.username }}"
+    password: "{{ docker_registry.password }}"
+
+- name: Setup required data volumes
+  become: true
+  import_tasks: data_volumes.yml
+
+- name: Setup required networks
+  become: true
+  import_tasks: networks.yml
+
+- name: Start Hub Base Services (Database, Message Queue, Mailserver)
+  become: true
+  import_tasks: base_services.yml
+
+- name: Start Hub Main Services (Application Servers)
+  become: true
+  import_tasks: main_services.yml
+
+- name: Start Hub Reverse Proxy Services
+  become: true
+  import_tasks: reverse_proxy.yml
+
+- name: Make sure communication with Hub is encrypted (https)
+  become: true
+  import_tasks: secure_communication.yml
+  when: letsencrypt
+
+- name: Run Database Migrations
+  become: true
+  command: "docker exec {{ container_names.main }} python manage.py migrate"
+  when: hub_configuration.setup_database
+
+- name: Collect static files for WMC
+  become: true
+  # yamllint disable rule:line-length
+  command: "docker exec {{ container_names.main }} python manage.py collectstatic -v 0 -c --no-input"
+  # yamllint enable rule:line-length
+  when: hub_configuration.setup_wmc
+
+- name: Setup Hub Discovery Portal
+  become: true
+  import_tasks: discovery_portal.yml
+  when: hub_configuration.setup_database
+
+- name: Setup Telemetry Service
+  become: true
+  import_tasks: telemetry.yml

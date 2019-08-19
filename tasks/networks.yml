@@ -1,0 +1,4 @@
+---
+- name: Create Hub's network
+  docker_network:
+    name: "{{ network_names.main }}"

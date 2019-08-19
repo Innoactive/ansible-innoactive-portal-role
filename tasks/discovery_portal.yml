@@ -1,0 +1,51 @@
+---
+- name: Get Client Credentials for Discovery Portal Service
+  # yamllint disable rule:line-length
+  shell: |-
+    docker exec -i {{ container_names.main }} python manage.py shell <<EOF
+    import json
+
+    from oauth2_provider.models import get_application_model
+
+    # get or create a suitable oauth client for the discovery portal
+    ClientModel = get_application_model()
+    discovery_portal_client, created = ClientModel.objects.get_or_create(name='Application Discovery Portal',
+                                                                        authorization_grant_type=ClientModel.GRANT_AUTHORIZATION_CODE)
+
+    # make sure a redirect uri is registered for the portal hostname
+    expected_redirect_uri = 'https://%s/hub/callback/' % '{{ hub_configuration.hostname }}'
+    current_redirect_uris = discovery_portal_client.redirect_uris.splitlines()
+    updated = False
+    if expected_redirect_uri not in current_redirect_uris:
+        current_redirect_uris.append(expected_redirect_uri)
+        discovery_portal_client.redirect_uris = '\r\n'.join(current_redirect_uris)
+        discovery_portal_client.save(update_fields=['redirect_uris'])
+        updated = True
+
+    print(json.dumps({
+        "changed": created or updated
+        "client_id": discovery_portal_client.client_id,
+        "client_secret": discovery_portal_client.client_secret
+    }))
+    EOF
+  register: oauth_client_portal
+  changed_when: "{{ oauth_client_portal.stdout | from_json | json_query('changed') }}"
+  # yamllint enable rule:line-length
+
+- name: Start Discovery Portal Service
+  docker_container:
+    name: hub_portal
+    image: "{{ image_versions.portal }}"
+    restart_policy: unless-stopped
+    exposed_ports:
+      - 80
+    env:
+      VIRTUAL_HOST: "portal.{{ hub_configuration.hostname }}"
+      LETSENCRYPT_HOST: "portal.{{ hub_configuration.hostname }}"
+      API_ROOT: "{{ hub_configuration.hostname }}"
+      # yamllint disable rule:line-length
+      OAUTH_CLIENT_ID: "{{ oauth_client_portal.stdout | from_json | json_query('client_id') }}"
+      OAUTH_SECRET: "{{ oauth_client_portal.stdout | from_json | json_query('client_secret') }}"
+      # yamllint enable rule:line-length
+    networks:
+      - name: "{{ network_names.main }}"

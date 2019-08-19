@@ -1,0 +1,14 @@
+---
+- name: Converge
+  hosts: all
+  roles:
+    - role: ../../../.
+      vars:
+        registry_username: "{{ lookup('env','DOCKER_REGISTRY_USERNAME') }}"
+        registry_password: "{{ lookup('env','DOCKER_REGISTRY_PASSWORD') }}"
+        setup_database: true
+        setup_wmc: false
+        letsencrypt: false
+        secret_key: not-secret-at-all-but-okay-for-tests
+        hostname: localhost
+        admin_email: admin@innoactive.de

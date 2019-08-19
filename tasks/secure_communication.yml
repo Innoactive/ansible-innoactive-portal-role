@@ -1,0 +1,15 @@
+---
+- name: Start Letsencrypt Proxy Companion for nginx
+  docker_container:
+    name: hub_letsencrypt
+    image: "{{ image_versions.letsencrypt_proxy_companion }}"
+    restart_policy: unless-stopped
+    env:
+      DEFAULT_EMAIL: "{{ hub_configuration.admin_email }}"
+      LETSENCRYPT_TEST: true
+    networks:
+      - name: "{{ network_names.main }}"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    volumes_from:
+      - hub_nginx

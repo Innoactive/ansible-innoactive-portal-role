@@ -1,0 +1,15 @@
+---
+- name: Start Fluentd Service
+  docker_container:
+    name: hub_fluentd
+    image: "{{ image_versions.fluentd }}"
+    restart_policy: unless-stopped
+    exposed_ports:
+      - 24224
+      - 24224/udp
+    published_ports:
+      - 24284:24284
+      - 24284:24284/udp
+      - 24443:24443
+    networks:
+      - name: "{{ network_names.main }}"

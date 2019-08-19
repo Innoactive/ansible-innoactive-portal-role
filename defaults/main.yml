@@ -1,0 +1,75 @@
+---
+# Docker Registry to pull images from
+registry_hostname: registry.docker.innoactive.de
+registry_username:
+registry_password:
+
+docker_registry:
+  hostname: "{{registry_hostname}}"
+  username: "{{registry_username}}"
+  password: "{{registry_password}}"
+
+# Main Hub Configuration parameters
+hostname:
+secret_key:
+admin_email:
+setup_database: false
+setup_wmc: false
+# Error Tracking configuration
+sentry_dsn:
+# Google Analytics configuration
+google_analytics_tracking_id:
+
+image_versions:
+  mailserver: namshi/smtp:latest
+  message_queue: redis:5
+  database: postgres:9.6
+  hub: registry.docker.innoactive.de/hub_web:latest
+  portal: registry.docker.innoactive.de/hub_portal_web:latest
+  reverse_proxy: registry.docker.innoactive.de/hub_nginx:1.2.1
+  reverse_proxy_config_generator: jwilder/docker-gen:latest
+  letsencrypt_proxy_companion: jrcs/letsencrypt-nginx-proxy-companion:v1.11
+  fluentd: registry.docker.innoactive.de/hub_fluentd:latest
+
+hub_configuration:
+  hostname: "{{hostname}}"
+  secret_key: "{{secret_key}}"
+  admin_email: "{{admin_email}}"
+  setup_database: "{{setup_database}}"
+  setup_wmc: "{{setup_wmc}}"
+  google_analytics_id: "{{google_analytics_tracking_id}}"
+  sentry_dsn: "{{sentry_dsn}}"
+
+# Telemetry configuration
+telemetry_shared_key:
+telemetry_salt:
+telemetry_private_key_passphrase:
+
+telemetry:
+  shared_key:
+  salt:
+  private_key_passphrase:
+
+# Secure Communications (SSL / TLS)
+letsencrypt: false
+
+# Mail Configuration
+gmail_user:
+gmail_password:
+
+mail_configuration:
+  gmail:
+    user: "{{gmail_user}}"
+    password: "{{gmail_password}}"
+
+
+# defaults file for hub
+volume_names:
+  media: hub_media
+  static: hub_static
+
+network_names:
+  main: hub
+
+container_names:
+  main: hub_web

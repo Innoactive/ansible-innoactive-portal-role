@@ -1,0 +1,19 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+molecule = {extras = ["docker"],version = "*"}
+autopep8 = "*"
+
+[packages]
+ansible = "*"
+molecule = {extras = ["vagrant"],version = "*"}
+python-vagrant = "*"
+paramiko = "*"
+jmespath = "*"
+
+[requires]
+python_version = "3.7"

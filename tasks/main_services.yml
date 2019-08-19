@@ -1,0 +1,44 @@
+---
+- name: Start Django Application Server
+  docker_container: &webservice
+    name: "{{ container_names.main }}"
+    image: "{{ image_versions.hub }}"
+    restart_policy: unless-stopped
+    exposed_ports:
+      - 8000
+    volumes:
+      - "{{ volume_names.media }}:/media"
+      - "{{ volume_names.static }}:/static"
+    env: &webservice_env
+      # yamllint disable rule:line-length
+      VIRTUAL_PORT: "8000"
+      VIRTUAL_PROTO: uwsgi
+      VIRTUAL_HOST: "{{ hub_configuration.hostname }}"
+      DJANGO_ALLOWED_HOSTS: "{{ hub_configuration.hostname }}"
+      DJANGO_SECRET_KEY: "{{ hub_configuration.secret_key }}"
+      FROM_EMAIL: "{{ hub_configuration.admin_email }}"
+      LETSENCRYPT_HOST: "{{ hub_configuration.hostname }}"
+      RAVEN_DSN: "{{ hub_configuration.sentry_dsn | default('') }}"
+      GOOGLE_ANALYTICS_TRACKING_ID: "{{ hub_configuration.google_analytics_tracking_id | default('') }}"
+      # yamllint enable rule:line-length
+    command: supervisord -n -c /etc/supervisor/conf.d/supervisord.django.conf
+    networks:
+      - name: "{{ network_names.main }}"
+        aliases:
+          - web
+
+- name: Start Django Realtime Application Server
+  docker_container:
+    <<: *webservice
+    command: supervisord -n -c /etc/supervisor/conf.d/supervisord.channels.conf
+    name: hub_channels
+    env:
+      <<: *webservice_env
+      VIRTUAL_HOST: channels
+      # channels cannot work via uwsgi, it needs http
+      VIRTUAL_PROTO: http
+      NETWORK_ACCESS: internal
+    networks:
+      - name: "{{ network_names.main }}"
+        aliases:
+          - channels

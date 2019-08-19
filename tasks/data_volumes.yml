@@ -1,0 +1,8 @@
+---
+- name: Create Hub's media data volume
+  docker_volume:
+    name: "{{ volume_names.media }}"
+
+- name: Create Hub's static data volume
+  docker_volume:
+    name: "{{ volume_names.static }}"
