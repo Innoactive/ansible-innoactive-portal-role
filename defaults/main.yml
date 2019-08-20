@@ -82,8 +82,8 @@ container_names:
   database: "{{hub_service_prefix}}_db"
   message_queue: "{{hub_service_prefix}}_mq"
   mailserver: "{{hub_service_prefix}}_mailer"
-  reverse_proxy: nginx
-  reverse_proxy_config_generator: nginx-gen
+  reverse_proxy: "{{hub_service_prefix}}_nginx"
+  reverse_proxy_config_generator: "{{hub_service_prefix}}_nginx_gen"
   letsencrypt_proxy_companion: "{{hub_service_prefix}}_letsencrypt"
   discovery_portal: "{{hub_service_prefix}}_portal"
   fluentd: "{{hub_service_prefix}}_fluentd"

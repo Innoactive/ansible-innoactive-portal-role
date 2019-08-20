@@ -6,6 +6,7 @@
       vars:
         # since we'll already have docker in our test environment, we skip the
         # respective role
+        #install_docker: false
         docker_service_state: stopped
         docker_service_enabled: false
         docker_install_compose: false

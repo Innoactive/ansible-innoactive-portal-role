@@ -39,7 +39,7 @@
   become: true
   command: "docker exec {{ container_names.main }} python manage.py migrate"
   register: migration_result
-  changed_when: '"No migrations to apply." not in migration_result.stdout'
+  changed_when: '"Applying " in migration_result.stdout'
   when: hub_configuration.setup_database
 
 - name: Collect static files for WMC

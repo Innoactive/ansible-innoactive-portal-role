@@ -19,17 +19,20 @@ def test_docker_python_package_installed(host):
 
 
 def test_services_are_running(host):
+    stack_prefix = 'molecule_test_hub_'
+
     with host.sudo():
-        expected_service_names = [
-            "molecule_test_hub_web",
-            "molecule_test_hub_channels",
-            "nginx",
-            "nginx-gen",
-            "molecule_test_hub_mq",
-            "molecule_test_hub_db",
-            "molecule_test_hub_portal",
-            # "molecule_test_hub_fluentd"
-        ]
+        expected_service_names = [service_name % stack_prefix for
+                                  service_name in [
+                                      "%sweb",
+                                      "%schannels",
+                                      "%snginx",
+                                      "%snginx_gen",
+                                      "%smq",
+                                      "%sdb",
+                                      "%sportal",
+                                      # "%shub_fluentd"
+                                  ]]
         actual_service_names = [container.name for container in
                                 host.docker.get_containers(status="running")]
         for expected_service_name in expected_service_names:
