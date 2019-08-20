@@ -1,4 +1,2 @@
 ---
 # vars file for hub
-pip_install_packages:
-  - name: docker

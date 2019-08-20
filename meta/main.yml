@@ -38,8 +38,8 @@ galaxy_info:
   #       Maximum 20 tags per role.
 
 dependencies:
-  - role: geerlingguy.docker
-    when: install_docker
+  - role: burnedikt.pip
     become: true
-  - role: geerlingguy.pip
-    become: true
+    vars:
+      pip_install_packages:
+        - name: docker

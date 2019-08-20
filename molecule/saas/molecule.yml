@@ -4,31 +4,18 @@ dependency:
   options:
     role-file: molecule/requirements.yml
 driver:
-  name: docker
+  name: hetznercloud
 lint:
   name: yamllint
 platforms:
-  - name: molecule-docker
-    image: debian:stretch-slim
-    privileged: true
-    volumes:
-      # mount the docker.sock so that we can start other docker containers
-      - /var/run/docker.sock:/var/run/docker.sock:rw
+  - name: molecule-hub-hetzner
+    server_type: cx11
+    image: debian-9
 provisioner:
   name: ansible
   log: true
-  playbooks:
-    converge: playbook.yml
-    cleanup: cleanup.yml
-  env:
-    ANSIBLE_ROLES_PATH: $HOME/.ansible/roles
-    DOCKER_REGISTRY_USERNAME: ${DOCKER_REGISTRY_USERNAME}
-    DOCKER_REGISTRY_PASSWORD: ${DOCKER_REGISTRY_PASSWORD}
   lint:
     name: ansible-lint
-    options:
-      exclude:
-        - $HOME/.ansible/roles
 verifier:
   name: testinfra
   directory: ../tests/
@@ -40,6 +27,3 @@ verifier:
     PYTHONWARNINGS: "ignore:.*U.*mode is deprecated:DeprecationWarning"
   lint:
     name: flake8
-  options:
-    # show which tests where executed in test output
-    v: 1

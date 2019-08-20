@@ -1,8 +1,0 @@
----
-- name: >-
-    Install setuptools as dependency,
-    see https://github.com/ansible/ansible/issues/47361
-  package:
-    name: python-setuptools
-    state: present
-    update_cache: true

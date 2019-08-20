@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "bc4127468bf8f51ac02d7735b49dc0f54d7b0a9428ff195ba2c57630bc4ac301"
+            "sha256": "fbd94f2a7c4fec87c4cd1273f82fd0bed31367b565db84d4db45ad4a3c6ae9e3"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -249,6 +249,12 @@
             ],
             "version": "==1.2.2"
         },
+        "hcloud": {
+            "hashes": [
+                "sha256:d925d1a391727181da8d6725d9e124ac8c59ac2ad31cc4e8981226ee1181eb2b"
+            ],
+            "version": "==1.4.1"
+        },
         "identify": {
             "hashes": [
                 "sha256:9aba2d08a82aa8e6f58810d4887ed3cf103a1befeb1eaf632d9c6fd2d6642542",
@@ -335,7 +341,8 @@
         },
         "molecule": {
             "extras": [
-                "docker"
+                "docker",
+                "hetznercloud"
             ],
             "hashes": [
                 "sha256:12fa4231ed69c6e7f50432588eaace36cea917a8c73c1751269ce55df32ced24",
@@ -502,17 +509,17 @@
         },
         "pytest": {
             "hashes": [
-                "sha256:3805d095f1ea279b9870c3eeae5dddf8a81b10952c8835cd628cf1875b0ef031",
-                "sha256:abc562321c2d190dd63c2faadf70b86b7af21a553b61f0df5f5e1270717dc5a3"
+                "sha256:95b1f6db806e5b1b5b443efeb58984c24945508f93a866c1719e1a507a957d7c",
+                "sha256:c3d5020755f70c82eceda3feaf556af9a341334414a8eca521a18f463bcead88"
             ],
-            "version": "==5.1.0"
+            "version": "==5.1.1"
         },
         "python-dateutil": {
             "hashes": [
-                "sha256:7e6584c74aeed623791615e26efd690f29817a27c73085b78e4bad02493df2fb",
-                "sha256:c89805f6f4d64db21ed966fda138f8a5ed7a4fdbc1a8ee329ce1b74e3c74da9e"
+                "sha256:063df5763652e21de43de7d9e00ccf239f953a832941e37be541614732cdfc93",
+                "sha256:88f9287c0174266bb0d8cedd395cfba9c58e87e5ad86b2ce58859bc11be3cf02"
             ],
-            "version": "==2.8.0"
+            "version": "==2.7.5"
         },
         "python-gilt": {
             "hashes": [
@@ -521,13 +528,6 @@
                 "sha256:e23a45a6905e6bb7aec3ff7652b48309933a6991fad4546d9e793ac7e0513f8a"
             ],
             "version": "==1.2.1"
-        },
-        "python-vagrant": {
-            "hashes": [
-                "sha256:af9a8a9802d382d45dbea96aa3cfbe77c6e6ad65b3fe7b7c799d41ab988179c6"
-            ],
-            "index": "pypi",
-            "version": "==0.5.15"
         },
         "pyyaml": {
             "hashes": [
@@ -1039,7 +1039,8 @@
         },
         "molecule": {
             "extras": [
-                "docker"
+                "docker",
+                "hetznercloud"
             ],
             "hashes": [
                 "sha256:12fa4231ed69c6e7f50432588eaace36cea917a8c73c1751269ce55df32ced24",
@@ -1214,17 +1215,17 @@
         },
         "pytest": {
             "hashes": [
-                "sha256:3805d095f1ea279b9870c3eeae5dddf8a81b10952c8835cd628cf1875b0ef031",
-                "sha256:abc562321c2d190dd63c2faadf70b86b7af21a553b61f0df5f5e1270717dc5a3"
+                "sha256:95b1f6db806e5b1b5b443efeb58984c24945508f93a866c1719e1a507a957d7c",
+                "sha256:c3d5020755f70c82eceda3feaf556af9a341334414a8eca521a18f463bcead88"
             ],
-            "version": "==5.1.0"
+            "version": "==5.1.1"
         },
         "python-dateutil": {
             "hashes": [
-                "sha256:7e6584c74aeed623791615e26efd690f29817a27c73085b78e4bad02493df2fb",
-                "sha256:c89805f6f4d64db21ed966fda138f8a5ed7a4fdbc1a8ee329ce1b74e3c74da9e"
+                "sha256:063df5763652e21de43de7d9e00ccf239f953a832941e37be541614732cdfc93",
+                "sha256:88f9287c0174266bb0d8cedd395cfba9c58e87e5ad86b2ce58859bc11be3cf02"
             ],
-            "version": "==2.8.0"
+            "version": "==2.7.5"
         },
         "python-gilt": {
             "hashes": [

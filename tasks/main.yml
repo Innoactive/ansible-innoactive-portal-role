@@ -1,8 +1,4 @@
 ---
-- name: Install setuptools as dependency
-  import_tasks: setuptools.yml
-  become: true
-
 - name: Login to docker registry
   become: true
   docker_login:

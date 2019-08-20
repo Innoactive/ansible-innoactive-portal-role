@@ -10,8 +10,7 @@ autopep8 = "*"
 
 [packages]
 ansible = "*"
-molecule = {extras = ["docker"],version = "*"}
-python-vagrant = "*"
+molecule = {extras = ["hetznercloud","docker"],version = "*"}
 paramiko = "*"
 jmespath = "*"
 
