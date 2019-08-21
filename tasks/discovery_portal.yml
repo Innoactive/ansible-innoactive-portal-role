@@ -28,9 +28,21 @@
         "client_secret": discovery_portal_client.client_secret
     }))
     EOF
-  register: oauth_client_portal
-  changed_when: "{{ oauth_client_portal.stdout | from_json | json_query('changed') }}"
+  register: discovery_portal_oauth2_client_raw
+  changed_when: "{{ discovery_portal_oauth2_client_raw.stdout | from_json | json_query('changed') }}"
   # yamllint enable rule:line-length
+
+- name: Identify Client Id for Discovery Portal
+  set_fact:
+    discovery_portal_oauth2_client_id: "{{ discovery_portal_oauth2_client_raw.stdout | from_json | json_query('client_id') }}"
+    discovery_portal_oauth2_client_secret: "{{ discovery_portal_oauth2_client_raw.stdout | from_json | json_query('client_secret') }}"
+  when: discovery_portal_oauth2_client_raw is defined
+
+- name: Identify Client Id for Discovery Portal (Fallback)
+  set_fact:
+    discovery_portal_oauth2_client_id: ""
+    discovery_portal_oauth2_client_secret: ""
+  when: discovery_portal_oauth2_client_raw is not defined
 
 - name: Start Discovery Portal Service
   docker_container:
@@ -44,8 +56,9 @@
       LETSENCRYPT_HOST: "portal.{{ hub_configuration.hostname }}"
       API_ROOT: "{{ hub_configuration.hostname }}"
       # yamllint disable rule:line-length
-      OAUTH_CLIENT_ID: "{{ oauth_client_portal.stdout | from_json | json_query('client_id') }}"
-      OAUTH_SECRET: "{{ oauth_client_portal.stdout | from_json | json_query('client_secret') }}"
+      OAUTH_CLIENT_ID: "{{ discovery_portal_oauth2_client_id | mandatory }}"
+      OAUTH_SECRET: "{{ discovery_portal_oauth2_client_secret | mandatory }}"
       # yamllint enable rule:line-length
+    networks_cli_compatible: true
     networks:
       - name: "{{ network_names.main }}"
