@@ -8,7 +8,7 @@ driver:
 lint:
   name: yamllint
 platforms:
-  - name: molecule-hub-hetzner
+  - name: molecule-hub-hetzner${INSTANCE_NAME_SUFFIX}
     server_type: cx11
     image: debian-9
 provisioner:
