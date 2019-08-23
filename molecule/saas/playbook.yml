@@ -1,14 +1,15 @@
 ---
 - name: Converge
   hosts: all
+  pre_tasks:
+    - name: "Identify Hetzner Machine hostname (DNS)"
+      # we are running on a hetzner machine and need a publicly accessible hostname
+      # we can get it by reversing the ip4 address, prefixing it with static. and
+      # suffixing it with clients.your-server.de
+      set_fact:
+        public_hostname: "static.{{ ansible_default_ipv4.address.split('.') | reverse | join('.') }}.clients.your-server.de"
   roles:
     - role: geerlingguy.docker
-      vars:
-        # since we'll already have docker in our test environment, we skip the
-        # respective role
-        docker_service_state: stopped
-        docker_service_enabled: false
-        docker_install_compose: false
       become: true
     - role: ../../../.
       vars:
@@ -16,10 +17,10 @@
         registry_username: "{{ lookup('env','DOCKER_REGISTRY_USERNAME') }}"
         registry_password: "{{ lookup('env','DOCKER_REGISTRY_PASSWORD') }}"
         setup_database: true
-        setup_wmc: false
-        letsencrypt: false
+        setup_wmc: true
+        letsencrypt: true
         secret_key: not-secret-at-all-but-okay-for-tests
-        hostname: localhost
+        hostname: "{{ public_hostname }}"
         admin_email: admin@innoactive.de
         # change the default prefix to easily identify test containers / services
         hub_service_prefix: molecule_test_hub

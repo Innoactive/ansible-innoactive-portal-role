@@ -1,3 +1,6 @@
 [*.py]
 indent_size = 4
 indent_style = space
+
+[Jenkinsfile]
+indent_size = 4

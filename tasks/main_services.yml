@@ -1,6 +1,6 @@
 ---
 - name: Start Django Application Server
-  docker_container: &webservice
+  docker_container:
     name: "{{ container_names.main }}"
     image: "{{ image_versions.hub }}"
     restart_policy: unless-stopped
@@ -13,15 +13,16 @@
       # yamllint disable rule:line-length
       VIRTUAL_PORT: "8000"
       VIRTUAL_PROTO: uwsgi
-      VIRTUAL_HOST: "{{ hub_configuration.hostname }}"
-      DJANGO_ALLOWED_HOSTS: "{{ hub_configuration.hostname }}"
-      DJANGO_SECRET_KEY: "{{ hub_configuration.secret_key }}"
-      FROM_EMAIL: "{{ hub_configuration.admin_email }}"
-      LETSENCRYPT_HOST: "{{ hub_configuration.hostname }}"
+      VIRTUAL_HOST: "{{ hub_configuration.hostname | mandatory }}"
+      DJANGO_ALLOWED_HOSTS: "{{ hub_configuration.hostname | mandatory }}"
+      DJANGO_SECRET_KEY: "{{ hub_configuration.secret_key | mandatory }}"
+      FROM_EMAIL: "{{ hub_configuration.admin_email | mandatory }}"
+      LETSENCRYPT_HOST: "{{ hub_configuration.hostname | mandatory }}"
       RAVEN_DSN: "{{ hub_configuration.sentry_dsn | default('') }}"
       GOOGLE_ANALYTICS_TRACKING_ID: "{{ hub_configuration.google_analytics_tracking_id | default('') }}"
       # yamllint enable rule:line-length
     command: supervisord -n -c /etc/supervisor/conf.d/supervisord.django.conf
+    networks_cli_compatible: true
     networks:
       - name: "{{ network_names.main }}"
         aliases:
@@ -29,15 +30,30 @@
 
 - name: Start Django Realtime Application Server
   docker_container:
-    <<: *webservice
-    command: supervisord -n -c /etc/supervisor/conf.d/supervisord.channels.conf
     name: "{{ container_names.realtime }}"
+    image: "{{ image_versions.hub }}"
+    restart_policy: unless-stopped
+    exposed_ports:
+      - "8000"
+    volumes:
+      - "{{ volume_names.media }}:/media"
+      - "{{ volume_names.static }}:/static"
     env:
-      <<: *webservice_env
+      # yamllint disable rule:line-length
+      VIRTUAL_PORT: "8000"
       VIRTUAL_HOST: channels
       # channels cannot work via uwsgi, it needs http
       VIRTUAL_PROTO: http
       NETWORK_ACCESS: internal
+      DJANGO_ALLOWED_HOSTS: "{{ hub_configuration.hostname | mandatory }}"
+      DJANGO_SECRET_KEY: "{{ hub_configuration.secret_key | mandatory }}"
+      FROM_EMAIL: "{{ hub_configuration.admin_email | mandatory }}"
+      LETSENCRYPT_HOST: "{{ hub_configuration.hostname | mandatory }}"
+      RAVEN_DSN: "{{ hub_configuration.sentry_dsn | default('') }}"
+      GOOGLE_ANALYTICS_TRACKING_ID: "{{ hub_configuration.google_analytics_tracking_id | default('') }}"
+      # yamllint enable rule:line-length
+    command: supervisord -n -c /etc/supervisor/conf.d/supervisord.channels.conf
+    networks_cli_compatible: true
     networks:
       - name: "{{ network_names.main }}"
         aliases:

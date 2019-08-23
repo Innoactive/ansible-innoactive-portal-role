@@ -1,0 +1,29 @@
+---
+dependency:
+  name: galaxy
+  options:
+    role-file: molecule/requirements.yml
+driver:
+  name: hetznercloud
+lint:
+  name: yamllint
+platforms:
+  - name: molecule-hub-hetzner${INSTANCE_NAME_SUFFIX}
+    server_type: cx11
+    image: debian-9
+provisioner:
+  name: ansible
+  log: true
+  lint:
+    name: ansible-lint
+verifier:
+  name: testinfra
+  directory: ../tests/
+  env:
+    # yamllint disable rule:line-length
+    # get rid of the DeprecationWarning messages of third-party libs,
+    # see https://docs.pytest.org/en/latest/warnings.html#deprecationwarning-and-pendingdeprecationwarning
+    # yamllint enable rule:line-length
+    PYTHONWARNINGS: "ignore:.*U.*mode is deprecated:DeprecationWarning"
+  lint:
+    name: flake8

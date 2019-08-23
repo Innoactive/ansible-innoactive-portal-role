@@ -1,12 +1,14 @@
 ---
 dependency:
   name: galaxy
+  options:
+    role-file: molecule/requirements.yml
 driver:
   name: docker
 lint:
   name: yamllint
 platforms:
-  - name: molecule-docker
+  - name: molecule-docker${INSTANCE_NAME_SUFFIX}
     image: debian:stretch-slim
     privileged: true
     volumes:
@@ -14,6 +16,7 @@ platforms:
       - /var/run/docker.sock:/var/run/docker.sock:rw
 provisioner:
   name: ansible
+  log: true
   playbooks:
     converge: playbook.yml
     cleanup: cleanup.yml
@@ -28,6 +31,7 @@ provisioner:
         - $HOME/.ansible/roles
 verifier:
   name: testinfra
+  directory: ../tests/
   env:
     # yamllint disable rule:line-length
     # get rid of the DeprecationWarning messages of third-party libs,

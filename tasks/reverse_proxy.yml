@@ -15,6 +15,7 @@
       - /usr/share/nginx/html
       - /docker-gen-templates
       - /etc/nginx/certs
+    networks_cli_compatible: true
     networks:
       - name: "{{ network_names.main }}"
         aliases:
@@ -27,11 +28,12 @@
     image: "{{ image_versions.reverse_proxy_config_generator }}"
     restart_policy: unless-stopped
     command: >-
-      -notify-sighup nginx -watch -wait 5s:30s /docker-gen-templates/nginx.tmpl
+      -notify-sighup {{ container_names.reverse_proxy }} -watch -wait 5s:30s /docker-gen-templates/nginx.tmpl
       /etc/nginx/conf.d/default.conf
     volumes_from:
       - "{{ container_names.reverse_proxy }}"
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
+    networks_cli_compatible: true
     networks:
       - name: "{{ network_names.main }}"

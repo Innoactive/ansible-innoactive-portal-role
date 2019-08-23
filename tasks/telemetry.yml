@@ -11,5 +11,6 @@
       - 24284:24284
       - 24284:24284/udp
       - 24443:24443
+    networks_cli_compatible: yes
     networks:
       - name: "{{ network_names.main }}"
