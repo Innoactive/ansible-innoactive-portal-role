@@ -30,19 +30,24 @@
     EOF
   register: discovery_portal_oauth2_client_raw
   changed_when: "{{ discovery_portal_oauth2_client_raw.stdout | from_json | json_query('changed') }}"
+  when: (portal_configuration.oauth2_client_id is not defined) or
+        (portal_configuration.oauth2_client_secret is not defined)
   # yamllint enable rule:line-length
 
 - name: Identify Client Id for Discovery Portal
   set_fact:
     discovery_portal_oauth2_client_id: "{{ discovery_portal_oauth2_client_raw.stdout | from_json | json_query('client_id') }}"
     discovery_portal_oauth2_client_secret: "{{ discovery_portal_oauth2_client_raw.stdout | from_json | json_query('client_secret') }}"
-  when: discovery_portal_oauth2_client_raw is defined
+  when: (portal_configuration.oauth2_client_id is not defined) or
+        (portal_configuration.oauth2_client_secret is not defined)
 
 - name: Identify Client Id for Discovery Portal (Fallback)
   set_fact:
-    discovery_portal_oauth2_client_id: ""
-    discovery_portal_oauth2_client_secret: ""
-  when: discovery_portal_oauth2_client_raw is not defined
+    discovery_portal_oauth2_client_id: "{{ portal_configuration.oauth2_client_id }}"
+    discovery_portal_oauth2_client_secret: "{{ portal_configuration.oauth2_client_secret }}"
+  when:
+    - portal_configuration.oauth2_client_id is defined
+    - portal_configuration.oauth2_client_secret is defined
 
 - name: Start Discovery Portal Service
   docker_container:
@@ -52,8 +57,8 @@
     exposed_ports:
       - "80"
     env:
-      VIRTUAL_HOST: "portal.{{ hub_configuration.hostname }}"
-      LETSENCRYPT_HOST: "portal.{{ hub_configuration.hostname }}"
+      VIRTUAL_HOST: "{{ portal_configuration.hostname }}"
+      LETSENCRYPT_HOST: "{{ portal_configuration.hostname }}"
       API_ROOT: "{{ hub_configuration.hostname }}"
       # yamllint disable rule:line-length
       OAUTH_CLIENT_ID: "{{ discovery_portal_oauth2_client_id | mandatory }}"

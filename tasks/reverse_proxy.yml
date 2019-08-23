@@ -21,7 +21,6 @@
         aliases:
           - nginx
 
-
 - name: Start Reverse Proxy Auto-Configuration-Service
   docker_container:
     name: "{{ container_names.reverse_proxy_config_generator }}"

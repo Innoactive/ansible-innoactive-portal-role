@@ -57,14 +57,30 @@ DSN for [Sentry](https://sentry.io/welcome/) to automatically track runtime erro
 
     google_analytics_tracking_id:
 
-### Secured Communication
-
 Tracking ID of a Google Analytics Property to monitor usage of the Hub.
+
+### Secured Communication
 
     letsencrypt: true
 
 Whether or not to use [Let's Encrypt](https://letsencrypt.org/) to issue SSL / TLS certificates. Set this to false if
 you intend to use custom certificates or no certificates at all.
+
+### Innoactive Discovery Portal
+
+    portal_hostname: "portal.{{ hub_configuration.hostname  }}"
+
+The hostname under which the discovery portal should be publicly availabe. This defaults to `portal.<hostname-of-hub-instance>`.
+
+    portal_oauth_client_id:
+
+Allows to explicitly define the oauth client id to be used by the portal to communicate with the Hub. If not defined,
+an oauth client will automatically be retrieved.
+
+    portal_oauth_client_secret:
+
+Allows to explicitly define the oauth client secret to be used by the portal to communicate with the Hub. If not defined,
+an oauth client will automatically be retrieved.
 
 ### Mail Setup
 
