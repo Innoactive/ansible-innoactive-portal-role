@@ -61,6 +61,7 @@ telemetry:
 
 # Secure Communications (SSL / TLS)
 letsencrypt: true
+letsencrypt_test: false
 
 # Mail Configuration
 gmail_user:

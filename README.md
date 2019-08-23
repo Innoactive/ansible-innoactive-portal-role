@@ -66,6 +66,12 @@ Tracking ID of a Google Analytics Property to monitor usage of the Hub.
 Whether or not to use [Let's Encrypt](https://letsencrypt.org/) to issue SSL / TLS certificates. Set this to false if
 you intend to use custom certificates or no certificates at all.
 
+    letsencrypt_test: false
+
+When using [Let's Encrypt](https://letsencrypt.org/) to issue SSL / TLS certificates this flag (defaults to false) can be
+used to issue certificates by Let's Encrypt's [staging environment](https://letsencrypt.org/docs/staging-environment/)
+instead of the production environment.
+
 ### Innoactive Discovery Portal
 
     portal_hostname: "portal.{{ hub_configuration.hostname  }}"
