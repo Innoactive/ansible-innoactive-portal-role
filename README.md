@@ -1,17 +1,18 @@
 # Role Name
 
-A brief description of the role goes here.
+This role sets up a host to run the Innoactive Hub - XR platform.
 
 ## Requirements
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the
-role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+Since the deployment uses [json_query](https://docs.ansible.com/ansible/latest/user_guide/playbooks_filters.html#json-query-filter)
+to extract important values from json data structures, the respective pip package [jmespath][http://jmespath.org/] needs
+to be installed locally via pip.
+
+## Installation
+
+To install this role locally, simply run `ansible-galaxy install git+git@github.com:Innoactive/ansible-innoactive-hub-role.git`.
 
 ## Role Variables
-
-A description of the settable variables for this role should go here, including any variables that are in
-defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables
-that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
 
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 
