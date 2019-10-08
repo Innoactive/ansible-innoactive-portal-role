@@ -13,7 +13,7 @@
                                                                         authorization_grant_type=ClientModel.GRANT_AUTHORIZATION_CODE)
 
     # make sure a redirect uri is registered for the portal hostname
-    expected_redirect_uri = 'https://%s/hub/callback/' % '{{ hub_configuration.hostname }}'
+    expected_redirect_uri = '{{ hub_configuration.protocol }}://%s/hub/callback/' % '{{ portal_configuration.hostname }}'
     current_redirect_uris = discovery_portal_client.redirect_uris.splitlines()
     updated = False
     if expected_redirect_uri not in current_redirect_uris:
@@ -30,24 +30,32 @@
     EOF
   register: discovery_portal_oauth2_client_raw
   changed_when: "{{ discovery_portal_oauth2_client_raw.stdout | from_json | json_query('changed') }}"
-  when: (portal_configuration.oauth2_client_id is not defined) or
-        (portal_configuration.oauth2_client_secret is not defined)
+  when: (portal_configuration.oauth2_client_id is not defined or not portal_configuration.oauth2_client_id) or
+        (portal_configuration.oauth2_client_secret is not defined or not portal_configuration.oauth2_client_secret)
   # yamllint enable rule:line-length
 
 - name: Identify Client Id for Discovery Portal
   set_fact:
     discovery_portal_oauth2_client_id: "{{ discovery_portal_oauth2_client_raw.stdout | from_json | json_query('client_id') }}"
     discovery_portal_oauth2_client_secret: "{{ discovery_portal_oauth2_client_raw.stdout | from_json | json_query('client_secret') }}"
-  when: (portal_configuration.oauth2_client_id is not defined) or
-        (portal_configuration.oauth2_client_secret is not defined)
+  when: (portal_configuration.oauth2_client_id is not defined or not portal_configuration.oauth2_client_id) or
+        (portal_configuration.oauth2_client_secret is not defined or not portal_configuration.oauth2_client_secret)
 
 - name: Identify Client Id for Discovery Portal (Fallback)
   set_fact:
     discovery_portal_oauth2_client_id: "{{ portal_configuration.oauth2_client_id }}"
     discovery_portal_oauth2_client_secret: "{{ portal_configuration.oauth2_client_secret }}"
   when:
-    - portal_configuration.oauth2_client_id is defined
-    - portal_configuration.oauth2_client_secret is defined
+    - portal_configuration.oauth2_client_id is defined and portal_configuration.oauth2_client_id
+    - portal_configuration.oauth2_client_secret is defined and portal_configuration.oauth2_client_secret
+
+- name: Validate client credentials
+  assert:
+    that:
+      - discovery_portal_oauth2_client_id is defined
+      - discovery_portal_oauth2_client_id|length
+      - discovery_portal_oauth2_client_secret is defined
+      - discovery_portal_oauth2_client_secret|length
 
 - name: Start Discovery Portal Service
   docker_container:
@@ -61,8 +69,8 @@
       LETSENCRYPT_HOST: "{{ portal_configuration.hostname }}"
       API_ROOT: "{{ hub_configuration.protocol }}://{{ hub_configuration.hostname }}"
       # yamllint disable rule:line-length
-      OAUTH_CLIENT_ID: "{{ discovery_portal_oauth2_client_id | mandatory }}"
-      OAUTH_SECRET: "{{ discovery_portal_oauth2_client_secret | mandatory }}"
+      OAUTH_CLIENT_ID: "{{ discovery_portal_oauth2_client_id }}"
+      OAUTH_SECRET: "{{ discovery_portal_oauth2_client_secret }}"
       # yamllint enable rule:line-length
     networks_cli_compatible: true
     networks:
