@@ -1,6 +1,7 @@
 ---
 - name: Create Hub's media data volume
   docker_volume:
+    # TODO: ability to mount external volume would be nice
     name: "{{ volume_names.media }}"
 
 - name: Create Hub's static data volume
