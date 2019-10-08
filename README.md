@@ -44,6 +44,14 @@ A user-defined, secret key used for salting hashes within the Hub's application.
 
 E-Mail address of the main admin user, used to notify upon errors, expired certificates, etc.
 
+    admin_password:
+
+Password of the main admin user to login to the Hub instance and manage other users or content.
+
+    create_admin_user: true
+
+Whether to ensure the creation of an admin user on the Hub instance, may be skipped if users are setup manually.
+
     setup_database: true
 
 Whether to run database migrations and setup the database.

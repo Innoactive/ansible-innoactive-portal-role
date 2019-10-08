@@ -1,0 +1,24 @@
+---
+- name: Validate superuser credentials
+  assert:
+    that:
+      - hub_configuration.admin_email is defined
+      - hub_configuration.admin_email
+      - hub_configuration.admin_email|length
+      - hub_configuration.admin_password is defined
+      - hub_configuration.admin_password
+      - hub_configuration.admin_password|length
+- name: Create superuser account
+  # yamllint disable rule:line-length
+  # see also https://stackoverflow.com/a/26091252/1142028 on how to create a
+  # superuser account in django
+  shell: |-
+    docker exec -i {{ container_names.main }} python manage.py shell <<EOF
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    if not User.objects.filter(email='{{ hub_configuration.admin_email | mandatory }}').exists():
+      User.objects.create_superuser('{{ hub_configuration.admin_email | mandatory }}', '{{ hub_configuration.admin_password | mandatory }}')
+    EOF
+  register: discovery_portal_oauth2_client_raw
+  changed_when: false
+  # yamllint enable rule:line-length

@@ -52,6 +52,11 @@
   import_tasks: discovery_portal.yml
   when: hub_configuration.setup_database
 
+- name: Create Superuser
+  become: true
+  import_tasks: superuser.yml
+  when: hub_configuration.create_admin_user
+
 # - name: Setup Telemetry Service
 #   become: true
 #   import_tasks: telemetry.yml

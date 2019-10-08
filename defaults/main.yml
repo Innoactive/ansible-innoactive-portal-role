@@ -13,6 +13,8 @@ docker_registry:
 hostname:
 secret_key:
 admin_email:
+admin_password:
+create_admin_user: true
 setup_database: true
 setup_wmc: true
 # Error Tracking configuration
@@ -35,11 +37,13 @@ hub_configuration:
   hostname: "{{ hostname }}"
   secret_key: "{{ secret_key }}"
   admin_email: "{{ admin_email }}"
+  admin_password: "{{ admin_password }}"
   setup_database: "{{ setup_database }}"
   setup_wmc: "{{ setup_wmc }}"
   google_analytics_id: "{{ google_analytics_tracking_id }}"
   sentry_dsn: "{{ sentry_dsn }}"
   protocol: "{{ 'https' if letsencrypt else 'http' }}"
+  create_admin_user: "{{ create_admin_user }}"
 
 portal_hostname: "portal.{{ hub_configuration.hostname  }}"
 portal_oauth_client_id:
