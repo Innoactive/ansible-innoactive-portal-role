@@ -39,6 +39,7 @@ hub_configuration:
   setup_wmc: "{{ setup_wmc }}"
   google_analytics_id: "{{ google_analytics_tracking_id }}"
   sentry_dsn: "{{ sentry_dsn }}"
+  protocol: "{{ 'https' if letsencrypt else 'http' }}"
 
 portal_hostname: "portal.{{ hub_configuration.hostname  }}"
 portal_oauth_client_id:

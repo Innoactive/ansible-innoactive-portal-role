@@ -59,7 +59,7 @@
     env:
       VIRTUAL_HOST: "{{ portal_configuration.hostname }}"
       LETSENCRYPT_HOST: "{{ portal_configuration.hostname }}"
-      API_ROOT: "{{ hub_configuration.hostname }}"
+      API_ROOT: "{{ hub_configuration.protocol }}://{{ hub_configuration.hostname }}"
       # yamllint disable rule:line-length
       OAUTH_CLIENT_ID: "{{ discovery_portal_oauth2_client_id | mandatory }}"
       OAUTH_SECRET: "{{ discovery_portal_oauth2_client_secret | mandatory }}"
