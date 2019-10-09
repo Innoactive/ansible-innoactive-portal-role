@@ -5,7 +5,7 @@ This role sets up a host to run the Innoactive Hub - XR platform.
 ## Requirements
 
 Since the deployment uses [json_query](https://docs.ansible.com/ansible/latest/user_guide/playbooks_filters.html#json-query-filter)
-to extract important values from json data structures, the respective pip package [jmespath][http://jmespath.org/] needs
+to extract important values from json data structures, the respective pip package [jmespath](http://jmespath.org/) needs
 to be installed locally via pip.
 
 ## Installation
