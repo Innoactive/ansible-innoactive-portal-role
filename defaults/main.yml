@@ -5,14 +5,16 @@ registry_username:
 registry_password:
 
 docker_registry:
-  hostname: "{{registry_hostname}}"
-  username: "{{registry_username}}"
-  password: "{{registry_password}}"
+  hostname: "{{ registry_hostname }}"
+  username: "{{ registry_username }}"
+  password: "{{ registry_password }}"
 
 # Main Hub Configuration parameters
 hostname:
 secret_key:
 admin_email:
+admin_password:
+create_admin_user: true
 setup_database: true
 setup_wmc: true
 # Error Tracking configuration
@@ -32,13 +34,25 @@ image_versions:
   fluentd: registry.docker.innoactive.de/hub_fluentd:latest
 
 hub_configuration:
-  hostname: "{{hostname}}"
-  secret_key: "{{secret_key}}"
-  admin_email: "{{admin_email}}"
-  setup_database: "{{setup_database}}"
-  setup_wmc: "{{setup_wmc}}"
-  google_analytics_id: "{{google_analytics_tracking_id}}"
-  sentry_dsn: "{{sentry_dsn}}"
+  hostname: "{{ hostname }}"
+  secret_key: "{{ secret_key }}"
+  admin_email: "{{ admin_email }}"
+  admin_password: "{{ admin_password }}"
+  setup_database: "{{ setup_database }}"
+  setup_wmc: "{{ setup_wmc }}"
+  google_analytics_id: "{{ google_analytics_tracking_id }}"
+  sentry_dsn: "{{ sentry_dsn }}"
+  protocol: "{{ 'https' if letsencrypt else 'http' }}"
+  create_admin_user: "{{ create_admin_user }}"
+
+portal_hostname: "portal.{{ hub_configuration.hostname  }}"
+portal_oauth_client_id:
+portal_oauth_client_secret:
+
+portal_configuration:
+  hostname: "{{ portal_hostname }}"
+  oauth2_client_id: "{{ portal_oauth_client_id }}"
+  oauth2_client_secret: "{{ portal_oauth_client_secret }}"
 
 # Telemetry configuration
 telemetry_shared_key:
@@ -52,6 +66,7 @@ telemetry:
 
 # Secure Communications (SSL / TLS)
 letsencrypt: true
+letsencrypt_test: false
 
 # Mail Configuration
 gmail_user:
@@ -59,28 +74,27 @@ gmail_password:
 
 mail_configuration:
   gmail:
-    user: "{{gmail_user}}"
-    password: "{{gmail_password}}"
-
+    user: "{{ gmail_user }}"
+    password: "{{ gmail_password }}"
 
 # defaults file for hub
 hub_service_prefix: hub
 
 volume_names:
-  media: "{{hub_service_prefix}}_media"
-  static: "{{hub_service_prefix}}_static"
+  media: "{{ hub_service_prefix }}_media"
+  static: "{{ hub_service_prefix }}_static"
 
 network_names:
-  main: "{{hub_service_prefix}}_network"
+  main: "{{ hub_service_prefix }}_network"
 
 container_names:
-  main: "{{hub_service_prefix}}_web"
-  realtime: "{{hub_service_prefix}}_channels"
-  database: "{{hub_service_prefix}}_db"
-  message_queue: "{{hub_service_prefix}}_mq"
-  mailserver: "{{hub_service_prefix}}_mailer"
-  reverse_proxy: "{{hub_service_prefix}}_nginx"
-  reverse_proxy_config_generator: "{{hub_service_prefix}}_nginx_gen"
-  letsencrypt_proxy_companion: "{{hub_service_prefix}}_letsencrypt"
-  discovery_portal: "{{hub_service_prefix}}_portal"
-  fluentd: "{{hub_service_prefix}}_fluentd"
+  main: "{{ hub_service_prefix }}_web"
+  realtime: "{{ hub_service_prefix }}_channels"
+  database: "{{ hub_service_prefix }}_db"
+  message_queue: "{{ hub_service_prefix }}_mq"
+  mailserver: "{{ hub_service_prefix }}_mailer"
+  reverse_proxy: "{{ hub_service_prefix }}_nginx"
+  reverse_proxy_config_generator: "{{ hub_service_prefix }}_nginx_gen"
+  letsencrypt_proxy_companion: "{{ hub_service_prefix }}_letsencrypt"
+  discovery_portal: "{{ hub_service_prefix }}_portal"
+  fluentd: "{{ hub_service_prefix }}_fluentd"

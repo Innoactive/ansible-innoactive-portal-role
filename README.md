@@ -1,17 +1,18 @@
 # Role Name
 
-A brief description of the role goes here.
+This role sets up a host to run the Innoactive Hub - XR platform.
 
 ## Requirements
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the
-role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+Since the deployment uses [json_query](https://docs.ansible.com/ansible/latest/user_guide/playbooks_filters.html#json-query-filter)
+to extract important values from json data structures, the respective pip package [jmespath][http://jmespath.org/] needs
+to be installed locally via pip.
+
+## Installation
+
+To install this role locally, simply run `ansible-galaxy install git+git@github.com:Innoactive/ansible-innoactive-hub-role.git`.
 
 ## Role Variables
-
-A description of the settable variables for this role should go here, including any variables that are in
-defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables
-that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
 
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 
@@ -43,6 +44,14 @@ A user-defined, secret key used for salting hashes within the Hub's application.
 
 E-Mail address of the main admin user, used to notify upon errors, expired certificates, etc.
 
+    admin_password:
+
+Password of the main admin user to login to the Hub instance and manage other users or content.
+
+    create_admin_user: true
+
+Whether to ensure the creation of an admin user on the Hub instance, may be skipped if users are setup manually.
+
     setup_database: true
 
 Whether to run database migrations and setup the database.
@@ -57,14 +66,36 @@ DSN for [Sentry](https://sentry.io/welcome/) to automatically track runtime erro
 
     google_analytics_tracking_id:
 
-### Secured Communication
-
 Tracking ID of a Google Analytics Property to monitor usage of the Hub.
+
+### Secured Communication
 
     letsencrypt: true
 
 Whether or not to use [Let's Encrypt](https://letsencrypt.org/) to issue SSL / TLS certificates. Set this to false if
 you intend to use custom certificates or no certificates at all.
+
+    letsencrypt_test: false
+
+When using [Let's Encrypt](https://letsencrypt.org/) to issue SSL / TLS certificates this flag (defaults to false) can be
+used to issue certificates by Let's Encrypt's [staging environment](https://letsencrypt.org/docs/staging-environment/)
+instead of the production environment.
+
+### Innoactive Discovery Portal
+
+    portal_hostname: "portal.{{ hub_configuration.hostname  }}"
+
+The hostname under which the discovery portal should be publicly availabe. This defaults to `portal.<hostname-of-hub-instance>`.
+
+    portal_oauth_client_id:
+
+Allows to explicitly define the oauth client id to be used by the portal to communicate with the Hub. If not defined,
+an oauth client will automatically be retrieved.
+
+    portal_oauth_client_secret:
+
+Allows to explicitly define the oauth client secret to be used by the portal to communicate with the Hub. If not defined,
+an oauth client will automatically be retrieved.
 
 ### Mail Setup
 

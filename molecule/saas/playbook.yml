@@ -19,8 +19,11 @@
         setup_database: true
         setup_wmc: true
         letsencrypt: true
+        # do not issue certificates from production letsencrypt server
+        letsencrypt_test: true
         secret_key: not-secret-at-all-but-okay-for-tests
         hostname: "{{ public_hostname }}"
         admin_email: admin@innoactive.de
+        admin_password: sup3rs3cur3pa55w0rdf0rt3st1ng
         # change the default prefix to easily identify test containers / services
         hub_service_prefix: molecule_test_hub
