@@ -25,6 +25,7 @@ pipeline {
                             withEnv(["HCLOUD_TOKEN=$hcloud_api_token"]) {
                                 ansiColor('xterm') {
                                     sh "molecule test -s saas"
+                                    sh "molecule test -s with_cifs"
                                 }
                             }
                         }

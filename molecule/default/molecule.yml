@@ -31,7 +31,7 @@ provisioner:
         - $HOME/.ansible/roles
 verifier:
   name: testinfra
-  directory: ../tests/
+  directory: ./tests/
   env:
     # yamllint disable rule:line-length
     # get rid of the DeprecationWarning messages of third-party libs,

@@ -1,0 +1,19 @@
+---
+- name: Ensure CIFS is supported
+  package:
+    name: cifs-utils
+
+- name: Define CIFS Mount credentials
+  set_fact:
+    media_storage_mount_credentials: "username={{ media_volume_mount.cifs.username }},password={{ media_volume_mount.cifs.password }},"
+  when:
+    - media_volume_mount.cifs.username | default('') | trim | length > 0
+    - media_volume_mount.cifs.password | default('') | trim | length > 0
+
+- name: Mount data volume via CIFS
+  mount:
+    path: "{{ media_storage_path }}"
+    src: "{{ media_volume_mount.cifs.url }}"
+    fstype: cifs
+    state: mounted
+    opts: "{{ media_storage_mount_credentials | default('') }}nounix,file_mode=0666,dir_mode=0777,vers=3.0"

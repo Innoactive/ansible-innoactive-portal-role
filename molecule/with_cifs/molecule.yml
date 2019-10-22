@@ -2,23 +2,34 @@
 dependency:
   name: galaxy
   options:
-    role-file: molecule/requirements.yml
+    role-file: molecule/with_cifs/requirements.yml
 driver:
   name: hetznercloud
 lint:
   name: yamllint
 platforms:
-  - name: molecule-hub-${INSTANCE_NAME_SUFFIX}
+  - name: molecule-hub-${INSTANCE_NAME_SUFFIX}-cifs
     server_type: cx11
     image: ubuntu-18.04
+
+scenario:
+  converge_sequence:
+    - converge
 provisioner:
   name: ansible
   config_options:
     defaults:
       interpreter_python: /usr/bin/python3
-  env:
-    LOCAL_MOUNT_PATH: /tmp/localmount
   log: true
+  env:
+    CIFS_USERNAME: cifsuser
+    CIFS_PASSWORD: cifsaccess
+    CIFS_SHARENAME: testshare
+  playbooks:
+    create: ../saas/create.yml
+    prepare: prepare.yml
+    converge: playbook.yml
+    destroy: ../saas/destroy.yml
   lint:
     name: ansible-lint
 verifier:

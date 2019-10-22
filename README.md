@@ -8,6 +8,9 @@ Since the deployment uses [json_query](https://docs.ansible.com/ansible/latest/u
 to extract important values from json data structures, the respective pip package [jmespath](http://jmespath.org/) needs
 to be installed locally via pip.
 
+Also, the Innoactive Hub's images are distributed via Innoactive's private Docker registry so in order to access and deploy
+them, credentials to access the docker registry at `registry.docker.innoactive.de` are required.
+
 ## Installation
 
 To install this role locally, simply run `ansible-galaxy install git+git@github.com:Innoactive/ansible-innoactive-hub-role.git`.
@@ -68,6 +71,69 @@ DSN for [Sentry](https://sentry.io/welcome/) to automatically track runtime erro
 
 Tracking ID of a Google Analytics Property to monitor usage of the Hub.
 
+#### Media Files
+
+The Hub's files (user uploads like applications, assets, ...) are stored within a dedicated docker volume. To ensure
+sufficient space, backing this volume with an external storage via cifs or a locally mounted disk can make sense.
+To enable the volume storage for media files, we need to decide whether to use the local or cifs mount options and
+specify those accordingly:
+
+##### CIFS
+
+To go for a CIFS mounted volume for the media files, the following needs to be specified
+
+    media_volume_mount:
+      cifs:
+        url:
+        username:
+        password:
+
+The individual values of the configuration object are explained below:
+
+    url:
+
+The public URL of the storage / file share supporting CIFS.
+
+    username:
+
+The username to use for authentication against the CIFS file share.
+
+    password:
+
+The password to use for authentication against the CIFS file share.
+
+##### Local Mount / Drive
+
+As an alternative to the Samba / CIFS share, we can also use a local disk, drive or folder for the static files, as long
+as the filesystem on this mountpoint is `ext4`. To make use of it, we need to configure as follows:
+
+    media_volume_mount:
+      local:
+        path:
+
+with:
+
+    path:
+
+An absolute path on the filesystem pointing to an `ext4`-formatted volume / storage.
+
+#### Versioning
+
+It is possible to deploy different versions of the Innoactive Hub's services by specifying the following variables.
+Available versions for the docker container images can be found in our registry at `registry.docker.innoactive.de`.
+
+    portal_image_version: latest
+
+The version of the Innoactive Hub's Portal container.
+
+    hub_image_version: latest
+
+The version of the Innoactive Hub's Main Service container.
+
+    reverse_proxy_image_version: 1.2.1
+
+The version of the reverse proxy image to be used.
+
 ### Secured Communication
 
     letsencrypt: true
@@ -112,7 +178,7 @@ Password for the specified G-Mail account.
 A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set
 for other roles, or variables that are used from other roles.
 
-- [burnedikt.pip](https://github.com/burnedikt/ansible-role-pip)
+- [geerlingguy.pip](https://github.com/geerlingguy/ansible-role-pip)
 
 If the server to which to apply the Innoactive Hub role to does not come with docker pre-installed, it is helpful to also
 use:

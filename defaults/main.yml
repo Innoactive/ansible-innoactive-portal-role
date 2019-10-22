@@ -22,16 +22,31 @@ sentry_dsn:
 # Google Analytics configuration
 google_analytics_tracking_id:
 
+# Docker Image Versions
+portal_image_version: latest
+hub_image_version: latest
+reverse_proxy_image_version: 1.2.1
+
+mailserver_image: namshi/smtp:latest
+message_queue_image: redis:5
+database_image: postgres:9.6
+hub_image: registry.docker.innoactive.de/hub_web:{{ hub_image_version }}
+portal_image: registry.docker.innoactive.de/hub_portal_web:{{ portal_image_version }}
+reverse_proxy_image: registry.docker.innoactive.de/hub_nginx:{{ reverse_proxy_image_version }}
+reverse_proxy_config_generator_image: jwilder/docker-gen:latest
+letsencrypt_proxy_companion_image: jrcs/letsencrypt-nginx-proxy-companion:v1.11
+fluentd_image: registry.docker.innoactive.de/hub_fluentd:latest
+
 image_versions:
-  mailserver: namshi/smtp:latest
-  message_queue: redis:5
-  database: postgres:9.6
-  hub: registry.docker.innoactive.de/hub_web:latest
-  portal: registry.docker.innoactive.de/hub_portal_web:latest
-  reverse_proxy: registry.docker.innoactive.de/hub_nginx:1.2.1
-  reverse_proxy_config_generator: jwilder/docker-gen:latest
-  letsencrypt_proxy_companion: jrcs/letsencrypt-nginx-proxy-companion:v1.11
-  fluentd: registry.docker.innoactive.de/hub_fluentd:latest
+  mailserver: "{{ mailserver_image }}"
+  message_queue: "{{ message_queue_image }}"
+  database: "{{ database_image }}"
+  hub: "{{ hub_image }}"
+  portal: "{{ portal_image }}"
+  reverse_proxy: "{{ reverse_proxy_image }}"
+  reverse_proxy_config_generator: "{{ reverse_proxy_config_generator_image }}"
+  letsencrypt_proxy_companion: "{{ letsencrypt_proxy_companion_image }}"
+  fluentd: "{{ fluentd_image }}"
 
 hub_configuration:
   hostname: "{{ hostname }}"
@@ -79,6 +94,15 @@ mail_configuration:
 
 # defaults file for hub
 hub_service_prefix: hub
+
+# Mount options
+media_volume_mount:
+  cifs:
+    url:
+    username:
+    password:
+  local:
+    path:
 
 volume_names:
   media: "{{ hub_service_prefix }}_media"

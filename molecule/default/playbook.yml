@@ -1,6 +1,19 @@
 ---
 - name: Converge
   hosts: all
+  vars:
+    # main configuration parameters
+    registry_username: "{{ lookup('env','DOCKER_REGISTRY_USERNAME') }}"
+    registry_password: "{{ lookup('env','DOCKER_REGISTRY_PASSWORD') }}"
+    setup_database: true
+    setup_wmc: false
+    letsencrypt: false
+    secret_key: not-secret-at-all-but-okay-for-tests
+    hostname: localhost
+    admin_email: admin@innoactive.de
+    admin_password: sup3rs3cur3pa55w0rdf0rt3st1ng
+    # change the default prefix to easily identify test containers / services
+    hub_service_prefix: molecule_test_hub
   roles:
     - role: geerlingguy.docker
       vars:
@@ -11,16 +24,3 @@
         docker_install_compose: false
       become: true
     - role: ../../../.
-      vars:
-        # main configuration parameters
-        registry_username: "{{ lookup('env','DOCKER_REGISTRY_USERNAME') }}"
-        registry_password: "{{ lookup('env','DOCKER_REGISTRY_PASSWORD') }}"
-        setup_database: true
-        setup_wmc: false
-        letsencrypt: false
-        secret_key: not-secret-at-all-but-okay-for-tests
-        hostname: localhost
-        admin_email: admin@innoactive.de
-        admin_password: sup3rs3cur3pa55w0rdf0rt3st1ng
-        # change the default prefix to easily identify test containers / services
-        hub_service_prefix: molecule_test_hub

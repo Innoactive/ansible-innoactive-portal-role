@@ -14,12 +14,14 @@
     hostname: "{{ public_hostname }}"
     admin_email: admin@innoactive.de
     admin_password: sup3rs3cur3pa55w0rdf0rt3st1ng
-    # mount media volume (locally)
-    media_volume_mount:
-      local:
-        path: "{{ lookup('env', 'LOCAL_MOUNT_PATH') }}"
     # change the default prefix to easily identify test containers / services
     hub_service_prefix: molecule_test_hub
+    # mount media volume
+    media_volume_mount:
+      cifs:
+        url: "//localhost/{{ lookup('env', 'CIFS_SHARENAME') }}"
+        username: "{{ lookup('env', 'CIFS_USERNAME') }}"
+        password: "{{ lookup('env', 'CIFS_PASSWORD') }}"
     # we are running on a hetzner machine and need a publicly accessible hostname
     # we can get it by reversing the ip4 address, prefixing it with static. and
     # suffixing it with clients.your-server.de

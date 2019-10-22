@@ -2,8 +2,16 @@
 - name: Prepare
   hosts: all
   gather_facts: false
+  vars:
+    media_storage_path: "{{ lookup('env', 'LOCAL_MOUNT_PATH') }}"
   tasks:
-    - name: Install python for Ansible
-      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal python-zipstream)
-      become: true
-      changed_when: false
+    - name: Wait for apt list lock (Known to cause issues sometimes), see https://github.com/geerlingguy/ansible-role-docker/issues/159
+      raw: while fuser /var/lib/apt/lists/lock >/dev/null 2>&1; do echo 'Waiting for apt list lock.' && sleep 10; done
+    - name: Create a folder to serve as the media storage
+      file:
+        path: "{{ media_storage_path }}"
+        state: directory
+    - name: Create a file within the media storage
+      copy:
+        content: '# Stupid testfile'
+        dest: "{{ media_storage_path }}/test.txt"
