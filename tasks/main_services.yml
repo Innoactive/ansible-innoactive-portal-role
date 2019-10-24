@@ -58,3 +58,19 @@
       - name: "{{ network_names.main }}"
         aliases:
           - channels
+
+- name: Run Database Migrations
+  become: true
+  command: "docker exec {{ container_names.main }} python manage.py migrate"
+  register: migration_result
+  changed_when: '"Applying " in migration_result.stdout'
+  when: hub_configuration.setup_database
+
+- name: Collect static files for WMC
+  become: true
+  # yamllint disable rule:line-length
+  command: "docker exec {{ container_names.main }} python manage.py collectstatic -v 0 -c --no-input"
+  # yamllint enable rule:line-length
+  when: hub_configuration.setup_wmc
+  # TODO: technically, this is not correct, it should only be changed if no files are collected
+  changed_when: false
