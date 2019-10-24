@@ -107,3 +107,34 @@
   # yamllint enable rule:line-length
   # TODO: technically, this is not correct, it should only be changed if no files are collected
   changed_when: false
+
+- name: Enable Customization Micro Frontend
+  become: true
+  # yamllint disable rule:line-length
+  shell: |-
+    docker exec -i {{ container_names.main }} python manage.py shell <<EOF
+    import json
+
+    from microservices.models import HubService
+
+    # create entry for customization micro frontend
+    customization_frontend, created = HubService.objects.get_or_create(name='Discovery Portal Customization',
+                                                                       menu_entry_name='Customization',
+                                                                       url_prefix='customization',
+                                                                       fa_icon='paint-brush',
+                                                                       script_url='{{ hub_configuration.protocol }}://{{ customization_configuration.hostname }}/main.js',
+                                                                       init_function='customizationAppRender')
+
+    # enable micro frontends feature on the Hub as a whole
+    from dynamic_preferences.registries import global_preferences_registry
+    # We instantiate a manager for our global preferences
+    # see https://django-dynamic-preferences.readthedocs.io/en/latest/quickstart.html#retrieve-and-update-preferences
+    global_preferences = global_preferences_registry.manager()
+    # enable micro frontends
+    global_preferences['feature__enable_hub_services'] = True
+
+    print(created)
+    EOF
+  register: customization_micro_frontend_raw
+  changed_when: "{{ customization_micro_frontend_raw.stdout | trim | bool }}"
+  # yamllint enable rule:line-length
