@@ -8,7 +8,7 @@ driver:
 lint:
   name: yamllint
 platforms:
-  - name: molecule-hub-${INSTANCE_NAME_SUFFIX}-cifs
+  - name: molecule-hub${INSTANCE_NAME_SUFFIX}-cifs
     server_type: cx11
     image: ubuntu-18.04
 
