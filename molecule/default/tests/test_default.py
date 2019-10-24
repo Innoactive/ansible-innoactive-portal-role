@@ -13,7 +13,9 @@ def test_is_docker_installed(host):
 
 
 def test_docker_python_package_installed(host):
-    pip_package_docker = host.pip_package.get_packages().get('docker')
+    pip_package_docker = host.pip_package.get_packages(
+        pip_path='pip3'
+    ).get('docker')
 
     assert pip_package_docker
 

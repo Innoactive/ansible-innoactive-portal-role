@@ -1,0 +1,34 @@
+---
+# Setup a SMB / CIFS server on the host
+- hosts: all
+  vars:
+    cifs_username: "{{ lookup('env','CIFS_USERNAME') }}"
+    cifs_password: "{{ lookup('env','CIFS_PASSWORD') }}"
+    cifs_sharepath: /tmp/sambashare
+    cifs_sharename: "{{ lookup('env','CIFS_SHARENAME') }}"
+  pre_tasks:
+    - name: Wait for apt list lock (Known to cause issues sometimes), see https://github.com/geerlingguy/ansible-role-docker/issues/159
+      raw: while fuser /var/lib/apt/lists/lock >/dev/null 2>&1; do echo 'Waiting for apt list lock.' && sleep 10; done
+    - name: Add a user to access the cifs share
+      user:
+        name: "{{ cifs_username }}"
+        comment: CIFS User
+    - name: Create a folder to share via SMB / CIFS
+      file:
+        path: "{{ cifs_sharepath }}"
+        state: directory
+        owner: "{{ cifs_username }}"
+    - name: Create a file to share via SMB / CIFS
+      copy:
+        content: '# Stupid testfile'
+        dest: "{{ cifs_sharepath }}/test.txt"
+  roles:
+    - role: bertvv.samba
+      vars:
+        samba_users:
+          - name: "{{ cifs_username }}"
+            password: "{{ cifs_password }}"
+        samba_shares:
+          - name: testshare
+            valid_users: "+{{ cifs_username }}"
+            path: "{{ cifs_sharepath }}"

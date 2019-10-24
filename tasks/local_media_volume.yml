@@ -1,0 +1,8 @@
+---
+- name: Create Hub's media data volume (with local mount)
+  mount:
+    path: "{{ media_storage_path }}"
+    src: "{{ media_volume_mount.local.path }}"
+    fstype: ext4
+    state: mounted
+    opts: bind

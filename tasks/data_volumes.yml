@@ -1,8 +1,65 @@
 ---
-- name: Create Hub's media data volume
+- name: Determine whether volume creation mode
+  block:
+    - name: Setup variables
+      set_fact:
+        use_cifs: no
+        use_local_mount: no
+    - name: Determine whether volume should be created via Samba / CIFS
+      set_fact:
+        use_cifs: yes
+      when:
+        - media_volume_mount.cifs is defined
+        - media_volume_mount.cifs.url is defined
+        - media_volume_mount.cifs.url | default('', true) | trim | length > 0
+
+    - name: Determine whether volume should be created via local mount or simple
+      set_fact:
+        use_local_mount: yes
+      when:
+        - media_volume_mount.local is defined
+        - media_volume_mount.local.path is defined
+        - media_volume_mount.local.path | default('', true) | trim | length > 0
+
+    - name: Assert Variables
+      assert:
+        that:
+          - not ((use_local_mount | default(false)) and (use_cifs | default(false)))
+        fail_msg: "Cannot specify both options for local and for cifs mount!"
+        quiet: yes
+
+- name: Create Hub's media data volume (without CIFS)
   docker_volume:
-    # TODO: ability to mount external volume would be nice
     name: "{{ volume_names.media }}"
+  when:
+    - not use_cifs
+    - not use_local_mount
+
+- name: Define Volume Mount path
+  set_fact:
+    media_storage_path: /mnt/hub-media-storage
+  when: use_cifs or use_local_mount
+
+- name: Mount Media Volume locally
+  import_tasks: local_media_volume.yml
+  when:
+    - use_local_mount
+    - not use_cifs
+
+- name: Mount Media Volume via CIFS
+  import_tasks: cifs_media_volume.yml
+  when:
+    - use_cifs
+    - not use_local_mount
+
+- name: Create Hub's media (docker) volume at specified mount path
+  docker_volume:
+    name: "{{ volume_names.media }}"
+    driver_options:
+      device: "{{ media_storage_path }}"
+      type: local
+      o: bind
+  when: use_cifs or use_local_mount
 
 - name: Create Hub's static data volume
   docker_volume:
