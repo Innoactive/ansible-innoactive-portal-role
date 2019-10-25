@@ -99,6 +99,8 @@
   when: hub_configuration.setup_database
   # TODO: technically, this is not correct, it should only be changed if no files are collected
   changed_when: false
+  tags:
+    - setup_tasks
 
 - name: Run Database migrations
   become: true
@@ -108,6 +110,8 @@
   when: hub_configuration.setup_database
   # TODO: technically, this is not correct, it should only be changed if no files are collected
   changed_when: false
+  tags:
+    - setup_tasks
 
 - name: Collect static files for Customization Service
   become: true
@@ -116,6 +120,8 @@
   # yamllint enable rule:line-length
   # TODO: technically, this is not correct, it should only be changed if no files are collected
   changed_when: false
+  tags:
+    - setup_tasks
 
 - name: Enable Customization Micro Frontend
   become: true
@@ -148,3 +154,5 @@
   # yamllint enable rule:line-length
   register: customization_micro_frontend_raw
   changed_when: "{{ customization_micro_frontend_raw.stdout | trim | bool }}"
+  tags:
+    - setup_tasks

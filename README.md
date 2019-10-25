@@ -211,6 +211,30 @@ use:
 
 - [geerlingguy.docker](https://github.com/geerlingguy/ansible-role-docker)
 
+## Tags
+
+Since this role has quite a few steps and takes a while to execute, several tags exist that allow to dynamically disable
+or enable parts of the role. See also [ansible docs](https://docs.ansible.com/ansible/latest/user_guide/playbooks_tags.html).
+
+The available Tags are:
+
+- *dependencies* Controls whether or not the (meta) dependencies of this role are being executed (docker and pip packages),
+  more specific tags are available:
+
+  - *docker* Controls whether the docker role dependency is being executed (might want to skip if Docker already installed)
+  - *pip* Controls whether the pip role dependency is being executed
+
+- *services* Controls whether or not all of the Hub's Services are being setup. More specifically, the individual services
+  can be controlled with the following tags:
+
+  - *base* Controls whether base services will be set up (Database, Message Queue, Mailserver)
+  - *main* Controls whether main Hub services will be set up (Django application)
+  - *ssl* Controls whether or not the Let's Encrypt service will be set up
+  - *discovery_portal* Controls whether or not the discovery portal service will be set up
+  - *customization* Controls whether or not the customization service for the discovery portal service will be set up
+
+- *setup_tasks* Controls whether or not to run any setup tasks like database migrations, collection of static files, etc.
+
 ## Example Playbook
 
 Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for
