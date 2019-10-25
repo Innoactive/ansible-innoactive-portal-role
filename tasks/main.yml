@@ -17,10 +17,16 @@
 - name: Start Hub Base Services (Database, Message Queue, Mailserver)
   become: true
   import_tasks: base_services.yml
+  tags:
+    - services
+    - base
 
 - name: Start Hub Main Services (Application Servers)
   become: true
   import_tasks: main_services.yml
+  tags:
+    - services
+    - main
 
 - name: Start Hub Reverse Proxy Services
   become: true
@@ -30,21 +36,32 @@
   become: true
   import_tasks: secure_communication.yml
   when: letsencrypt
+  tags:
+    - services
+    - ssl
 
 - name: Setup Hub Discovery Portal
   become: true
   import_tasks: discovery_portal.yml
   when: hub_configuration.setup_discovery_portal
+  tags:
+    - services
+    - discovery_portal
 
 - name: Setup Hub Customization Service
   become: true
   import_tasks: customization_service.yml
   when: hub_configuration.setup_customization_service
+  tags:
+    - services
+    - customization
 
 - name: Create Superuser
   become: true
   import_tasks: superuser.yml
   when: hub_configuration.create_admin_user
+  tags:
+    - setup_tasks
 
 # - name: Setup Telemetry Service
 #   become: true
