@@ -118,11 +118,12 @@
     from microservices.models import HubService
 
     # create entry for customization micro frontend
+    script_url = '{{ hub_configuration.protocol }}://{{ customization_configuration.hostname }}/main.js'
     customization_frontend, created = HubService.objects.get_or_create(name='Discovery Portal Customization',
                                                                        menu_entry_name='Customization',
                                                                        url_prefix='customization',
                                                                        fa_icon='paint-brush',
-                                                                       script_url='{{ hub_configuration.protocol }}://{{ customization_configuration.hostname }}/main.js',
+                                                                       script_url=script_url,
                                                                        init_function='customizationAppRender')
 
     # enable micro frontends feature on the Hub as a whole
@@ -135,6 +136,6 @@
 
     print(created)
     EOF
+  # yamllint enable rule:line-length
   register: customization_micro_frontend_raw
   changed_when: "{{ customization_micro_frontend_raw.stdout | trim | bool }}"
-  # yamllint enable rule:line-length
