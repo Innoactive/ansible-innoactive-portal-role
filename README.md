@@ -147,7 +147,13 @@ When using [Let's Encrypt](https://letsencrypt.org/) to issue SSL / TLS certific
 used to issue certificates by Let's Encrypt's [staging environment](https://letsencrypt.org/docs/staging-environment/)
 instead of the production environment.
 
-### Innoactive Discovery Portal
+### Additional Hub Services
+
+#### Innoactive Discovery Portal
+
+    setup_discovery_portal: true
+
+Whether or not to setup the discovery portal for this instance.
 
     portal_hostname: "portal.{{ hub_configuration.hostname  }}"
 
@@ -159,6 +165,26 @@ Allows to explicitly define the oauth client id to be used by the portal to comm
 an oauth client will automatically be retrieved.
 
     portal_oauth_client_secret:
+
+Allows to explicitly define the oauth client secret to be used by the portal to communicate with the Hub. If not defined,
+an oauth client will automatically be retrieved.
+
+#### Innoactive Customization Service (for Discovery Portal)
+
+    setup_customization_service: true
+
+Whether or not to setup the customization service for this instance.
+
+    customization_hostname: "customization.{{ hub_configuration.hostname  }}"
+
+The hostname under which the customization service should be publicly availabe. This defaults to `customization.<hostname-of-hub-instance>`.
+
+    customization_oauth_client_id:
+
+Allows to explicitly define the oauth client id to be used by the portal to communicate with the Hub. If not defined,
+an oauth client will automatically be retrieved.
+
+    customization_oauth_client_secret:
 
 Allows to explicitly define the oauth client secret to be used by the portal to communicate with the Hub. If not defined,
 an oauth client will automatically be retrieved.

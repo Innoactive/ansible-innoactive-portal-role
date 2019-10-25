@@ -17,6 +17,8 @@ admin_password:
 create_admin_user: true
 setup_database: true
 setup_wmc: true
+setup_discovery_portal: true
+setup_customization_service: true
 # Error Tracking configuration
 sentry_dsn:
 # Google Analytics configuration
@@ -36,6 +38,7 @@ reverse_proxy_image: registry.docker.innoactive.de/hub_nginx:{{ reverse_proxy_im
 reverse_proxy_config_generator_image: jwilder/docker-gen:latest
 letsencrypt_proxy_companion_image: jrcs/letsencrypt-nginx-proxy-companion:v1.11
 fluentd_image: registry.docker.innoactive.de/hub_fluentd:latest
+customization_image: registry.docker.innoactive.de/hub_customization:latest
 
 image_versions:
   mailserver: "{{ mailserver_image }}"
@@ -47,6 +50,7 @@ image_versions:
   reverse_proxy_config_generator: "{{ reverse_proxy_config_generator_image }}"
   letsencrypt_proxy_companion: "{{ letsencrypt_proxy_companion_image }}"
   fluentd: "{{ fluentd_image }}"
+  customization: "{{ customization_image }}"
 
 hub_configuration:
   hostname: "{{ hostname }}"
@@ -55,11 +59,14 @@ hub_configuration:
   admin_password: "{{ admin_password }}"
   setup_database: "{{ setup_database }}"
   setup_wmc: "{{ setup_wmc }}"
+  setup_discovery_portal: "{{ setup_discovery_portal }}"
+  setup_customization_service: "{{ setup_customization_service }}"
   google_analytics_id: "{{ google_analytics_tracking_id }}"
   sentry_dsn: "{{ sentry_dsn }}"
   protocol: "{{ 'https' if letsencrypt else 'http' }}"
   create_admin_user: "{{ create_admin_user }}"
 
+# Portal Configuration
 portal_hostname: "portal.{{ hub_configuration.hostname  }}"
 portal_oauth_client_id:
 portal_oauth_client_secret:
@@ -68,6 +75,16 @@ portal_configuration:
   hostname: "{{ portal_hostname }}"
   oauth2_client_id: "{{ portal_oauth_client_id }}"
   oauth2_client_secret: "{{ portal_oauth_client_secret }}"
+
+# Customization Configuration
+customiatzion_hostname: "customization.{{ hub_configuration.hostname  }}"
+customiatzion_oauth_client_id:
+customiatzion_oauth_client_secret:
+
+customization_configuration:
+  hostname: "{{ customiatzion_hostname }}"
+  oauth2_client_id: "{{ customiatzion_oauth_client_id }}"
+  oauth2_client_secret: "{{ customiatzion_oauth_client_secret }}"
 
 # Telemetry configuration
 telemetry_shared_key:
@@ -121,4 +138,5 @@ container_names:
   reverse_proxy_config_generator: "{{ hub_service_prefix }}_nginx_gen"
   letsencrypt_proxy_companion: "{{ hub_service_prefix }}_letsencrypt"
   discovery_portal: "{{ hub_service_prefix }}_portal"
+  customization: "{{ hub_service_prefix }}_customization"
   fluentd: "{{ hub_service_prefix }}_fluentd"

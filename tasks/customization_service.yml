@@ -1,0 +1,141 @@
+---
+- name: Get Client Credentials for Customization Service
+  # yamllint disable rule:line-length
+  shell: |-
+    docker exec -i {{ container_names.main }} python manage.py shell <<EOF
+    import json
+
+    from oauth2_provider.models import get_application_model
+
+    # get or create a suitable oauth client for the discovery portal
+    ClientModel = get_application_model()
+    customiatzion_client, created = ClientModel.objects.get_or_create(name='Discovery Portal Customization Service',
+                                                                      authorization_grant_type=ClientModel.GRANT_AUTHORIZATION_CODE,
+                                                                      skip_authorization=True)
+
+    # make sure a redirect uri is registered for the portal hostname
+    expected_redirect_uri = '{{ hub_configuration.protocol }}://%s/hub/callback/' % '{{ customization_configuration.hostname }}'
+    current_redirect_uris = customiatzion_client.redirect_uris.splitlines()
+    updated = False
+    if expected_redirect_uri not in current_redirect_uris:
+        current_redirect_uris.append(expected_redirect_uri)
+        customiatzion_client.redirect_uris = '\r\n'.join(current_redirect_uris)
+        customiatzion_client.save(update_fields=['redirect_uris'])
+        updated = True
+
+    print(json.dumps({
+        "changed": created or updated,
+        "client_id": customiatzion_client.client_id,
+        "client_secret": customiatzion_client.client_secret
+    }))
+    EOF
+  register: customization_oauth2_client_raw
+  changed_when: "{{ customization_oauth2_client_raw.stdout | from_json | json_query('changed') }}"
+  when: (customization_configuration.oauth2_client_id is not defined or not customization_configuration.oauth2_client_id) or
+        (customization_configuration.oauth2_client_secret is not defined or not customization_configuration.oauth2_client_secret)
+
+- name: Identify Client Id for Customization Service
+  set_fact:
+    customization_oauth2_client_id: "{{ customization_oauth2_client_raw.stdout | from_json | json_query('client_id') }}"
+    customization_oauth2_client_secret: "{{ customization_oauth2_client_raw.stdout | from_json | json_query('client_secret') }}"
+  when: (customization_configuration.oauth2_client_id is not defined or not customization_configuration.oauth2_client_id) or
+        (customization_configuration.oauth2_client_secret is not defined or not customization_configuration.oauth2_client_secret)
+
+- name: Identify Client Id for Customization service (Fallback)
+  set_fact:
+    customization_oauth2_client_id: "{{ customization_configuration.oauth2_client_id }}"
+    customization_oauth2_client_secret: "{{ customization_configuration.oauth2_client_secret }}"
+  when:
+    - customization_configuration.oauth2_client_id is defined and customization_configuration.oauth2_client_id
+    - customization_configuration.oauth2_client_secret is defined and customization_configuration.oauth2_client_secret
+
+- name: Validate client credentials
+  assert:
+    that:
+      - customization_oauth2_client_id is defined
+      - customization_oauth2_client_id|length > 0
+      - customization_oauth2_client_secret is defined
+      - customization_oauth2_client_secret|length > 0
+
+- name: Start Customization Service
+  docker_container:
+    name: "{{ container_names.customization }}"
+    image: "{{ image_versions.customization }}"
+    restart_policy: unless-stopped
+    exposed_ports:
+      - "80"
+    env:
+      VIRTUAL_HOST: "{{ customization_configuration.hostname }}"
+      LETSENCRYPT_HOST: "{{ customization_configuration.hostname }}"
+      HUB_URL: "{{ hub_configuration.protocol }}://{{ hub_configuration.hostname }}"
+      API_ROOT: "{{ hub_configuration.protocol }}://{{ hub_configuration.hostname }}"
+      OAUTH_CLIENT_ID: "{{ customization_oauth2_client_id }}"
+      OAUTH_SECRET: "{{ customization_oauth2_client_secret }}"
+      DJANGO_SETTINGS_MODULE: core.settings.dev_deployment
+      DB_NAME: customization
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_HOST: db
+      CUSTOMIZATION_API_ROOT: "{{ hub_configuration.protocol }}://{{ customization_configuration.hostname }}/api"
+      BASE_URL: "/"
+    networks_cli_compatible: true
+    networks:
+      - name: "{{ network_names.main }}"
+
+- name: Setup Database
+  become: true
+  # yamllint disable rule:line-length
+  command: "docker exec {{ container_names.customization }} python manage.py create_db"
+  # yamllint enable rule:line-length
+  when: hub_configuration.setup_database
+  # TODO: technically, this is not correct, it should only be changed if no files are collected
+  changed_when: false
+
+- name: Run Database migrations
+  become: true
+  # yamllint disable rule:line-length
+  command: "docker exec {{ container_names.customization }} python manage.py migrate"
+  # yamllint enable rule:line-length
+  when: hub_configuration.setup_database
+  # TODO: technically, this is not correct, it should only be changed if no files are collected
+  changed_when: false
+
+- name: Collect static files for Customization Service
+  become: true
+  # yamllint disable rule:line-length
+  command: "docker exec {{ container_names.customization }} python manage.py collectstatic -v 0 -c --no-input"
+  # yamllint enable rule:line-length
+  # TODO: technically, this is not correct, it should only be changed if no files are collected
+  changed_when: false
+
+- name: Enable Customization Micro Frontend
+  become: true
+  # yamllint disable rule:line-length
+  shell: |-
+    docker exec -i {{ container_names.main }} python manage.py shell <<EOF
+    import json
+
+    from microservices.models import HubService
+
+    # create entry for customization micro frontend
+    script_url = '{{ hub_configuration.protocol }}://{{ customization_configuration.hostname }}/main.js'
+    customization_frontend, created = HubService.objects.get_or_create(name='Discovery Portal Customization',
+                                                                       menu_entry_name='Customization',
+                                                                       url_prefix='customization',
+                                                                       fa_icon='paint-brush',
+                                                                       script_url=script_url,
+                                                                       init_function='customizationAppRender')
+
+    # enable micro frontends feature on the Hub as a whole
+    from dynamic_preferences.registries import global_preferences_registry
+    # We instantiate a manager for our global preferences
+    # see https://django-dynamic-preferences.readthedocs.io/en/latest/quickstart.html#retrieve-and-update-preferences
+    global_preferences = global_preferences_registry.manager()
+    # enable micro frontends
+    global_preferences['feature__enable_hub_services'] = True
+
+    print(created)
+    EOF
+  # yamllint enable rule:line-length
+  register: customization_micro_frontend_raw
+  changed_when: "{{ customization_micro_frontend_raw.stdout | trim | bool }}"
