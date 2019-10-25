@@ -4,6 +4,8 @@
     name: "{{ container_names.mailserver }}"
     image: "{{ image_versions.mailserver }}"
     restart_policy: unless-stopped
+    exposed_ports:
+      - "1025"
     env:
       GMAIL_USER: "{{ mail_configuration.gmail.user }}"
       GMAIL_PASSWORD: "{{ mail_configuration.gmail.password }}"
