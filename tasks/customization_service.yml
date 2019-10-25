@@ -13,15 +13,24 @@
                                                                       authorization_grant_type=ClientModel.GRANT_AUTHORIZATION_CODE,
                                                                       skip_authorization=True)
 
-    # make sure a redirect uri is registered for the portal hostname
-    expected_redirect_uri = '{{ hub_configuration.protocol }}://%s/services/customization/hub/callback/' % '{{ customization_configuration.hostname }}'
+    # make sure two redirect uri is registered for the portal hostname
+    expected_redirect_uri_1 = '{{ hub_configuration.protocol }}://%s/services/customization/hub/callback/' % '{{ hub_configuration.hostname }}'
+    expected_redirect_uri_2 = '{{ hub_configuration.protocol }}://%s/hub/callback/' % '{{ customization_configuration.hostname }}'
+
     current_redirect_uris = customiatzion_client.redirect_uris.splitlines()
     updated = False
-    if expected_redirect_uri not in current_redirect_uris:
-        current_redirect_uris.append(expected_redirect_uri)
+    if expected_redirect_uri_1 not in current_redirect_uris:
+        current_redirect_uris.append(expected_redirect_uri_1)
         customiatzion_client.redirect_uris = '\r\n'.join(current_redirect_uris)
-        customiatzion_client.save(update_fields=['redirect_uris'])
         updated = True
+
+    if expected_redirect_uri_2 not in current_redirect_uris:
+        current_redirect_uris.append(expected_redirect_uri_2)
+        customiatzion_client.redirect_uris = '\r\n'.join(current_redirect_uris)
+        updated = True
+
+    if updated:
+        customiatzion_client.save(update_fields=['redirect_uris'])
 
     print(json.dumps({
         "changed": created or updated,
