@@ -94,3 +94,66 @@
   changed_when: site_update_output.stdout | trim | int != 0
   tags:
     - setup_tasks
+
+# FIXME: This group should be delivered already within the software
+- name: Setup Admin User Group with Permissions
+  # yamllint disable rule:line-length
+  shell: |-
+    docker exec -i {{ container_names.main }} python manage.py shell <<EOF
+    from django.contrib.auth.models import Group
+    from guardian.shortcuts import assign_perm
+
+    group, created = Group.objects.get_or_create(name='Admins')
+    assign_perm('{{ item }}', group)
+    # print whether or not the group has been created
+    print(created)
+    EOF
+  # yamllint enable rule:line-length
+  register: admin_group_output
+  changed_when: admin_group_output.stdout | trim | bool
+  loop:
+    - core.superuser
+  tags:
+    - setup_tasks
+
+# FIXME: This group should be delivered already within the software
+- name: Setup Default User Group with Permissions
+  # yamllint disable rule:line-length
+  shell: |-
+    docker exec -i {{ container_names.main }} python manage.py shell <<EOF
+    from django.contrib.auth.models import Group
+    from guardian.shortcuts import assign_perm
+
+    group, created = Group.objects.get_or_create(name='Users')
+    assign_perm('{{ item }}', group)
+    # print whether or not the group has been created
+    print(created)
+    EOF
+  # yamllint enable rule:line-length
+  register: admin_group_output
+  changed_when: admin_group_output.stdout | trim | bool
+  loop:
+    - assets.view_application
+    - assets.view_asset
+    - assets.add_asset
+    - assets.view_audio
+    - assets.add_audio
+    - assets.view_image
+    - assets.add_image
+    - assets.view_model
+    - assets.add_model
+    - assets.view_pdf
+    - assets.add_pdf
+    - assets.view_photo
+    - assets.add_photo
+    - assets.view_photoset
+    - assets.add_photoset
+    - assets.view_smartasset
+    - assets.add_smartasset
+    - assets.view_video
+    - assets.add_video
+    - core.view_space
+    - core.change_space
+    - core.add_space
+  tags:
+    - setup_tasks
