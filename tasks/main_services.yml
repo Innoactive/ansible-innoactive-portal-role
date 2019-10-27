@@ -115,6 +115,8 @@
     - core.superuser
   tags:
     - setup_tasks
+    - user_groups
+    - defaults
 
 # FIXME: This group should be delivered already within the software
 - name: Setup Default User Group with Permissions
@@ -157,3 +159,5 @@
     - core.add_space
   tags:
     - setup_tasks
+    - user_groups
+    - defaults

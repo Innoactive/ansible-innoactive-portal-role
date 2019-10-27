@@ -235,6 +235,10 @@ The available Tags are:
 
 - *setup_tasks* Controls whether or not to run any setup tasks like database migrations, collection of static files, etc.
 
+  - *user_groups* Controls whether or not to create an _Admins_ and _Users_ default group on the Hub instance. Both groups
+    come with some predefined permissions to get started more easily. _Admins_ can do everything whereas _Users_ only can
+    view and manage (upload) assets, applications, etc.
+
 ## Example Playbook
 
 Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for
