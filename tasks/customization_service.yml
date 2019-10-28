@@ -1,40 +1,43 @@
 ---
 - name: Get Client Credentials for Customization Service
-  # yamllint disable rule:line-length
-  shell: "{{ lookup('template', 'run_in_django_shell.sh.j2') }}" # noqa 305
-  vars:
-    python_script_name: get_oauth_client_credentials
-    client_name: Discovery Portal Customization Service
-    redirect_uris:
-      - "{{ hub_configuration.protocol }}://%s/services/customization/hub/callback/' % '{{ hub_configuration.hostname }}"
-      - "{{ hub_configuration.protocol }}://%s/hub/callback/' % '{{ customization_configuration.hostname }}"
-  register: customization_oauth2_client_output
-  changed_when: customization_oauth2_client_output.stdout | from_json | json_query('changed')
-  when: (customization_configuration.oauth2_client_id is not defined or not customization_configuration.oauth2_client_id) or
-        (customization_configuration.oauth2_client_secret is not defined or not customization_configuration.oauth2_client_secret)
+  block:
+    - name: Create / Determine existing client credentials in Application
+      shell: "{{ lookup('template', 'run_in_django_shell.sh.j2') }}" # noqa 305
+      vars:
+        python_script_name: get_oauth_client_credentials
+        client_name: Discovery Portal Customization Service
+        client_id: false
+        client_secret: false
+        redirect_uris:
+          - "{{ hub_configuration.protocol }}://%s/services/customization/hub/callback/' % '{{ hub_configuration.hostname }}"
+          - "{{ hub_configuration.protocol }}://%s/hub/callback/' % '{{ customization_configuration.hostname }}"
+      register: customization_oauth2_client_output
+      changed_when: customization_oauth2_client_output.stdout | from_json | json_query('changed')
+      # ansible lint has an issue where it cannot bypass rules (like 305) within blocks
+      # see https://github.com/ansible/ansible-lint/issues/484, so we need to explicitly skip
+      tags:
+        - skip_ansible_lint
 
-- name: Identify Client Id for Customization Service
-  set_fact:
-    customization_oauth2_client_id: "{{ customization_oauth2_client_output.stdout | from_json | json_query('client_id') }}"
-    customization_oauth2_client_secret: "{{ customization_oauth2_client_output.stdout | from_json | json_query('client_secret') }}"
-  when: (customization_configuration.oauth2_client_id is not defined or not customization_configuration.oauth2_client_id) or
-        (customization_configuration.oauth2_client_secret is not defined or not customization_configuration.oauth2_client_secret)
+    - name: Identify Client Id for Customization Service
+      set_fact:
+        customization_oauth2_client_id: "{{ customization_oauth2_client_output.stdout | from_json | json_query('client_id') }}"
+        customization_oauth2_client_secret: "{{ customization_oauth2_client_output.stdout | from_json | json_query('client_secret') }}"
+  when: (customization_configuration.oauth2_client_id | default('', true) | length == 0) or
+        (customization_configuration.oauth2_client_secret | default('', true) | length == 0)
 
 - name: Identify Client Id for Customization service (Fallback)
   set_fact:
     customization_oauth2_client_id: "{{ customization_configuration.oauth2_client_id }}"
     customization_oauth2_client_secret: "{{ customization_configuration.oauth2_client_secret }}"
   when:
-    - customization_configuration.oauth2_client_id is defined and customization_configuration.oauth2_client_id
-    - customization_configuration.oauth2_client_secret is defined and customization_configuration.oauth2_client_secret
+    - customization_configuration.oauth2_client_id | default('', true) | length > 0
+    - customization_configuration.oauth2_client_secret | default('', true) | length > 0
 
 - name: Validate client credentials
   assert:
     that:
-      - customization_oauth2_client_id is defined
-      - customization_oauth2_client_id|length > 0
-      - customization_oauth2_client_secret is defined
-      - customization_oauth2_client_secret|length > 0
+      - customization_oauth2_client_id | default('', true) | length > 0
+      - customization_oauth2_client_secret | default('', true) | length > 0
 
 - name: Start Customization Service
   docker_container:

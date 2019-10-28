@@ -40,6 +40,13 @@
     - services
     - ssl
 
+- name: Setup Hub Launcher
+  become: true
+  import_tasks: launcher.yml
+  tags:
+    - setup_tasks
+    - launcher
+
 - name: Setup Hub Discovery Portal
   become: true
   import_tasks: discovery_portal.yml
@@ -62,6 +69,7 @@
   when: hub_configuration.create_admin_user
   tags:
     - setup_tasks
+    - superuser
 
 # - name: Setup Telemetry Service
 #   become: true
