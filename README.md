@@ -147,6 +147,20 @@ When using [Let's Encrypt](https://letsencrypt.org/) to issue SSL / TLS certific
 used to issue certificates by Let's Encrypt's [staging environment](https://letsencrypt.org/docs/staging-environment/)
 instead of the production environment.
 
+### Innoactive Hub Launcher
+
+To enable the Innoactive Hub Launcher (a standalone application capable of retrieving content from the Hub) to access
+data from the Hub, a suitable OAuth2 Client with the specified client credentials can be created if the following
+parameters are provided:
+
+    launcher_oauth_client_id:
+
+The OAuth2 Client ID that the Launcher uses.
+
+    launcher_oauth_client_secret:
+
+The OAuth2 Client Secret that the Launcher uses.
+
 ### Additional Hub Services
 
 #### Innoactive Discovery Portal
@@ -238,6 +252,8 @@ The available Tags are:
   - *user_groups* Controls whether or not to create an _Admins_ and _Users_ default group on the Hub instance. Both groups
     come with some predefined permissions to get started more easily. _Admins_ can do everything whereas _Users_ only can
     view and manage (upload) assets, applications, etc.
+  - *superuser* Controls whether or not to create a superuser account
+  - *launcher* Controls whether or not to create an oauth2 client for the Innoactive Hub Launcher
 
 ## Example Playbook
 

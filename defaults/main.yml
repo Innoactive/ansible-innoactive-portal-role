@@ -76,6 +76,14 @@ portal_configuration:
   oauth2_client_id: "{{ portal_oauth_client_id }}"
   oauth2_client_secret: "{{ portal_oauth_client_secret }}"
 
+# Launcher Configuration
+launcher_oauth_client_id:
+launcher_oauth_client_secret:
+
+launcher_configuration:
+  oauth2_client_id: "{{ launcher_oauth_client_id }}"
+  oauth2_client_secret: "{{ launcher_oauth_client_secret }}"
+
 # Customization Configuration
 customiatzion_hostname: "customization.{{ hub_configuration.hostname  }}"
 customiatzion_oauth_client_id:
