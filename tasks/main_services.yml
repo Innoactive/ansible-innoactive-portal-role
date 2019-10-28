@@ -62,7 +62,7 @@
 - name: Run Database Migrations
   command: "docker exec {{ container_names.main }} python manage.py migrate"
   register: migration_result
-  changed_when: '"Applying " in migration_result.stdout'
+  changed_when: '"Applying" in migration_result.stdout'
   when: hub_configuration.setup_database
   tags:
     - setup_tasks
@@ -70,41 +70,37 @@
 - name: Collect static files for WMC
   # yamllint disable rule:line-length
   command: "docker exec {{ container_names.main }} python manage.py collectstatic -v 0 -c --no-input"
+  register: collect_static_result
   # yamllint enable rule:line-length
   when: hub_configuration.setup_wmc
-  # TODO: technically, this is not correct, it should only be changed if no files are collected
+  # TODO: technically, this is not correct, it should only be changed
+  # if no files are collected but django doesn't tell us ...
   changed_when: false
   tags:
     - setup_tasks
 
 # FIXME: This should be handled in the Django application setup automatically
 - name: Change default Site name and domain
-  # yamllint disable rule:line-length
-  shell: |-
-    docker exec -i {{ container_names.main }} python manage.py shell <<EOF
-    from django.contrib.sites.models import Site
-    # default Site name is example.com, fix it!
-    print(Site.objects.filter(name='example.com').update(
-      name='{{ hub_configuration.hostname }}',
-      domain='{{ hub_configuration.hostname }}'
-    ))
-    EOF
-  # yamllint enable rule:line-length
+  shell: "{{ lookup('template', 'run_in_django_shell.sh.j2') }}" # noqa 305
+  vars:
+    python_script_name: change_site_name_and_domain
+    site_name: "{{ hub_configuration.hostname }}"
+    domain: "{{ hub_configuration.hostname }}"
   register: site_update_output
-  changed_when: site_update_output.stdout | trim | int != 0
+  changed_when: site_update_output.stdout | trim | bool
   tags:
     - setup_tasks
 
 # FIXME: This group should be delivered already within the software
 - name: Setup Admin User Group with Permissions
-  shell: "{{ lookup('template', 'create_user_group_with_perms.sh.j2') }}"
-  register: admin_group_output
-  changed_when: admin_group_output.stdout | trim | bool
+  shell: "{{ lookup('template', 'run_in_django_shell.sh.j2') }}" # noqa 305
   vars:
-    container_name: "{{ container_names.main }}"
+    python_script_name: create_user_group_with_perms
     group_name: Admins
     perms:
       - core.superuser
+  register: admin_group_output
+  changed_when: admin_group_output.stdout | trim | bool
   tags:
     - setup_tasks
     - user_groups
@@ -112,11 +108,9 @@
 
 # FIXME: This group should be delivered already within the software
 - name: Setup Default User Group with Permissions
-  shell: "{{ lookup('template', 'create_user_group_with_perms.sh.j2') }}"
-  register: users_group_output
-  changed_when: users_group_output.stdout | trim | bool
+  shell: "{{ lookup('template', 'run_in_django_shell.sh.j2') }}" # noqa 305
   vars:
-    container_name: "{{ container_names.main }}"
+    python_script_name: create_user_group_with_perms
     group_name: Users
     perms:
       - assets.view_application
@@ -141,6 +135,8 @@
       - core.view_space
       - core.change_space
       - core.add_space
+  register: users_group_output
+  changed_when: users_group_output.stdout | trim | bool
   tags:
     - setup_tasks
     - user_groups

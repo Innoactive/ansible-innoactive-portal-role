@@ -1,44 +1,20 @@
 ---
 - name: Get Client Credentials for Discovery Portal Service
-  # yamllint disable rule:line-length
-  shell: |-
-    docker exec -i {{ container_names.main }} python manage.py shell <<EOF
-    import json
-
-    from oauth2_provider.models import get_application_model
-
-    # get or create a suitable oauth client for the discovery portal
-    ClientModel = get_application_model()
-    discovery_portal_client, created = ClientModel.objects.get_or_create(name='Application Discovery Portal',
-                                                                        authorization_grant_type=ClientModel.GRANT_AUTHORIZATION_CODE,
-                                                                        skip_authorization=True)
-
-    # make sure a redirect uri is registered for the portal hostname
-    expected_redirect_uri = '{{ hub_configuration.protocol }}://%s/hub/callback/' % '{{ portal_configuration.hostname }}'
-    current_redirect_uris = discovery_portal_client.redirect_uris.splitlines()
-    updated = False
-    if expected_redirect_uri not in current_redirect_uris:
-        current_redirect_uris.append(expected_redirect_uri)
-        discovery_portal_client.redirect_uris = '\r\n'.join(current_redirect_uris)
-        discovery_portal_client.save(update_fields=['redirect_uris'])
-        updated = True
-
-    print(json.dumps({
-        "changed": created or updated,
-        "client_id": discovery_portal_client.client_id,
-        "client_secret": discovery_portal_client.client_secret
-    }))
-    EOF
-  register: discovery_portal_oauth2_client_raw
-  changed_when: "{{ discovery_portal_oauth2_client_raw.stdout | from_json | json_query('changed') }}"
+  shell: "{{ lookup('template', 'run_in_django_shell.sh.j2') }}" # noqa 305
+  vars:
+    python_script_name: get_oauth_client_credentials
+    client_name: Application Discovery Portal
+    redirect_uris:
+      - "{{ hub_configuration.protocol }}://%s/hub/callback/' % '{{ portal_configuration.hostname }}"
+  register: discovery_portal_oauth2_client_output
+  changed_when: discovery_portal_oauth2_client_output.stdout | from_json | json_query('changed')
   when: (portal_configuration.oauth2_client_id is not defined or not portal_configuration.oauth2_client_id) or
         (portal_configuration.oauth2_client_secret is not defined or not portal_configuration.oauth2_client_secret)
-  # yamllint enable rule:line-length
 
 - name: Identify Client Id for Discovery Portal
   set_fact:
-    discovery_portal_oauth2_client_id: "{{ discovery_portal_oauth2_client_raw.stdout | from_json | json_query('client_id') }}"
-    discovery_portal_oauth2_client_secret: "{{ discovery_portal_oauth2_client_raw.stdout | from_json | json_query('client_secret') }}"
+    discovery_portal_oauth2_client_id: "{{ discovery_portal_oauth2_client_output.stdout | from_json | json_query('client_id') }}"
+    discovery_portal_oauth2_client_secret: "{{ discovery_portal_oauth2_client_output.stdout | from_json | json_query('client_secret') }}"
   when: (portal_configuration.oauth2_client_id is not defined or not portal_configuration.oauth2_client_id) or
         (portal_configuration.oauth2_client_secret is not defined or not portal_configuration.oauth2_client_secret)
 

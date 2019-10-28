@@ -1,0 +1,8 @@
+# see also https://stackoverflow.com/a/26091252/1142028 on how to create a superuser account in django
+from django.contrib.auth import get_user_model
+User = get_user_model()
+if not User.objects.filter(email='{{ admin.email }}').exists():
+  User.objects.create_superuser('{{ admin.email }}', '{{ admin.password }}')
+  print(True)
+else:
+  print(False)

@@ -1,0 +1,7 @@
+from django.contrib.sites.models import Site
+
+# default Site name is example.com, fix it!
+print(Site.objects.filter(name='example.com').update(
+  name='{{ site_name }}',
+  domain='{{ domain }}'
+) != 0)

@@ -1,4 +1,3 @@
-docker exec -i {{ container_name }} python manage.py shell <<EOF
 from django.contrib.auth.models import Group
 from guardian.shortcuts import assign_perm
 
@@ -10,4 +9,3 @@ assign_perm('{{ perm }}', group)
 
 # print whether or not the group has been created
 print(created)
-EOF
