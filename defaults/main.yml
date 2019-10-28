@@ -97,12 +97,18 @@ customization_configuration:
 # Telemetry configuration
 telemetry_shared_key:
 telemetry_salt:
-telemetry_private_key_passphrase:
+telemetry_tls_privatekey_passphrase:
+telemetry_tls_privatekey:
+telemetry_tls_certificate:
+telemetry_tls_ca_certificate:
 
 telemetry:
-  shared_key:
-  salt:
-  private_key_passphrase:
+  shared_key: "{{ telemetry_shared_key }}"
+  salt: "{{ telemetry_salt }}"
+  tls_privatekey: "{{ telemetry_tls_privatekey }}"
+  tls_privatekey_passphrase: "{{ telemetry_tls_privatekey_passphrase }}"
+  tls_certificate: "{{ telemetry_tls_privatekey }}"
+  tls_ca_certificate: "{{ telemetry_tls_ca_certificate }}"
 
 # Secure Communications (SSL / TLS)
 letsencrypt: true
@@ -132,6 +138,7 @@ media_volume_mount:
 volume_names:
   media: "{{ hub_service_prefix }}_media"
   static: "{{ hub_service_prefix }}_static"
+  telemetry_logs: "{{ hub_service_prefix }}_fluentd_logs"
 
 network_names:
   main: "{{ hub_service_prefix }}_network"
@@ -147,4 +154,4 @@ container_names:
   letsencrypt_proxy_companion: "{{ hub_service_prefix }}_letsencrypt"
   discovery_portal: "{{ hub_service_prefix }}_portal"
   customization: "{{ hub_service_prefix }}_customization"
-  fluentd: "{{ hub_service_prefix }}_fluentd"
+  telemetry: "{{ hub_service_prefix }}_fluentd"

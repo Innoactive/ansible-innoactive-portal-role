@@ -1,16 +1,43 @@
 ---
+- name: Set base path for fluentd certificates
+  set_fact:
+    telemetry_certificate_path: "/tmp/hub/fluentd"
+
+- name: Upload Fluentd Server certificates
+  copy:
+    src: "{{ item }}"
+    dest: "{{ telemetry_certificate_path }}/"
+  loop:
+    - "{{ telemetry.tls_privatekey }}"
+    - "{{ telemetry.tls_certificate }}"
+    - "{{ telemetry.tls_ca_certificate }}"
+
+- name: Create persistent Volume for FluentD logs
+  docker_volume:
+    name: "{{ volume_names.telemetry_logs }}"
+
 - name: Start Fluentd Service
   docker_container:
-    name: "{{ container_names.fluentd }}"
+    name: "{{ container_names.telemetry }}"
     image: "{{ image_versions.fluentd }}"
     restart_policy: unless-stopped
+    volumes:
+      - "{{ telemetry_certificate_path }}:/fluentd/etc/ssl:ro"
+      - "{{ volume_names.telemetry_logs }}:/fluentd/log"
     exposed_ports:
-      - 24224
-      - 24224/udp
+      - "24224"
+      - "24224/udp"
     published_ports:
-      - 24284:24284
-      - 24284:24284/udp
-      - 24443:24443
+      - "24284:24284"
+      - "24284:24284/udp"
+      - "24443:24443"
+    env:
+      FLUENTD_HOSTNAME: "{{ hub_configuration.hostname }}"
+      FLUENTD_SHARED_KEY: "{{ telemetry.shared_key }}"
+      FLUENTD_TLS_PRIVATE_KEY_PASSPHRASE: "{{ telemetry.tls_privatekey_passphrase }}"
+      FLUENTD_SALT: "{{ telemetry.salt }}"
     networks_cli_compatible: yes
     networks:
       - name: "{{ network_names.main }}"
+        aliases:
+          - fluentd
