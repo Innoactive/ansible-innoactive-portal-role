@@ -1,0 +1,11 @@
+from django.contrib.auth.models import Group
+from guardian.shortcuts import assign_perm
+
+group, created = Group.objects.get_or_create(name='{{ group_name }}')
+
+{% for perm in perms %}
+assign_perm('{{ perm }}', group)
+{% endfor %}
+
+# print whether or not the group has been created
+print(created)
