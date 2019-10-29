@@ -38,6 +38,11 @@
       - discovery_portal_oauth2_client_id | default('', true) | length > 0
       - discovery_portal_oauth2_client_secret | default('', true) | length > 0
 
+- name: Find Out Customization Service Endpoint
+  set_fact:
+    customization_api_root: "{{ hub_configuration.protocol }}://{{ customization_configuration.hostname }}"
+  when: hub_configuration.setup_customization_service
+
 - name: Start Discovery Portal Service
   docker_container:
     name: "{{ container_names.discovery_portal }}"
@@ -49,6 +54,7 @@
       VIRTUAL_HOST: "{{ portal_configuration.hostname }}"
       LETSENCRYPT_HOST: "{{ portal_configuration.hostname }}"
       API_ROOT: "{{ hub_configuration.protocol }}://{{ hub_configuration.hostname }}"
+      CUSTOMIZATION_API_ROOT: "{{ customization_api_root | default('', true) }}"
       # yamllint disable rule:line-length
       OAUTH_CLIENT_ID: "{{ discovery_portal_oauth2_client_id }}"
       OAUTH_SECRET: "{{ discovery_portal_oauth2_client_secret }}"
