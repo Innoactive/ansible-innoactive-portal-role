@@ -21,6 +21,19 @@
     - services
     - base
 
+- name: Setup Telemetry Service
+  become: true
+  import_tasks: telemetry.yml
+  when:
+    - telemetry.shared_key | default('', true) | length > 0
+    - telemetry.tls_privatekey | default('', true) | length > 0
+    - telemetry.tls_privatekey_passphrase | default('', true) | length > 0
+    - telemetry.tls_certificate | default('', true) | length > 0
+    - telemetry.tls_ca_certificate | default('', true) | length > 0
+  tags:
+    - services
+    - telemetry
+
 - name: Start Hub Main Services (Application Servers)
   become: true
   import_tasks: main_services.yml
@@ -43,6 +56,9 @@
 - name: Setup Hub Launcher
   become: true
   import_tasks: launcher.yml
+  when:
+    - launcher_configuration.oauth2_client_id | default('', true) | length > 0
+    - launcher_configuration.oauth2_client_secret | default('', true) | length > 0
   tags:
     - setup_tasks
     - launcher
@@ -70,7 +86,3 @@
   tags:
     - setup_tasks
     - superuser
-
-# - name: Setup Telemetry Service
-#   become: true
-#   import_tasks: telemetry.yml

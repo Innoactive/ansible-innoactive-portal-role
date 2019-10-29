@@ -147,11 +147,43 @@ When using [Let's Encrypt](https://letsencrypt.org/) to issue SSL / TLS certific
 used to issue certificates by Let's Encrypt's [staging environment](https://letsencrypt.org/docs/staging-environment/)
 instead of the production environment.
 
+### Telemetry Service / Analytics / Fluentd (Optional)
+
+To enable the Hub's telemetry service / event database ("fluentd"), the following options need to be provided. This
+service is entirely optional and if one of the values is not provided, it will not be set up.
+
+    telemetry_shared_key:
+
+A shared key used for authenticating trusted services running within the same stack. This shared key is e.g. used to log
+event from another application server running on docker as well (like the django application) to the event collector.
+
+    telemetry_salt:
+
+Add some entropy to the hashing of sensitive user data within the events.
+
+    telemetry_tls_privatekey:
+
+Path to a valid TLS private key (on the local machine) that needs to be password protected. Used to decrypt incoming data
+that has been encrypted using the TLS certificate.
+
+    telemetry_tls_privatekey_passphrase:
+
+Passphrase to unlock the TLS private key above.
+
+    telemetry_tls_certificate:
+
+TLS certificate that clients use to send their events in an encrypted and secure way.
+
+    telemetry_tls_ca_certificate:
+
+TLS certificate of the Certificate authority, i.e. the authority that signed the TLS certificate of both the event server
+and the client certificate of any client sending data (used to validate the client certificate).
+
 ### Innoactive Hub Launcher
 
 To enable the Innoactive Hub Launcher (a standalone application capable of retrieving content from the Hub) to access
 data from the Hub, a suitable OAuth2 Client with the specified client credentials can be created if the following
-parameters are provided:
+parameters are provided (if none are provided, Launcher client will not be setup):
 
     launcher_oauth_client_id:
 
@@ -245,7 +277,8 @@ The available Tags are:
   - *main* Controls whether main Hub services will be set up (Django application)
   - *ssl* Controls whether or not the Let's Encrypt service will be set up
   - *discovery_portal* Controls whether or not the discovery portal service will be set up
-  - *customization* Controls whether or not the customization service for the discovery portal service will be set up
+  - *customization* Controls whether or not the customization service for the discovery portal will be set up
+  - *telemetry* Controls whether or not the telemetry / analytics service will be set up
 
 - *setup_tasks* Controls whether or not to run any setup tasks like database migrations, collection of static files, etc.
 
