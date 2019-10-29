@@ -107,7 +107,7 @@ telemetry:
   salt: "{{ telemetry_salt }}"
   tls_privatekey: "{{ telemetry_tls_privatekey }}"
   tls_privatekey_passphrase: "{{ telemetry_tls_privatekey_passphrase }}"
-  tls_certificate: "{{ telemetry_tls_privatekey }}"
+  tls_certificate: "{{ telemetry_tls_certificate }}"
   tls_ca_certificate: "{{ telemetry_tls_ca_certificate }}"
 
 # Secure Communications (SSL / TLS)
