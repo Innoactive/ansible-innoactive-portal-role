@@ -34,10 +34,16 @@
         aliases:
           - db
 
+- name: Create Hub message queue data volume
+  docker_volume:
+    name: "{{ volume_names.message_queue }}"
+
 - name: Start Message Queue
   docker_container:
     name: "{{ container_names.message_queue }}"
     image: "{{ image_versions.message_queue }}"
+    volumes:
+      - "{{ volume_names.message_queue }}:/data"
     restart_policy: unless-stopped
     networks_cli_compatible: true
     networks:
