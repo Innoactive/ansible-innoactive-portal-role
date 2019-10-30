@@ -140,6 +140,7 @@ volume_names:
   static: "{{ hub_service_prefix }}_static"
   telemetry_logs: "{{ hub_service_prefix }}_fluentd_logs"
   customization: "{{ hub_service_prefix }}_customization_media"
+  database: "{{ hub_service_prefix }}_database"
 
 network_names:
   main: "{{ hub_service_prefix }}_network"

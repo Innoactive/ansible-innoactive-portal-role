@@ -1,4 +1,8 @@
 ---
+- name: Setup required data volumes
+  become: true
+  import_tasks: data_volumes.yml
+
 - name: Start Django Application Server
   docker_container:
     name: "{{ container_names.main }}"

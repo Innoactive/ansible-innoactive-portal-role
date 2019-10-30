@@ -17,11 +17,17 @@
         aliases:
           - mailserver
 
+- name: Create Hub database data volume
+  docker_volume:
+    name: "{{ volume_names.database }}"
+
 - name: Start Database
   docker_container:
     name: "{{ container_names.database }}"
     image: "{{ image_versions.database }}"
     restart_policy: unless-stopped
+    volumes:
+      - "{{ volume_names.database }}:/var/lib/postgresql/data"
     networks_cli_compatible: true
     networks:
       - name: "{{ network_names.main }}"
