@@ -63,14 +63,6 @@
     - setup_tasks
     - launcher
 
-- name: Setup Hub Discovery Portal
-  become: true
-  import_tasks: discovery_portal.yml
-  when: hub_configuration.setup_discovery_portal
-  tags:
-    - services
-    - discovery_portal
-
 - name: Setup Hub Customization Service
   become: true
   import_tasks: customization_service.yml
@@ -78,6 +70,14 @@
   tags:
     - services
     - customization
+
+- name: Setup Hub Discovery Portal
+  become: true
+  import_tasks: discovery_portal.yml
+  when: hub_configuration.setup_discovery_portal
+  tags:
+    - services
+    - discovery_portal
 
 - name: Create Superuser
   become: true
