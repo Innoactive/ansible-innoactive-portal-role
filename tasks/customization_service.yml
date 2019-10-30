@@ -40,11 +40,17 @@
       - customization_oauth2_client_id | default('', true) | length > 0
       - customization_oauth2_client_secret | default('', true) | length > 0
 
+- name: Create a volume to hold the customization files (images etc.)
+  docker_volume:
+    name: "{{ volume_names.customization }}"
+
 - name: Start Customization Service
   docker_container:
     name: "{{ container_names.customization }}"
     image: "{{ image_versions.customization }}"
     restart_policy: unless-stopped
+    volumes:
+      - "{{ volume_names.customization }}:/usr/app/media"
     exposed_ports:
       - "80"
     env:
