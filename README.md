@@ -288,6 +288,9 @@ The available Tags are:
   - *superuser* Controls whether or not to create a superuser account
   - *launcher* Controls whether or not to create an oauth2 client for the Innoactive Hub Launcher
 
+- *requires_database* Allows to skip all tasks that require a running database (e.g. because the database should not be
+  filled with data as a previous dump should be imported)
+
 ## Example Playbook
 
 Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for

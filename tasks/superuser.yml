@@ -17,3 +17,5 @@
       password: "{{ hub_configuration.admin_password | mandatory }}"
   register: superuser_creation_output
   changed_when: superuser_creation_output.stdout | trim | bool
+  tags:
+    - requires_database

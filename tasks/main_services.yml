@@ -66,6 +66,7 @@
   when: hub_configuration.setup_database
   tags:
     - setup_tasks
+    - requires_database
 
 - name: Collect static files for WMC
   # yamllint disable rule:line-length
@@ -90,6 +91,7 @@
   changed_when: site_update_output.stdout | trim | bool
   tags:
     - setup_tasks
+    - requires_database
 
 # FIXME: This group should be delivered already within the software
 - name: Setup Admin User Group with Permissions
@@ -105,6 +107,7 @@
     - setup_tasks
     - user_groups
     - defaults
+    - requires_database
 
 # FIXME: This group should be delivered already within the software
 - name: Setup Default User Group with Permissions
@@ -141,3 +144,4 @@
     - setup_tasks
     - user_groups
     - defaults
+    - requires_database

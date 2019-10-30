@@ -17,6 +17,7 @@
       # see https://github.com/ansible/ansible-lint/issues/484, so we need to explicitly skip
       tags:
         - skip_ansible_lint
+        - requires_database
 
     - name: Identify Client Id for Customization Service
       set_fact:
