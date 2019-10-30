@@ -42,6 +42,7 @@ dependencies:
     become: true
     tags:
       - dependencies
+      - prerequisites
       - docker
   - role: geerlingguy.pip
     become: true
@@ -51,4 +52,5 @@ dependencies:
         - name: docker
     tags:
       - dependencies
+      - prerequisites
       - pip
