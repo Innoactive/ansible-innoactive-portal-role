@@ -1,4 +1,8 @@
 ---
+- name: Create a volume to hold the certificates for TLS / SSL
+  docker_volume:
+    name: "{{ volume_names.tls_certificates }}"
+
 - name: Start Reverse Proxy (nginx)
   docker_container:
     name: "{{ container_names.reverse_proxy }}"
@@ -14,7 +18,7 @@
       - /etc/nginx/vhost.d
       - /usr/share/nginx/html
       - /docker-gen-templates
-      - /etc/nginx/certs
+      - "{{ volume_names.tls_certificates }}/etc/nginx/certs"
     networks_cli_compatible: true
     networks:
       - name: "{{ network_names.main }}"
