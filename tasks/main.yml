@@ -37,18 +37,6 @@
     - services
     - main
 
-- name: Start Hub Reverse Proxy Services
-  become: true
-  import_tasks: reverse_proxy.yml
-
-- name: Make sure communication with Hub is encrypted (https)
-  become: true
-  import_tasks: secure_communication.yml
-  when: letsencrypt
-  tags:
-    - services
-    - ssl
-
 - name: Setup Hub Launcher
   become: true
   import_tasks: launcher.yml
@@ -82,3 +70,18 @@
   tags:
     - setup_tasks
     - superuser
+
+- name: Start Hub Reverse Proxy Services
+  become: true
+  import_tasks: reverse_proxy.yml
+  tags:
+    - services
+    - reverse_proxy
+
+- name: Make sure communication with Hub is encrypted (https)
+  become: true
+  import_tasks: secure_communication.yml
+  when: letsencrypt
+  tags:
+    - services
+    - ssl

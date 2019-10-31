@@ -276,7 +276,8 @@ The available Tags are:
   - *base* Controls whether base services will be set up (Database, Message Queue, Mailserver)
   - *main* Controls whether main Hub services will be set up (Django application)
   - *ssl* Controls whether or not the Let's Encrypt service will be set up
-  - *discovery_portal* Controls whether or not the discovery portal service will be set up
+  - *reverse_proxy* Controls whether or not the discovery portal service will be set up
+  - *discovery_portal* Controls whether or not to start the reverse proxy service
   - *customization* Controls whether or not the customization service for the discovery portal will be set up
   - *telemetry* Controls whether or not the telemetry / analytics service will be set up
 
