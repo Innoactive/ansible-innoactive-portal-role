@@ -6,10 +6,6 @@
     username: "{{ docker_registry.username }}"
     password: "{{ docker_registry.password }}"
 
-- name: Setup required data volumes
-  become: true
-  import_tasks: data_volumes.yml
-
 - name: Setup required networks
   become: true
   import_tasks: networks.yml

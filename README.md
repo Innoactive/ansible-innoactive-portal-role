@@ -264,8 +264,8 @@ or enable parts of the role. See also [ansible docs](https://docs.ansible.com/an
 
 The available Tags are:
 
-- *dependencies* Controls whether or not the (meta) dependencies of this role are being executed (docker and pip packages),
-  more specific tags are available:
+- *dependencies* (alias: *prerequisites*) Controls whether or not the (meta) dependencies of this role are being executed
+  (docker and pip packages), more specific tags are available:
 
   - *docker* Controls whether the docker role dependency is being executed (might want to skip if Docker already installed)
   - *pip* Controls whether the pip role dependency is being executed
@@ -287,6 +287,9 @@ The available Tags are:
     view and manage (upload) assets, applications, etc.
   - *superuser* Controls whether or not to create a superuser account
   - *launcher* Controls whether or not to create an oauth2 client for the Innoactive Hub Launcher
+
+- *requires_database* Allows to skip all tasks that require a running database (e.g. because the database should not be
+  filled with data as a previous dump should be imported)
 
 ## Example Playbook
 
