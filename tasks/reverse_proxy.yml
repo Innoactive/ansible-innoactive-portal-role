@@ -18,7 +18,7 @@
       - /etc/nginx/vhost.d
       - /usr/share/nginx/html
       - /docker-gen-templates
-      - "{{ volume_names.tls_certificates }}/etc/nginx/certs"
+      - "{{ volume_names.tls_certificates }}:/etc/nginx/certs"
     networks_cli_compatible: true
     networks:
       - name: "{{ network_names.main }}"
