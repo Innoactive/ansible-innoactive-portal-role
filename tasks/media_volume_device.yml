@@ -1,0 +1,8 @@
+---
+- name: Create Hub's media data volume (by mounting an existing device)
+  mount:
+    path: "{{ media_storage_path }}"
+    src: "{{ media_volume_mount.device.path }}"
+    fstype: ext4
+    state: mounted
+    opts: discard,defaults

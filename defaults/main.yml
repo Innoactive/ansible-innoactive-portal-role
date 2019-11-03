@@ -132,6 +132,8 @@ media_volume_mount:
     url:
     username:
     password:
+  device:
+    path:
   local:
     path:
 

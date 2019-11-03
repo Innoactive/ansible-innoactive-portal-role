@@ -3,54 +3,79 @@
   block:
     - name: Setup variables
       set_fact:
-        use_cifs: no
-        use_local_mount: no
+        use_cifs_mount: no
+        use_bind_mount: no
+        use_device_mount: no
     - name: Determine whether volume should be created via Samba / CIFS
       set_fact:
-        use_cifs: yes
+        use_cifs_mount: yes
       when:
         - media_volume_mount.cifs is defined
         - media_volume_mount.cifs.url is defined
         - media_volume_mount.cifs.url | default('', true) | trim | length > 0
 
-    - name: Determine whether volume should be created via local mount or simple
+    - name: Determine whether volume should be created via bind mount
       set_fact:
-        use_local_mount: yes
+        use_bind_mount: yes
       when:
         - media_volume_mount.local is defined
         - media_volume_mount.local.path is defined
         - media_volume_mount.local.path | default('', true) | trim | length > 0
 
+    - name: Determine whether volume should be created via a device mount
+      set_fact:
+        use_device_mount: yes
+      when:
+        - media_volume_mount.device is defined
+        - media_volume_mount.device.path is defined
+        - media_volume_mount.device.path | default('', true) | trim | length > 0
+
     - name: Assert Variables
       assert:
         that:
-          - not ((use_local_mount | default(false)) and (use_cifs | default(false)))
-        fail_msg: "Cannot specify both options for local and for cifs mount!"
+          # after selecting all (truthy) mount option flags, we should only have one left
+          - mount_option_flags | select() | list | length <= 1
+        fail_msg: "Cannot specify multiple options for configuring the media volume!"
         quiet: yes
+      vars:
+        mount_option_flags:
+          - "{{ use_cifs_mount | default(false, true) }}"
+          - "{{ use_bind_mount | default(false, true) }}"
+          - "{{ use_device_mount | default(false, true) }}"
 
-- name: Create Hub's media data volume (without CIFS)
+- name: Create Hub's media data volume (without any mount)
   docker_volume:
     name: "{{ volume_names.media }}"
   when:
-    - not use_cifs
-    - not use_local_mount
+    - not use_cifs_mount
+    - not use_bind_mount
+    - not use_device_mount
 
 - name: Define Volume Mount path
   set_fact:
     media_storage_path: /mnt/hub-media-storage
-  when: use_cifs or use_local_mount
+  when: use_cifs_mount or use_bind_mount or use_device_mount
 
-- name: Mount Media Volume locally
-  import_tasks: local_media_volume.yml
+- name: Bind-Mount Media Volume to existing directory
+  import_tasks: media_volume_bind.yml
   when:
-    - use_local_mount
-    - not use_cifs
+    - not use_cifs_mount
+    - use_bind_mount
+    - not use_device_mount
 
 - name: Mount Media Volume via CIFS
-  import_tasks: cifs_media_volume.yml
+  import_tasks: media_volume_cifs.yml
   when:
-    - use_cifs
-    - not use_local_mount
+    - use_cifs_mount
+    - not use_bind_mount
+    - not use_device_mount
+
+- name: Mount Media Volume via Device Mount
+  import_tasks: media_volume_device.yml
+  when:
+    - not use_cifs_mount
+    - not use_bind_mount
+    - use_device_mount
 
 - name: Create Hub's media (docker) volume at specified mount path
   docker_volume:
@@ -59,7 +84,7 @@
       device: "{{ media_storage_path }}"
       type: local
       o: bind
-  when: use_cifs or use_local_mount
+  when: use_cifs_mount or use_bind_mount or use_device_mount
 
 - name: Create Hub's static data volume
   docker_volume:

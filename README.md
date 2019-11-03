@@ -102,9 +102,27 @@ The username to use for authentication against the CIFS file share.
 
 The password to use for authentication against the CIFS file share.
 
-##### Local Mount / Drive
+##### Device Mount / Drive
 
-As an alternative to the Samba / CIFS share, we can also use a local disk, drive or folder for the static files, as long
+As an alternative to the Samba / CIFS share, we can also use a locally available device to store media files, as long
+as the filesystem on this device is `ext4`. To make use of it, we need to configure as follows:
+
+    media_volume_mount:
+      device:
+        path:
+
+with:
+
+    path:
+
+An absolute path on the filesystem pointing to an `ext4`-formatted device.
+
+##### Bind / Local Mount [DEPRECATED]
+
+> [WARNING!]
+> This option is deprecated and will be removed in the future
+
+As an alternative to the Samba / CIFS share, we can also use an existing directory for the media files, as long
 as the filesystem on this mountpoint is `ext4`. To make use of it, we need to configure as follows:
 
     media_volume_mount:
@@ -115,7 +133,7 @@ with:
 
     path:
 
-An absolute path on the filesystem pointing to an `ext4`-formatted volume / storage.
+An absolute path on the filesystem pointing to an existing directory.
 
 #### Versioning
 
