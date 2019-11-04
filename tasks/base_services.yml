@@ -3,6 +3,8 @@
   docker_container:
     name: "{{ container_names.mailserver }}"
     image: "{{ image_versions.mailserver }}"
+    # pull image if version is latest
+    pull: "{{ (image_versions.mailserver | default(':', True)).split(':')[1] == 'latest' }}"
     restart_policy: unless-stopped
     exposed_ports:
       - "1025"
