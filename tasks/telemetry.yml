@@ -20,6 +20,8 @@
   docker_container:
     name: "{{ container_names.telemetry }}"
     image: "{{ image_versions.fluentd }}"
+    # pull image if version is latest
+    pull: "{{ (image_versions.fluentd | default(':', True)).split(':')[1] == 'latest' }}"
     restart_policy: unless-stopped
     volumes:
       - "{{ telemetry_certificate_path }}:/fluentd/etc/ssl:ro"
