@@ -352,7 +352,7 @@ available as `<api-token-for-hcloud>` simply run:
 
 ## License
 
-BSD
+[Apache 2.0](LICENSE)
 
 ## Author Information
 
