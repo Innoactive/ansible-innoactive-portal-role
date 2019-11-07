@@ -7,7 +7,7 @@
   docker_container:
     name: "{{ container_names.reverse_proxy }}"
     image: "{{ image_versions.reverse_proxy }}"
-    restart_policy: unless-stopped
+    restart_policy: always
     published_ports:
       - "80:80"
       - "443:443"
@@ -29,7 +29,7 @@
   docker_container:
     name: "{{ container_names.reverse_proxy_config_generator }}"
     image: "{{ image_versions.reverse_proxy_config_generator }}"
-    restart_policy: unless-stopped
+    restart_policy: always
     command: >-
       -notify-sighup {{ container_names.reverse_proxy }} -watch -wait 5s:30s /docker-gen-templates/nginx.tmpl
       /etc/nginx/conf.d/default.conf
