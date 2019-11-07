@@ -1,8 +1,4 @@
 ---
-- name: Set base path for fluentd certificates
-  set_fact:
-    telemetry_certificate_path: "/tmp/hub/fluentd"
-
 - name: Upload Fluentd Server certificates
   copy:
     src: "{{ item }}"
