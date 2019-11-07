@@ -1,5 +1,5 @@
 ---
-- name: Create Hub's media data volume (with local mount)
+- name: Create Hub's media data volume (with bind mount to an existing directory)
   mount:
     path: "{{ media_storage_path }}"
     src: "{{ media_volume_mount.local.path }}"
