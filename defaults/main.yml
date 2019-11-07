@@ -95,6 +95,7 @@ customization_configuration:
   oauth2_client_secret: "{{ customiatzion_oauth_client_secret }}"
 
 # Telemetry configuration
+telemetry_certificate_path: /etc/hub/fluentd/ssl
 telemetry_shared_key:
 telemetry_salt:
 telemetry_tls_privatekey_passphrase:

@@ -179,6 +179,10 @@ TLS certificate that clients use to send their events in an encrypted and secure
 TLS certificate of the Certificate authority, i.e. the authority that signed the TLS certificate of both the event server
 and the client certificate of any client sending data (used to validate the client certificate).
 
+    telemetry_certificate_path: /etc/hub/fluentd/ssl
+
+Path to which to upload the certificates for the telemetry service to encrypt traffic.
+
 ### Innoactive Hub Launcher
 
 To enable the Innoactive Hub Launcher (a standalone application capable of retrieving content from the Hub) to access
