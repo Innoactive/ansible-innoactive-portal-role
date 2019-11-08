@@ -286,32 +286,32 @@ or enable parts of the role. See also [ansible docs](https://docs.ansible.com/an
 
 The available Tags are:
 
-- *dependencies* (alias: *prerequisites*) Controls whether or not the (meta) dependencies of this role are being executed
+- _dependencies_ (alias: _prerequisites_) Controls whether or not the (meta) dependencies of this role are being executed
   (docker and pip packages), more specific tags are available:
 
-  - *docker* Controls whether the docker role dependency is being executed (might want to skip if Docker already installed)
-  - *pip* Controls whether the pip role dependency is being executed
+  - _docker_ Controls whether the docker role dependency is being executed (might want to skip if Docker already installed)
+  - _pip_ Controls whether the pip role dependency is being executed
 
-- *services* Controls whether or not all of the Hub's Services are being setup. More specifically, the individual services
+- _services_ Controls whether or not all of the Hub's Services are being setup. More specifically, the individual services
   can be controlled with the following tags:
 
-  - *base* Controls whether base services will be set up (Database, Message Queue, Mailserver)
-  - *main* Controls whether main Hub services will be set up (Django application)
-  - *ssl* Controls whether or not the Let's Encrypt service will be set up
-  - *reverse_proxy* Controls whether or not the discovery portal service will be set up
-  - *discovery_portal* Controls whether or not to start the reverse proxy service
-  - *customization* Controls whether or not the customization service for the discovery portal will be set up
-  - *telemetry* Controls whether or not the telemetry / analytics service will be set up
+  - _base_ Controls whether base services will be set up (Database, Message Queue, Mailserver)
+  - _main_ Controls whether main Hub services will be set up (Django application)
+  - _ssl_ Controls whether or not the Let's Encrypt service will be set up
+  - _reverse_proxy_ Controls whether or not the discovery portal service will be set up
+  - _discovery_portal_ Controls whether or not to start the reverse proxy service
+  - _customization_ Controls whether or not the customization service for the discovery portal will be set up
+  - _telemetry_ Controls whether or not the telemetry / analytics service will be set up
 
-- *setup_tasks* Controls whether or not to run any setup tasks like database migrations, collection of static files, etc.
+- _setup_tasks_ Controls whether or not to run any setup tasks like database migrations, collection of static files, etc.
 
-  - *user_groups* Controls whether or not to create an _Admins_ and _Users_ default group on the Hub instance. Both groups
+  - _user_groups_ Controls whether or not to create an _Admins_ and _Users_ default group on the Hub instance. Both groups
     come with some predefined permissions to get started more easily. _Admins_ can do everything whereas _Users_ only can
     view and manage (upload) assets, applications, etc.
-  - *superuser* Controls whether or not to create a superuser account
-  - *launcher* Controls whether or not to create an oauth2 client for the Innoactive Hub Launcher
+  - _superuser_ Controls whether or not to create a superuser account
+  - _launcher_ Controls whether or not to create an oauth2 client for the Innoactive Hub Launcher
 
-- *requires_database* Allows to skip all tasks that require a running database (e.g. because the database should not be
+- _requires_database_ Allows to skip all tasks that require a running database (e.g. because the database should not be
   filled with data as a previous dump should be imported)
 
 ## Example Playbook
@@ -334,6 +334,15 @@ users too:
             secret_key: not-secret-at-all-but-okay-for-tests
             hostname: my.hub.hostname.com
             admin_email: admin@innoactive.de
+
+## Upgrading from 1.x to 2.x
+
+With version 2 of this role, we've introduced a breaking change by ensuring that data created by the Hub is stored in
+named docker volumes rather than anonymous ones (which can easily get lost). To ease the transition from Hub instances
+that were deployed with Version 1.x of this role, we've created a simple ansible playbook that helps by migrating all
+data previously stored in anonymous volumes to the new set of named volumes. After running this playbook on the host in
+question, Version 2.x of this role can simply be applied without the fear of losing data. See
+[here](migration/anonymous_to_named_volumes.yml) for the migration playbook.
 
 ## Testing
 

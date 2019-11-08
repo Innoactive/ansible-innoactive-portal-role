@@ -1,0 +1,191 @@
+# This playbook will ensure that all data stored within anonymous volumes (for Hub instances created with 
+# ansible-innoactive-hub-role < 2.X) will be available in the correctly named volumes that are being used in versions
+# > 2.x. This migration script needs to be run prior to applying the role in version 2.x
+
+# ansible-playbook --limit=stage.hub.innoactive.de playbooks/migration/anonymous_to_named_volumes.yml
+---
+- hosts: all
+  gather_facts: no
+
+  tasks:
+    - name: Stop all currently running containers
+      docker_container:
+        name: "{{ item }}"
+        state: stopped
+        comparisons: 
+          '*': ignore
+      loop:
+        - hub_nginx
+        - hub_nginx_gen
+        - hub_letsencrypt
+        - hub_web
+        - hub_channels
+        - hub_portal
+        # - hub_customization # do not stop / or remove the customization service as we need to copy the data from within it
+        - hub_db
+        - hub_mq
+        - hub_mailer
+
+    - name: Migrate Customization Service's media files
+      vars:
+        new_volume_name: hub_customization_media
+      block:
+        - name: Check if named customization media volume is existing
+          docker_volume_info:
+            name: "{{ new_volume_name }}"
+          register: customization_volume_result
+
+        - name: Assert named customization volume does not exist
+          debug:
+            msg: Volume with name {{ new_volume_name }} already exists. Skipping to avoid potential dataloss.
+          when: customization_volume_result.exists
+
+        - name: Migrate Customization media files
+          when: not customization_volume_result.exists
+          vars:
+            local_customization_media_path: /tmp/hub/customization/media
+          block:
+            - name: Copy media files to local directory
+              shell: mkdir -p /tmp/hub/customization && docker cp hub_customization:/usr/app/media {{ local_customization_media_path }}
+
+            - name: Create media files volume for service data
+              docker_volume:
+                name: "{{ new_volume_name }}"
+
+            - name: Stop Customization service container (to prevent further writes)
+              docker_container:
+                name: hub_customization
+                state: stopped
+                comparisons: 
+                  '*': ignore
+              tags:
+                - production
+
+            - name: Copy old customization media files into newly created volume
+              shell: docker run --rm -t -v {{ local_customization_media_path }}:/from -v {{ new_volume_name }}:/to alpine cp -av /from/. /to/
+
+    - name: Migrate data from anonymous TLS certificate volume to named volume
+      block:
+        - name: Identify name of volume containing TLS certificates
+          block:
+            - name: Identify mounts of nignx container
+              shell: docker inspect hub_nginx --format {% raw %}'{{json .Mounts }}'{% endraw %}
+              register: nginx_mounts_json_result
+            - name: Extract volume name of volume containing TLS certificates
+              set_fact:
+                nginx_volume_name: "{{ nginx_mounts_json_result.stdout | trim | from_json | json_query(\"[?Destination=='/etc/nginx/certs'].Name | [0]\") }}"
+            - name: Debug
+              debug: var=nginx_volume_name
+        - name: Security Steps
+          block:
+            - name: Check if volume existing
+              docker_volume_info:
+                name: "{{ new_volume_name }}"
+              register: volume_result
+
+            - name: Assert volume does not exist
+              debug:
+                msg: Volume with name {{ new_volume_name }} already exists. Skipping to avoid potential dataloss.
+              when: volume_result.exists
+
+        - name: Volume Copy Steps
+          when: not volume_result.exists
+          block:
+            - name: Create volume for service data
+              docker_volume:
+                name: "{{ new_volume_name }}"
+
+            - name: Copy old service data to new service data volume
+              shell: docker run --rm -t -v {{ nginx_volume_name }}:/from -v {{ new_volume_name }}:/to alpine cp -av /from/. /to/
+      vars:
+        new_volume_name: hub_tls_certificates
+
+    - name: Migrate data from anonymous database volume to named volume
+      block:
+        - name: Identify name of volume containing database data
+          block:
+            - name: Identify mounts of db container
+              shell: docker inspect hub_db --format {% raw %}'{{json .Mounts }}'{% endraw %}
+              register: database_mounts_json_result
+            - name: Extract volume name of volume containing TLS certificates
+              set_fact:
+                database_volume_name: "{{ database_mounts_json_result.stdout | trim | from_json | json_query(\"[0].Name\") }}"
+            - name: Debug
+              debug: var=database_volume_name
+        - name: Security Steps
+          block:
+            - name: Check if volume existing
+              docker_volume_info:
+                name: "{{ new_volume_name }}"
+              register: volume_result
+
+            - name: Assert volume does not exist
+              debug:
+                msg: Volume with name {{ new_volume_name }} already exists. Skipping to avoid potential dataloss.
+              when: volume_result.exists
+
+        - name: Volume Copy Steps
+          when: not volume_result.exists
+          block:
+            - name: Create volume for service data
+              docker_volume:
+                name: "{{ new_volume_name }}"
+
+            - name: Copy old service data to new service data volume
+              shell: docker run --rm -t -v {{ database_volume_name }}:/from -v {{ new_volume_name }}:/to alpine cp -av /from/. /to/
+      vars:
+        new_volume_name: hub_database
+
+    - name: Migrate data from anonymous message queue volume to named volume
+      block:
+        - name: Identify name of volume containing message queue (redis) data
+          block:
+            - name: Identify mounts of redis container
+              shell: docker inspect hub_mq --format {% raw %}'{{json .Mounts }}'{% endraw %}
+              register: message_queue_mounts_json_result
+            - name: Extract volume name of volume containing TLS certificates
+              set_fact:
+                message_queue_volume_name: "{{ message_queue_mounts_json_result.stdout | trim | from_json | json_query(\"[0].Name\") }}"
+            - name: Debug
+              debug: var=message_queue_volume_name
+        - name: Security Steps
+          block:
+            - name: Check if volume existing
+              docker_volume_info:
+                name: "{{ new_volume_name }}"
+              register: volume_result
+
+            - name: Assert volume does not exist
+              debug:
+                msg: Volume with name {{ new_volume_name }} already exists. Skipping to avoid potential dataloss.
+              when: volume_result.exists
+
+        - name: Volume Copy Steps
+          when: not volume_result.exists
+          block:
+            - name: Create volume for service data
+              docker_volume:
+                name: "{{ new_volume_name }}"
+
+            - name: Copy old service data to new service data volume
+              shell: docker run --rm -t -v {{ message_queue_volume_name }}:/from -v {{ new_volume_name }}:/to alpine cp -av /from/. /to/
+      vars:
+        new_volume_name: hub_message_queue
+
+    - name: Start all initially running containers again
+      docker_container:
+        name: "{{ item }}"
+        state: started
+        comparisons: 
+          '*': ignore
+      loop:
+        - hub_nginx
+        - hub_nginx_gen
+        - hub_letsencrypt
+        - hub_web
+        - hub_channels
+        - hub_portal
+        - hub_customization
+        - hub_db
+        - hub_mq
+        - hub_mailer
