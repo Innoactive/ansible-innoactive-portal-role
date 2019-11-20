@@ -36,7 +36,7 @@ hub_image: registry.docker.innoactive.de/hub_web:{{ hub_image_version }}
 portal_image: registry.docker.innoactive.de/hub_portal_web:{{ portal_image_version }}
 reverse_proxy_image: registry.docker.innoactive.de/hub_nginx:{{ reverse_proxy_image_version }}
 reverse_proxy_config_generator_image: jwilder/docker-gen:latest
-letsencrypt_proxy_companion_image: jrcs/letsencrypt-nginx-proxy-companion:v1.11
+letsencrypt_proxy_companion_image: jrcs/letsencrypt-nginx-proxy-companion:v1.12
 fluentd_image: registry.docker.innoactive.de/hub_fluentd:0.2.0
 customization_image: registry.docker.innoactive.de/hub_customization:latest
 
