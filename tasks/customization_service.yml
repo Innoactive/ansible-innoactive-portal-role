@@ -56,19 +56,16 @@
     exposed_ports:
       - "80"
     env:
-      VIRTUAL_HOST: "{{ customization_configuration.hostname }}"
-      LETSENCRYPT_HOST: "{{ customization_configuration.hostname }}"
-      HUB_URL: "{{ hub_configuration.protocol }}://{{ hub_configuration.hostname }}"
       API_ROOT: "{{ hub_configuration.protocol }}://{{ hub_configuration.hostname }}"
+      CUSTOMIZATION_API_ROOT: "{{ hub_configuration.protocol }}://{{ customization_configuration.hostname }}/api"
+      DB_HOST: db
+      DB_NAME: customization
+      DB_PASSWORD: postgres
+      DB_USER: postgres
+      LETSENCRYPT_HOST: "{{ customization_configuration.hostname }}"
       OAUTH_CLIENT_ID: "{{ customization_oauth2_client_id }}"
       OAUTH_SECRET: "{{ customization_oauth2_client_secret }}"
-      DJANGO_SETTINGS_MODULE: core.settings.dev_deployment
-      DB_NAME: customization
-      DB_USER: postgres
-      DB_PASSWORD: postgres
-      DB_HOST: db
-      CUSTOMIZATION_API_ROOT: "{{ hub_configuration.protocol }}://{{ customization_configuration.hostname }}/api"
-      BASE_URL: "/"
+      VIRTUAL_HOST: "{{ customization_configuration.hostname }}"
     networks_cli_compatible: true
     networks:
       - name: "{{ network_names.main }}"
