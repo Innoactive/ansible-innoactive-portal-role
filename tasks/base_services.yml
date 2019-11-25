@@ -11,7 +11,7 @@
     env:
       GMAIL_USER: "{{ mail_configuration.gmail.user }}"
       GMAIL_PASSWORD: "{{ mail_configuration.gmail.password }}"
-      MAILNAME: "{{ hub_configuration.hostname }}"
+      MAILNAME: "{{ hub_configuration.primary_hostname }}"
       PORT: "1025"
     networks_cli_compatible: true
     networks:

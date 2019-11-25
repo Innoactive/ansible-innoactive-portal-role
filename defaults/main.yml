@@ -54,6 +54,9 @@ image_versions:
 
 hub_configuration:
   hostname: "{{ hostname }}"
+  # hostname can contain multiple hostnames but we only need one
+  # for most following options
+  primary_hostname: "{{ hostname.split(',')[0] | trim }}"
   secret_key: "{{ secret_key }}"
   admin_email: "{{ admin_email }}"
   admin_password: "{{ admin_password }}"
@@ -67,7 +70,7 @@ hub_configuration:
   create_admin_user: "{{ create_admin_user }}"
 
 # Portal Configuration
-portal_hostname: "portal.{{ hub_configuration.hostname  }}"
+portal_hostname: "portal.{{ hub_configuration.primary_hostname }}"
 portal_oauth_client_id:
 portal_oauth_client_secret:
 
@@ -85,7 +88,7 @@ launcher_configuration:
   oauth2_client_secret: "{{ launcher_oauth_client_secret }}"
 
 # Customization Configuration
-customiatzion_hostname: "customization.{{ hub_configuration.hostname  }}"
+customiatzion_hostname: "customization.{{ hub_configuration.primary_hostname }}"
 customiatzion_oauth_client_id:
 customiatzion_oauth_client_secret:
 

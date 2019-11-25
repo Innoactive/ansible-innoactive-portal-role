@@ -37,7 +37,8 @@ The password to use to authenticate against the specified docker registry.
 
     hostname:
 
-The hostname under which the Hub instance will be available (this needs to be publicly reachable).
+The hostname under which the Hub instance will be available (this needs to be publicly reachable). Can also be a comma-
+separated list of hostnames, the Hub will then be accessible on all of these hostnames.
 
     secret_key:
 
@@ -223,7 +224,7 @@ The OAuth2 Client Secret that the Launcher uses.
 
 Whether or not to setup the discovery portal for this instance.
 
-    portal_hostname: "portal.{{ hub_configuration.hostname  }}"
+    portal_hostname: "portal.{{ hub_configuration.primay_hostname  }}"
 
 The hostname under which the discovery portal should be publicly availabe. This defaults to `portal.<hostname-of-hub-instance>`.
 
@@ -243,7 +244,7 @@ an oauth client will automatically be retrieved.
 
 Whether or not to setup the customization service for this instance.
 
-    customization_hostname: "customization.{{ hub_configuration.hostname  }}"
+    customization_hostname: "customization.{{ hub_configuration.primary_hostname  }}"
 
 The hostname under which the customization service should be publicly availabe. This defaults to `customization.<hostname-of-hub-instance>`.
 

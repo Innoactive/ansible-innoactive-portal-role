@@ -91,8 +91,8 @@
   shell: "{{ lookup('template', 'run_in_django_shell.sh.j2') }}" # noqa 305
   vars:
     python_script_name: change_site_name_and_domain
-    site_name: "{{ hub_configuration.hostname }}"
-    domain: "{{ hub_configuration.hostname }}"
+    site_name: "{{ hub_configuration.primary_hostname }}"
+    domain: "{{ hub_configuration.primary_hostname }}"
   register: site_update_output
   changed_when: site_update_output.stdout | trim | bool
   tags:
