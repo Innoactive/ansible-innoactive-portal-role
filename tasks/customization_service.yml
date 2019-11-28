@@ -117,6 +117,6 @@
       init_function: customizationAppRender
   register: customization_micro_frontend_raw
   changed_when: customization_micro_frontend_raw.stdout | trim | bool
-  when: hub_image_version == "latest" or hub_image_version is version('1.20.0', '>=')
+  when: ("{{'latest' in hub_image_version }}") or (hub_image_version is version('1.20.0', '>='))
   tags:
     - setup_tasks
