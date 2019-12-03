@@ -65,7 +65,7 @@
       DB_USER: postgres
       LETSENCRYPT_HOST: "{{ customization_configuration.hostname }}"
       OAUTH_CLIENT_ID: "{{ customization_oauth2_client_id }}"
-      OAUTH_SECRET: "{{ customization_oauth2_client_secret }}"
+      OAUTH_CLIENT_SECRET: "{{ customization_oauth2_client_secret }}"
       VIRTUAL_HOST: "{{ customization_configuration.hostname }}"
     networks_cli_compatible: true
     networks:
