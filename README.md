@@ -1,5 +1,8 @@
 # Role Name
 
+![](https://github.com/Innoactive/ansible-innoactive-hub-role/workflows/Integration/badge.svg)
+![](https://github.com/Innoactive/ansible-innoactive-hub-role/workflows/Release/badge.svg)
+
 This role sets up a host to run the Innoactive Hub - XR platform.
 
 ## Requirements
