@@ -10,6 +10,10 @@
   become: true
   import_tasks: networks.yml
 
+- name: Setup authorized SSH connection
+  become: true
+  import_tasks: ssh_authorization.yml
+
 - name: Start Hub Base Services (Database, Message Queue, Mailserver)
   become: true
   import_tasks: base_services.yml

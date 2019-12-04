@@ -1,0 +1,9 @@
+---
+
+- name: Set up authorized keys
+  authorized_key:
+    user: root
+    state: present
+    key: '{{ item }}'
+  with_fileglob:
+    - "{{ instance_folder }}/../authorized_keys/*.pub"
