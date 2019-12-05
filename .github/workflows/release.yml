@@ -7,6 +7,8 @@ on:
 
 jobs:
   release:
+    runs-on: ubuntu-latest
+
     steps:
       - name: Semantic Release
         uses: cycjimmy/semantic-release-action@v2
