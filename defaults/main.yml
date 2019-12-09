@@ -19,6 +19,7 @@ setup_database: true
 setup_wmc: true
 setup_discovery_portal: true
 setup_customization_service: true
+hub_offering: "lean"
 # Error Tracking configuration
 sentry_dsn:
 # Google Analytics configuration
@@ -68,6 +69,7 @@ hub_configuration:
   sentry_dsn: "{{ sentry_dsn }}"
   protocol: "{{ 'https' if letsencrypt else 'http' }}"
   create_admin_user: "{{ create_admin_user }}"
+  hub_offering: "{{ hub_offering }}"
 
 # Portal Configuration
 portal_hostname: "portal.{{ hub_configuration.primary_hostname }}"
