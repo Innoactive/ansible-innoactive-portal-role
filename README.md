@@ -75,6 +75,10 @@ DSN for [Sentry](https://sentry.io/welcome/) to automatically track runtime erro
 
 Tracking ID of a Google Analytics Property to monitor usage of the Hub.
 
+    hub_offering: "lean"
+
+Whether to display the "extended" feature set in the menu or a "lean" subset. 
+
 #### Media Files
 
 The Hub's files (user uploads like applications, assets, ...) are stored within a dedicated docker volume. To ensure

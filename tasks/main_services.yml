@@ -26,6 +26,7 @@
       LETSENCRYPT_HOST: "{{ hub_configuration.hostname | mandatory }}"
       RAVEN_DSN: "{{ hub_configuration.sentry_dsn | default('') }}"
       GOOGLE_ANALYTICS_TRACKING_ID: "{{ hub_configuration.google_analytics_id | default('') }}"
+      HUB_OFFERING: "{{ hub_configuration.hub_offering | mandatory }}"
       # yamllint enable rule:line-length
     command: supervisord -n -c /etc/supervisor/conf.d/supervisord.django.conf
     networks_cli_compatible: true
@@ -57,6 +58,7 @@
       LETSENCRYPT_HOST: "{{ hub_configuration.hostname | mandatory }}"
       RAVEN_DSN: "{{ hub_configuration.sentry_dsn | default('') }}"
       GOOGLE_ANALYTICS_TRACKING_ID: "{{ hub_configuration.google_analytics_id | default('') }}"
+      HUB_OFFERING: "{{ hub_configuration.hub_offering | mandatory }}"
       # yamllint enable rule:line-length
     command: supervisord -n -c /etc/supervisor/conf.d/supervisord.channels.conf
     networks_cli_compatible: true
