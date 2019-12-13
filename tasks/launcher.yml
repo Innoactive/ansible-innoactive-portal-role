@@ -1,19 +1,32 @@
 ---
 - name: Allow Launcher to communicate with Hub Instance
-  shell: "{{ lookup('template', 'run_in_django_shell.sh.j2') }}" # noqa 305
-  vars:
-    python_script_name: get_oauth_client_credentials
-    client_name: Innoactive Hub Launcher
-    client_id: "{{ launcher_configuration.oauth2_client_id }}"
-    client_secret: "{{ launcher_configuration.oauth2_client_secret }}"
-    redirect_uris:
-      - "http://127.0.0.1:51236/"
-      - "http://127.0.0.1:51237/"
-      - "http://localhost:51236/"
-      - "http://localhost:51237/"
-  register: launcher_oauth_client_output
-  changed_when: launcher_oauth_client_output.stdout | from_json | json_query('changed')
-  tags:
-    - requires_database
-  when: (launcher_configuration.oauth2_client_id | default('', true) | length == 0) or
-        (launcher_configuration.oauth2_client_secret | default('', true) | length == 0)
+  block:
+    - name: Create / Determine existing client credentials in Application
+      shell: "{{ lookup('template', 'register_oauth_client.sh.j2') }}" # noqa 305
+      vars:
+        client_name: Innoactive Hub Launcher
+        client_id: "{{ launcher_configuration.oauth2_client_id }}"
+        client_secret: "{{ launcher_configuration.oauth2_client_secret }}"
+        redirect_uris:
+          - "http://127.0.0.1:51236/"
+          - "http://127.0.0.1:51237/"
+          - "http://localhost:51236/"
+          - "http://localhost:51237/"
+      register: launcher_oauth_client_output
+      changed_when: launcher_oauth_client_output.stdout | from_json | json_query('changed')
+      # ansible lint has an issue where it cannot bypass rules (like 305) within blocks
+      # see https://github.com/ansible/ansible-lint/issues/484, so we need to explicitly skip
+      tags:
+        - skip_ansible_lint
+        - requires_database
+
+    - name: Identify Client Credentials for Launcher
+      set_fact:
+        customization_oauth2_client_id: "{{ customization_oauth2_client_output.stdout | from_json | json_query('client_id') }}"
+        customization_oauth2_client_secret: "{{ customization_oauth2_client_output.stdout | from_json | json_query('client_secret') }}"
+
+    - name: Validate client credentials
+      assert:
+        that:
+          - customization_oauth2_client_id | default('', true) | length > 0
+          - customization_oauth2_client_secret | default('', true) | length > 0

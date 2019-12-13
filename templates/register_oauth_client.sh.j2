@@ -1,0 +1,8 @@
+docker exec -i {{ container_names.main }} python manage.py register_oauth_client \
+  "{{ client_name }}" \
+  {% if client_id %}--client-id {{ client_id }}{% endif %} \
+  {% if client_secret %}--client-secret {{ client_secret }}{% endif %} \
+  {% for redirect_uri in redirect_uris %}
+  --redirect-uri {{ redirect_uri }} \
+  {% endfor %}
+  --output json
