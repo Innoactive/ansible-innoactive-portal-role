@@ -77,7 +77,11 @@ Tracking ID of a Google Analytics Property to monitor usage of the Hub.
 
     hub_offering: "lean"
 
-Whether to display the "extended" feature set in the menu or a "lean" subset. 
+Whether to display the "extended" feature set in the menu or a "lean" subset.
+
+    concurrent_access_tokens: true
+
+Whether or not to allow one and the same user being authenticated in the same application (OAuth2 client) multiple times.
 
 #### Media Files
 

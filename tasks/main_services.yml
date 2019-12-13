@@ -27,6 +27,7 @@
       RAVEN_DSN: "{{ hub_configuration.sentry_dsn | default('') }}"
       GOOGLE_ANALYTICS_TRACKING_ID: "{{ hub_configuration.google_analytics_id | default('') }}"
       HUB_OFFERING: "{{ hub_configuration.hub_offering | mandatory }}"
+      OAUTH2_ALLOW_CONCURRENT_ACCESS_TOKENS: "\"{{ hub_configuration.concurrent_access_tokens | mandatory | ternary(\"True\", \"False\") }}\""
       # yamllint enable rule:line-length
     command: supervisord -n -c /etc/supervisor/conf.d/supervisord.django.conf
     networks_cli_compatible: true
@@ -59,6 +60,7 @@
       RAVEN_DSN: "{{ hub_configuration.sentry_dsn | default('') }}"
       GOOGLE_ANALYTICS_TRACKING_ID: "{{ hub_configuration.google_analytics_id | default('') }}"
       HUB_OFFERING: "{{ hub_configuration.hub_offering | mandatory }}"
+      OAUTH2_ALLOW_CONCURRENT_ACCESS_TOKENS: "\"{{ hub_configuration.concurrent_access_tokens | mandatory | ternary(\"True\", \"False\") }}\""
       # yamllint enable rule:line-length
     command: supervisord -n -c /etc/supervisor/conf.d/supervisord.channels.conf
     networks_cli_compatible: true
