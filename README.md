@@ -249,6 +249,10 @@ an oauth client will automatically be retrieved.
 Allows to explicitly define the oauth client secret to be used by the portal to communicate with the Hub. If not defined,
 an oauth client will automatically be retrieved.
 
+    portal_enabled_features:
+
+Enables specific features on the hub portal. Can be used to enable the legacy `reality` feature.
+
 #### Innoactive Customization Service (for Discovery Portal)
 
     setup_customization_service: true

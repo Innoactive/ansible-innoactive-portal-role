@@ -77,11 +77,13 @@ hub_configuration:
 portal_hostname: "portal.{{ hub_configuration.primary_hostname }}"
 portal_oauth_client_id:
 portal_oauth_client_secret:
+portal_enabled_features:
 
 portal_configuration:
   hostname: "{{ portal_hostname }}"
   oauth2_client_id: "{{ portal_oauth_client_id }}"
   oauth2_client_secret: "{{ portal_oauth_client_secret }}"
+  enabled_features: "{{ portal_enabled_features }}"
 
 # Launcher Configuration
 launcher_oauth_client_id:
