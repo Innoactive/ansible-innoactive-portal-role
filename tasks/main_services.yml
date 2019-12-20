@@ -8,7 +8,7 @@
     name: "{{ container_names.main }}"
     image: "{{ image_versions.hub }}"
     # pull image if version is latest
-    pull: "{{ (image_versions.hub | default(':', True)).split(':')[1] == 'latest' }}"
+    pull: "{{ (image_versions.hub | default(':', True)).split(':')[1].startswith('latest') }}"
     restart_policy: unless-stopped
     exposed_ports:
       - "8000"
