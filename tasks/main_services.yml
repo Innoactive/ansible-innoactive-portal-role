@@ -8,7 +8,7 @@
     name: "{{ container_names.main }}"
     image: "{{ image_versions.hub }}"
     # pull image if version is latest
-    pull: "{{ (image_versions.hub | default(':', True)).split(':')[1] == 'latest' }}"
+    pull: "{{ (image_versions.hub | default(':', True)).split(':')[1].startswith('latest') }}"
     restart_policy: unless-stopped
     exposed_ports:
       - "8000"
@@ -27,7 +27,7 @@
       RAVEN_DSN: "{{ hub_configuration.sentry_dsn | default('') }}"
       GOOGLE_ANALYTICS_TRACKING_ID: "{{ hub_configuration.google_analytics_id | default('') }}"
       HUB_OFFERING: "{{ hub_configuration.hub_offering | mandatory }}"
-      OAUTH2_ALLOW_CONCURRENT_ACCESS_TOKENS: "\"{{ hub_configuration.concurrent_access_tokens | mandatory | ternary(\"True\", \"False\") }}\""
+      OAUTH2_ALLOW_CONCURRENT_ACCESS_TOKENS: "{{ hub_configuration.concurrent_access_tokens | bool | mandatory | string }}"
       # yamllint enable rule:line-length
     command: supervisord -n -c /etc/supervisor/conf.d/supervisord.django.conf
     networks_cli_compatible: true
@@ -60,7 +60,7 @@
       RAVEN_DSN: "{{ hub_configuration.sentry_dsn | default('') }}"
       GOOGLE_ANALYTICS_TRACKING_ID: "{{ hub_configuration.google_analytics_id | default('') }}"
       HUB_OFFERING: "{{ hub_configuration.hub_offering | mandatory }}"
-      OAUTH2_ALLOW_CONCURRENT_ACCESS_TOKENS: "\"{{ hub_configuration.concurrent_access_tokens | mandatory | ternary(\"True\", \"False\") }}\""
+      OAUTH2_ALLOW_CONCURRENT_ACCESS_TOKENS: "{{ hub_configuration.concurrent_access_tokens | bool | mandatory | string }}"
       # yamllint enable rule:line-length
     command: supervisord -n -c /etc/supervisor/conf.d/supervisord.channels.conf
     networks_cli_compatible: true
