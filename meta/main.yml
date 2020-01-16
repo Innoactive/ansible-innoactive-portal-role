@@ -36,21 +36,3 @@ galaxy_info:
   #
   # NOTE: A tag is limited to a single word comprised of alphanumeric characters
   #       Maximum 20 tags per role.
-
-dependencies:
-  - role: geerlingguy.docker
-    become: true
-    tags:
-      - dependencies
-      - prerequisites
-      - docker
-  - role: geerlingguy.pip
-    become: true
-    vars:
-      pip_package: python3-pip
-      pip_install_packages:
-        - name: docker
-    tags:
-      - dependencies
-      - prerequisites
-      - pip

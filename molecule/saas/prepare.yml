@@ -1,9 +1,28 @@
 ---
 - name: Prepare
   hosts: all
-  gather_facts: false
+  gather_facts: true
   vars:
     media_storage_path: "{{ lookup('env', 'LOCAL_MOUNT_PATH') }}"
+
+  roles:
+    # Install Docker
+    - role: geerlingguy.docker
+      become: true
+      tags:
+        - prerequisites
+        - docker
+    # Install Pip
+    - role: geerlingguy.pip
+      become: true
+      vars:
+        pip_package: python3-pip
+        pip_install_packages:
+          - name: docker
+      tags:
+        - prerequisites
+        - pip
+
   tasks:
     - name: Wait for apt list lock (Known to cause issues sometimes), see https://github.com/geerlingguy/ansible-role-docker/issues/159
       raw: while fuser /var/lib/apt/lists/lock >/dev/null 2>&1; do echo 'Waiting for apt list lock.' && sleep 10; done
