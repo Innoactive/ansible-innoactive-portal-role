@@ -9,6 +9,8 @@
       NGINX_DOCKER_GEN_CONTAINER: "{{ container_names.reverse_proxy_config_generator }}"
       # TODO: this should not be test when going to production.
       LETSENCRYPT_TEST: "\"{{ letsencrypt_test }}\""
+    # recreate this container whenever the nginx container has been changed (otherwise configs won't be updated)
+    recreate: "{{ reverse_proxy_result.changed }}"
     networks_cli_compatible: true
     networks:
       - name: "{{ network_names.main }}"
