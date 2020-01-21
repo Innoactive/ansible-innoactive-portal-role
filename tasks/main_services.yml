@@ -3,7 +3,43 @@
   become: true
   import_tasks: data_volumes.yml
 
+- name: Collect environment variables for the main application server
+  set_fact:
+    base_server_environment_variables:
+      VIRTUAL_PORT: "8000"
+      DJANGO_ALLOWED_HOSTS: "{{ hub_configuration.hostname | mandatory }}"
+      DJANGO_SECRET_KEY: "{{ hub_configuration.secret_key | mandatory }}"
+      FROM_EMAIL: "{{ hub_configuration.admin_email | mandatory }}"
+      LETSENCRYPT_HOST: "{{ hub_configuration.hostname | mandatory }}"
+      RAVEN_DSN: "{{ hub_configuration.sentry_dsn | default('') }}"
+      GOOGLE_ANALYTICS_TRACKING_ID: "{{ hub_configuration.google_analytics_id | default('') }}"
+      HUB_OFFERING: "{{ hub_configuration.hub_offering | mandatory }}"
+      OAUTH2_ALLOW_CONCURRENT_ACCESS_TOKENS: "{{ hub_configuration.concurrent_access_tokens | bool | mandatory | string }}"
+
+- name: Upload JWT Server certificates
+  copy:
+    src: "{{ jwt_local_key_path }}/"
+    dest: "{{ jwt_key_path }}/"
+  when:
+  - jwt_key_path | default('', true) | trim | length > 0
+  - jwt_local_key_path | default('', true) | trim | length > 0
+
+- name: Add jwt keys
+  vars:
+    jwt_environment_variables:
+      JWT_PRIVATE_KEY_PATH: "{{ jwt_key_path + '/' + jwt_privatekey }}"
+      JWT_PUBLIC_KEY_PATH: "{{ jwt_key_path + '/' + jwt_publickey }}"
+  set_fact:
+    base_server_environment_variables: "{{ base_server_environment_variables | combine (jwt_environment_variables) }}"
+  when:
+  - jwt_key_path | default('', true) | trim | length > 0
+  - jwt_local_key_path | default('', true) | trim | length > 0
+
 - name: Start Django Application Server
+  vars:
+    application_server_specific_environment_variables:
+      VIRTUAL_PROTO: uwsgi
+      VIRTUAL_HOST: "{{ hub_configuration.hostname | mandatory }}"
   docker_container:
     name: "{{ container_names.main }}"
     image: "{{ image_versions.hub }}"
@@ -15,20 +51,8 @@
     volumes:
       - "{{ volume_names.media }}:/media"
       - "{{ volume_names.static }}:/static"
-    env: &webservice_env
-      # yamllint disable rule:line-length
-      VIRTUAL_PORT: "8000"
-      VIRTUAL_PROTO: uwsgi
-      VIRTUAL_HOST: "{{ hub_configuration.hostname | mandatory }}"
-      DJANGO_ALLOWED_HOSTS: "{{ hub_configuration.hostname | mandatory }}"
-      DJANGO_SECRET_KEY: "{{ hub_configuration.secret_key | mandatory }}"
-      FROM_EMAIL: "{{ hub_configuration.admin_email | mandatory }}"
-      LETSENCRYPT_HOST: "{{ hub_configuration.hostname | mandatory }}"
-      RAVEN_DSN: "{{ hub_configuration.sentry_dsn | default('') }}"
-      GOOGLE_ANALYTICS_TRACKING_ID: "{{ hub_configuration.google_analytics_id | default('') }}"
-      HUB_OFFERING: "{{ hub_configuration.hub_offering | mandatory }}"
-      OAUTH2_ALLOW_CONCURRENT_ACCESS_TOKENS: "{{ hub_configuration.concurrent_access_tokens | bool | mandatory | string }}"
-      # yamllint enable rule:line-length
+      - "{{ jwt_key_path }}:{{ jwt_key_path }}"
+    env: "{{ base_server_environment_variables | combine (application_server_specific_environment_variables) }}"
     command: supervisord -n -c /etc/supervisor/conf.d/supervisord.django.conf
     networks_cli_compatible: true
     networks:
@@ -37,6 +61,11 @@
           - web
 
 - name: Start Django Realtime Application Server
+  vars:
+    realtime_server_specific_environment_variables:
+      NETWORK_ACCESS: internal
+      VIRTUAL_PROTO: http
+      VIRTUAL_HOST: channels
   docker_container:
     name: "{{ container_names.realtime }}"
     image: "{{ image_versions.hub }}"
@@ -46,21 +75,8 @@
     volumes:
       - "{{ volume_names.media }}:/media"
       - "{{ volume_names.static }}:/static"
-    env:
-      # yamllint disable rule:line-length
-      VIRTUAL_PORT: "8000"
-      VIRTUAL_HOST: channels
-      # channels cannot work via uwsgi, it needs http
-      VIRTUAL_PROTO: http
-      NETWORK_ACCESS: internal
-      DJANGO_ALLOWED_HOSTS: "{{ hub_configuration.hostname | mandatory }}"
-      DJANGO_SECRET_KEY: "{{ hub_configuration.secret_key | mandatory }}"
-      FROM_EMAIL: "{{ hub_configuration.admin_email | mandatory }}"
-      LETSENCRYPT_HOST: "{{ hub_configuration.hostname | mandatory }}"
-      RAVEN_DSN: "{{ hub_configuration.sentry_dsn | default('') }}"
-      GOOGLE_ANALYTICS_TRACKING_ID: "{{ hub_configuration.google_analytics_id | default('') }}"
-      HUB_OFFERING: "{{ hub_configuration.hub_offering | mandatory }}"
-      OAUTH2_ALLOW_CONCURRENT_ACCESS_TOKENS: "{{ hub_configuration.concurrent_access_tokens | bool | mandatory | string }}"
+      - "{{ jwt_key_path }}:{{ jwt_key_path }}"
+    env: "{{ base_server_environment_variables | combine (realtime_server_specific_environment_variables) }}"
       # yamllint enable rule:line-length
     command: supervisord -n -c /etc/supervisor/conf.d/supervisord.channels.conf
     networks_cli_compatible: true
