@@ -19,6 +19,7 @@ provisioner:
   log: true
   playbooks:
     converge: playbook.yml
+    prepare: prepare.yml
     cleanup: cleanup.yml
   env:
     ANSIBLE_ROLES_PATH: $HOME/.ansible/roles

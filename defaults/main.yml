@@ -112,6 +112,15 @@ telemetry_tls_privatekey:
 telemetry_tls_certificate:
 telemetry_tls_ca_certificate:
 
+# JWT configuration
+jwt_key_path: /etc/hub/jwt
+jwt_privatekey: jwt-key
+jwt_publickey: jwt-key.pub
+jwt_local_key_path:
+jwt:
+  privatekey: "{{ jwt_privatekey }}"
+  publickey: "{{ jwt_publickey }}"
+
 telemetry:
   shared_key: "{{ telemetry_shared_key }}"
   salt: "{{ telemetry_salt }}"
