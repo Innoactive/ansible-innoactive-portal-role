@@ -1,0 +1,18 @@
+---
+- name: Start Backup container
+  docker_container:
+    name: "{{ container_names.backup }}"
+    image: "prodrigestivill/postgres-backup-local"
+    restart_policy: unless-stopped
+    env:
+      POSTGRES_HOST: "{{ container_names.database }}"
+      POSTGRES_DB: postgres, customization
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      BACKUP_DIR: /backup_volume/backups/database"
+    volumes:
+      # Save the database backups on the media volume since that can be seen as secure.
+      - "{{ volume_names.media }}:/backup_volume"
+    networks_cli_compatible: true
+    networks:
+      - name: "{{ network_names.main }}"

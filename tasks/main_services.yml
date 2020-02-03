@@ -171,3 +171,7 @@
     - user_groups
     - defaults
     - requires_database
+
+- name: Setup continuous Backup
+  become: true
+  import_tasks: continuous_backup.yml

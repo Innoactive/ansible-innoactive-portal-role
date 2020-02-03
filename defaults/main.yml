@@ -180,3 +180,4 @@ container_names:
   discovery_portal: "{{ hub_service_prefix }}_portal"
   customization: "{{ hub_service_prefix }}_customization"
   telemetry: "{{ hub_service_prefix }}_fluentd"
+  backup: "{{ hub_service_prefix }}_backup"
