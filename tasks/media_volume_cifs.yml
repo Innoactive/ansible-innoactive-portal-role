@@ -16,4 +16,4 @@
     src: "{{ media_volume_mount.cifs.url }}"
     fstype: cifs
     state: mounted
-    opts: "{{ media_storage_mount_credentials | default('') }}nounix,file_mode=0666,dir_mode=0777,vers=3.0"
+    opts: "{{ media_storage_mount_credentials | default('') }}nounix,file_mode=0666,dir_mode=0777,vers=3.0,mfsymlinks"
