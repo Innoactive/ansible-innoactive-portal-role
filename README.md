@@ -279,13 +279,23 @@ an oauth client will automatically be retrieved.
 
 ### Mail Setup
 
-    gmail_user:
+In order to send mails, SMTP needs to be set up
 
-Username / E-Mail for a G-Mail account that can be used to send out emails.
+    smtp_host:
 
-    gmail_password:
+The host adress of the SMTP server.
 
-Password for the specified G-Mail account.
+    smtp_port:
+
+The port used by the SMTP server.
+
+    smtp_user:
+
+The SMTP user to authenticate with.
+
+    smtp_password:
+
+The password corresponding to the given SMTP user.
 
 ## Dependencies
 
