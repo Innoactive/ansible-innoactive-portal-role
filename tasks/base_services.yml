@@ -1,24 +1,4 @@
 ---
-- name: Start Mailserver
-  docker_container:
-    name: "{{ container_names.mailserver }}"
-    image: "{{ image_versions.mailserver }}"
-    # pull image if version is latest
-    pull: "{{ (image_versions.mailserver | default(':', True)).split(':')[1] == 'latest' }}"
-    restart_policy: unless-stopped
-    exposed_ports:
-      - "1025"
-    env:
-      GMAIL_USER: "{{ mail_configuration.gmail.user }}"
-      GMAIL_PASSWORD: "{{ mail_configuration.gmail.password }}"
-      MAILNAME: "{{ hub_configuration.primary_hostname }}"
-      PORT: "1025"
-    networks_cli_compatible: true
-    networks:
-      - name: "{{ network_names.main }}"
-        aliases:
-          - mailserver
-
 - name: Create Hub database data volume
   docker_volume:
     name: "{{ volume_names.database }}"
