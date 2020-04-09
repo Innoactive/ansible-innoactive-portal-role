@@ -15,6 +15,10 @@
       GOOGLE_ANALYTICS_TRACKING_ID: "{{ hub_configuration.google_analytics_id | default('') }}"
       HUB_OFFERING: "{{ hub_configuration.hub_offering | mandatory }}"
       OAUTH2_ALLOW_CONCURRENT_ACCESS_TOKENS: "{{ hub_configuration.concurrent_access_tokens | bool | mandatory | string }}"
+      EMAIL_HOST: "{{ mail_configuration.smtp.host }}"
+      EMAIL_PORT: "{{ mail_configuration.smtp.port }}"
+      EMAIL_USER: "{{ mail_configuration.smtp.user }}"
+      EMAIL_PASSWORD: "{{ mail_configuration.smtp.password }}"
 
 - name: Upload JWT Server certificates
   copy:
