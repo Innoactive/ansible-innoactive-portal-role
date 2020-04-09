@@ -9,7 +9,7 @@
       VIRTUAL_PORT: "8000"
       DJANGO_ALLOWED_HOSTS: "{{ hub_configuration.hostname | mandatory }}"
       DJANGO_SECRET_KEY: "{{ hub_configuration.secret_key | mandatory }}"
-      FROM_EMAIL: "{{ hub_configuration.admin_email | mandatory }}"
+      FROM_EMAIL: "{{ hub_configuration.from_email | default(hub_configuration.admin_email, true) | mandatory }}"
       LETSENCRYPT_HOST: "{{ hub_configuration.hostname | mandatory }}"
       RAVEN_DSN: "{{ hub_configuration.sentry_dsn | default('') }}"
       GOOGLE_ANALYTICS_TRACKING_ID: "{{ hub_configuration.google_analytics_id | default('') }}"

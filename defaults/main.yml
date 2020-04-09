@@ -12,6 +12,7 @@ docker_registry:
 # Main Hub Configuration parameters
 hostname:
 secret_key:
+from_email:
 admin_email:
 admin_password:
 create_admin_user: true
@@ -60,6 +61,7 @@ hub_configuration:
   # for most following options
   primary_hostname: "{{ hostname.split(',')[0] | trim }}"
   secret_key: "{{ secret_key }}"
+  from_email: "{{ from_email }}"
   admin_email: "{{ admin_email }}"
   admin_password: "{{ admin_password }}"
   setup_database: "{{ setup_database }}"
