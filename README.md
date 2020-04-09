@@ -51,6 +51,10 @@ separated list of hostnames, the Hub will then be accessible on all of these hos
 
 A user-defined, secret key used for salting hashes within the Hub's application. Never expose this to anyone!
 
+    from_email:
+
+E-Mail address from which to send transactional e-mails (e.g. onboarding) to users. If not provided, uses `admin_email`, see below.
+
     admin_email:
 
 E-Mail address of the main admin user, used to notify upon errors, expired certificates, etc.
