@@ -140,6 +140,8 @@ smtp_host:
 smtp_port:
 smtp_user:
 smtp_password:
+smtp_use_tls: no
+smtp_use_ssl: no
 
 mail_configuration:
   smtp:
@@ -147,6 +149,8 @@ mail_configuration:
     port: "{{ smtp_port }}"
     user: "{{ smtp_user }}"
     password: "{{ smtp_password }}"
+    use_tls: "{{ smtp_use_tls }}"
+    use_ssl: "{{ smtp_use_ssl }}"
 
 # defaults file for hub
 hub_service_prefix: hub
