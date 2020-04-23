@@ -19,6 +19,8 @@
       EMAIL_PORT: "{{ mail_configuration.smtp.port }}"
       EMAIL_USER: "{{ mail_configuration.smtp.user }}"
       EMAIL_PASSWORD: "{{ mail_configuration.smtp.password }}"
+      EMAIL_USE_TLS: "{{ mail_configuration.smtp.use_tls | ternary('True', 'False') | string }}"
+      EMAIL_USE_SSL: "{{ mail_configuration.smtp.use_ssl | ternary('True', 'False') | string }}"
 
 - name: Upload JWT Server certificates
   copy:

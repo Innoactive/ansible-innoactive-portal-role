@@ -305,6 +305,14 @@ The SMTP user to authenticate with.
 
 The password corresponding to the given SMTP user.
 
+    smtp_use_tls: no
+
+Whether or not (boolean) the SMTP server requires the use of TLS. Mutually exclusive with `use_ssl`.
+
+    smtp_use_ssl: no
+
+Whether or not (boolean) the SMTP server requires the use of SSL. Mutually exclusive with `use_tls`.
+
 ## Dependencies
 
 A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set
