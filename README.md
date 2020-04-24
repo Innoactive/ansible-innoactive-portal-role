@@ -261,6 +261,10 @@ an oauth client will automatically be retrieved.
 
 Enables specific features on the hub portal. Can be used to enable the legacy `reality` feature.
 
+    portal_sentry_dsn:
+
+DSN for [Sentry](https://sentry.io/welcome/) to automatically track runtime errors within the Portal.
+
 #### Innoactive Customization Service (for Discovery Portal)
 
     setup_customization_service: true

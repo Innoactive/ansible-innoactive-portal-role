@@ -62,6 +62,7 @@
       OAUTH_CLIENT_ID: "{{ discovery_portal_oauth2_client_id }}"
       OAUTH_SECRET: "{{ discovery_portal_oauth2_client_secret }}"
       ENABLED_FEATURES: "{{ portal_configuration.enabled_features }}"
+      SENTRY_DSN: "{{ portal_configuration.sentry_dsn }}"
       # yamllint enable rule:line-length
     networks_cli_compatible: true
     networks:
