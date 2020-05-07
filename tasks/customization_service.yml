@@ -46,17 +46,8 @@
     name: "{{ volume_names.customization }}"
 
 - name: Start Customization Service
-  docker_container:
-    name: "{{ container_names.customization }}"
-    image: "{{ image_versions.customization }}"
-    # pull image if version is latest
-    pull: "{{ (image_versions.customization | default(':', True)).split(':')[1] == 'latest' }}"
-    restart_policy: unless-stopped
-    volumes:
-      - "{{ volume_names.customization }}:/usr/app/media"
-    exposed_ports:
-      - "80"
-    env:
+  vars:
+    default_environment_variables:
       API_ROOT: "{{ hub_configuration.protocol }}://{{ hub_configuration.primary_hostname }}"
       CUSTOMIZATION_API_ROOT: "{{ hub_configuration.protocol }}://{{ customization_configuration.hostname }}/api"
       DB_HOST: db
@@ -67,6 +58,17 @@
       OAUTH_CLIENT_ID: "{{ customization_oauth2_client_id }}"
       OAUTH_CLIENT_SECRET: "{{ customization_oauth2_client_secret }}"
       VIRTUAL_HOST: "{{ customization_configuration.hostname }}"
+  docker_container:
+    name: "{{ container_names.customization }}"
+    image: "{{ image_versions.customization }}"
+    # pull image if version is latest
+    pull: "{{ (image_versions.customization | default(':', True)).split(':')[1] == 'latest' }}"
+    restart_policy: unless-stopped
+    volumes:
+      - "{{ volume_names.customization }}:/usr/app/media"
+    exposed_ports:
+      - "80"
+    env: "{{ default_environment_variables | combine(customization_configuration.extra_environment_variables) }}"
     networks_cli_compatible: true
     networks:
       - name: "{{ network_names.main }}"

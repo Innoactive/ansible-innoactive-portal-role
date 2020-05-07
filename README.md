@@ -293,6 +293,10 @@ an oauth client will automatically be retrieved.
 Allows to explicitly define the oauth client secret to be used by the portal to communicate with the Hub. If not defined,
 an oauth client will automatically be retrieved.
 
+    customization_extra_environment_variables: {}
+
+Optional mapping of additional environment variables to be passed on to the Hub (e.g. to unlock hidden features).
+
 ### Mail Setup
 
 In order to send mails, SMTP needs to be set up

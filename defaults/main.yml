@@ -105,11 +105,13 @@ launcher_configuration:
 customiatzion_hostname: "customization.{{ hub_configuration.primary_hostname }}"
 customiatzion_oauth_client_id:
 customiatzion_oauth_client_secret:
+customization_extra_environment_variables: {}
 
 customization_configuration:
   hostname: "{{ customiatzion_hostname }}"
   oauth2_client_id: "{{ customiatzion_oauth_client_id }}"
   oauth2_client_secret: "{{ customiatzion_oauth_client_secret }}"
+  extra_environment_variables: "{{ customization_extra_environment_variables }}"
 
 # Telemetry configuration
 telemetry_certificate_path: /etc/hub/fluentd/ssl
