@@ -26,6 +26,7 @@ concurrent_access_tokens: true
 sentry_dsn:
 # Google Analytics configuration
 google_analytics_tracking_id:
+extra_environment_variables: {}
 
 # Docker Image Versions
 portal_image_version: latest
@@ -74,6 +75,7 @@ hub_configuration:
   create_admin_user: "{{ create_admin_user }}"
   hub_offering: "{{ hub_offering }}"
   concurrent_access_tokens: "{{ concurrent_access_tokens }}"
+  extra_environment_variables: "{{ extra_environment_variables }}"
 
 # Portal Configuration
 portal_hostname: "portal.{{ hub_configuration.primary_hostname }}"

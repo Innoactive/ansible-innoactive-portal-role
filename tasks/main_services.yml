@@ -46,6 +46,7 @@
     application_server_specific_environment_variables:
       VIRTUAL_PROTO: uwsgi
       VIRTUAL_HOST: "{{ hub_configuration.hostname | mandatory }}"
+
   docker_container:
     name: "{{ container_names.main }}"
     image: "{{ image_versions.hub }}"
@@ -58,7 +59,9 @@
       - "{{ volume_names.media }}:/media"
       - "{{ volume_names.static }}:/static"
       - "{{ jwt_key_path }}:{{ jwt_key_path }}"
-    env: "{{ base_server_environment_variables | combine (application_server_specific_environment_variables) }}"
+    # yamllint disable rule:line-length
+    env: "{{ base_server_environment_variables | combine(application_server_specific_environment_variables) | combine(hub_configuration.extra_environment_variables) }}" # noqa 204
+    # yamllint enable rule:line-length
     command: supervisord -n -c /etc/supervisor/conf.d/supervisord.django.conf
     networks_cli_compatible: true
     networks:
