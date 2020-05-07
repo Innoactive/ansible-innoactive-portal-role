@@ -265,6 +265,10 @@ Enables specific features on the hub portal. Can be used to enable the legacy `r
 
 DSN for [Sentry](https://sentry.io/welcome/) to automatically track runtime errors within the Portal.
 
+    portal_extra_environment_variables: {}
+
+Optional mapping of additional environment variables to be passed on to the Portal (e.g. to unlock hidden features).
+
 #### Innoactive Customization Service (for Discovery Portal)
 
     setup_customization_service: true
