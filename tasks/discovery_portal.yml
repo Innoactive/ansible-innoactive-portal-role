@@ -45,6 +45,16 @@
   when: hub_configuration.setup_customization_service
 
 - name: Start Discovery Portal Service
+  vars:
+    default_environment_variables:
+      VIRTUAL_HOST: "{{ portal_configuration.hostname }}"
+      LETSENCRYPT_HOST: "{{ portal_configuration.hostname }}"
+      API_ROOT: "{{ hub_configuration.protocol }}://{{ hub_configuration.primary_hostname }}"
+      CUSTOMIZATION_API_ROOT: "{{ customization_api_root | default('', true) }}"
+      OAUTH_CLIENT_ID: "{{ discovery_portal_oauth2_client_id }}"
+      OAUTH_SECRET: "{{ discovery_portal_oauth2_client_secret }}"
+      ENABLED_FEATURES: "{{ portal_configuration.enabled_features }}"
+      SENTRY_DSN: "{{ portal_configuration.sentry_dsn }}"
   docker_container:
     name: "{{ container_names.discovery_portal }}"
     image: "{{ image_versions.portal }}"
@@ -53,17 +63,7 @@
     restart_policy: unless-stopped
     exposed_ports:
       - "80"
-    env:
-      VIRTUAL_HOST: "{{ portal_configuration.hostname }}"
-      LETSENCRYPT_HOST: "{{ portal_configuration.hostname }}"
-      API_ROOT: "{{ hub_configuration.protocol }}://{{ hub_configuration.primary_hostname }}"
-      CUSTOMIZATION_API_ROOT: "{{ customization_api_root | default('', true) }}"
-      # yamllint disable rule:line-length
-      OAUTH_CLIENT_ID: "{{ discovery_portal_oauth2_client_id }}"
-      OAUTH_SECRET: "{{ discovery_portal_oauth2_client_secret }}"
-      ENABLED_FEATURES: "{{ portal_configuration.enabled_features }}"
-      SENTRY_DSN: "{{ portal_configuration.sentry_dsn }}"
-      # yamllint enable rule:line-length
+    env: "{{ default_environment_variables | combine(portal_configuration.extra_environment_variables) }}"
     networks_cli_compatible: true
     networks:
       - name: "{{ network_names.main }}"
