@@ -91,6 +91,10 @@ Whether to display the "extended" feature set in the menu or a "lean" subset.
 
 Whether or not to allow one and the same user being authenticated in the same application (OAuth2 client) multiple times.
 
+    extra_environment_variables: {}
+
+Optional mapping of additional environment variables to be passed on to the Hub (e.g. to unlock hidden features).
+
 #### Media Files
 
 The Hub's files (user uploads like applications, assets, ...) are stored within a dedicated docker volume. To ensure
@@ -288,6 +292,10 @@ an oauth client will automatically be retrieved.
 
 Allows to explicitly define the oauth client secret to be used by the portal to communicate with the Hub. If not defined,
 an oauth client will automatically be retrieved.
+
+    customization_extra_environment_variables: {}
+
+Optional mapping of additional environment variables to be passed on to the Hub (e.g. to unlock hidden features).
 
 ### Mail Setup
 
