@@ -42,11 +42,6 @@
   - jwt_local_key_path | default('', true) | trim | length > 0
 
 - name: Start Django Application Server
-  vars:
-    application_server_specific_environment_variables:
-      VIRTUAL_PROTO: uwsgi
-      VIRTUAL_HOST: "{{ hub_configuration.hostname | mandatory }}"
-
   docker_container:
     name: "{{ container_names.main }}"
     image: "{{ image_versions.hub }}"
@@ -60,39 +55,42 @@
       - "{{ volume_names.static }}:/static"
       - "{{ jwt_key_path }}:{{ jwt_key_path }}"
     # yamllint disable rule:line-length
-    env: "{{ base_server_environment_variables | combine(application_server_specific_environment_variables) | combine(hub_configuration.extra_environment_variables) }}" # noqa 204
+    env: "{{ base_server_environment_variables | combine(hub_configuration.extra_environment_variables) }}" # noqa 204
     # yamllint enable rule:line-length
-    command: supervisord -n -c /etc/supervisor/conf.d/supervisord.django.conf
+    labels: {
+      traefik.enable: "true",
+      traefik.http.routers.web.rule: "Host(`{{ hub_configuration.primary_hostname }}`)",
+      traefik.http.routers.web.entrypoints: "traefik_proxy-secured",
+      traefik.http.routers.web.tls.certresolver: "mytlschallenge",
+
+    # redirect secondary domain to primary
+    # Get Options
+      traefik.http.routers.web-secondary.rule: "Host(`{{ hub_configuration.secondary_hostnames | join('`,`') }}`) && Method(`GET`,`OPTIONS`)",
+      traefik.http.middlewares.redirect-secondary.redirectregex.regex: "(.*\\/\\/)([^:\\/\\s]+)(.*)",
+      traefik.http.middlewares.redirect-secondary.redirectregex.replacement: "https://{{ hub_configuration.primary_hostname }}$${3}",
+      traefik.http.routers.web-secondary.middlewares: "redirect-secondary",
+
+      # POST
+      traefik.http.routers.web-secondary-post.rule:
+      "Host(`{{ hub_configuration.secondary_hostnames | join('`,`') }}`) && Method(`POST`,`PUT`,`PATCH`,`DELETE`)",
+      traefik.http.routers.web-secondary-post.entrypoints: "traefik_proxy-secured",
+      traefik.http.routers.web-secondary-post.tls.certresolver: "mytlschallenge",
+
+      # channels
+      traefik.http.routers.channels.rule: "Host(`{{ hub_configuration.primary_hostname }}`) && PathPrefix(`/ws`)",
+      traefik.http.routers.channels.entrypoints: "traefik_proxy-secured",
+      traefik.http.routers.channels.tls.certresolver: "mytlschallenge",
+
+    }
+
     networks_cli_compatible: true
     networks:
       - name: "{{ network_names.main }}"
         aliases:
           - web
-
-- name: Start Django Realtime Application Server
-  vars:
-    realtime_server_specific_environment_variables:
-      NETWORK_ACCESS: internal
-      VIRTUAL_PROTO: http
-      VIRTUAL_HOST: channels
-  docker_container:
-    name: "{{ container_names.realtime }}"
-    image: "{{ image_versions.hub }}"
-    restart_policy: unless-stopped
-    exposed_ports:
-      - "8000"
-    volumes:
-      - "{{ volume_names.media }}:/media"
-      - "{{ volume_names.static }}:/static"
-      - "{{ jwt_key_path }}:{{ jwt_key_path }}"
-    env: "{{ base_server_environment_variables | combine (realtime_server_specific_environment_variables) }}"
-      # yamllint enable rule:line-length
-    command: supervisord -n -c /etc/supervisor/conf.d/supervisord.channels.conf
-    networks_cli_compatible: true
-    networks:
-      - name: "{{ network_names.main }}"
+      - name: "{{ network_names.internal }}"
         aliases:
-          - channels
+          - db
 
 - name: Run Database Migrations
   command: "docker exec {{ container_names.main }} python manage.py migrate"

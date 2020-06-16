@@ -31,15 +31,14 @@ extra_environment_variables: {}
 # Docker Image Versions
 portal_image_version: latest
 hub_image_version: latest
-reverse_proxy_image_version: 1.2.1
+reverse_proxy_image_version: 2.2
 
 mailserver_image: namshi/smtp:latest
 message_queue_image: redis:5
 database_image: postgres:9.6
 hub_image: registry.docker.innoactive.de/hub_web:{{ hub_image_version }}
 portal_image: registry.docker.innoactive.de/hub_portal_web:{{ portal_image_version }}
-reverse_proxy_image: registry.docker.innoactive.de/hub_nginx:{{ reverse_proxy_image_version }}
-reverse_proxy_config_generator_image: jwilder/docker-gen:latest
+reverse_proxy_image: traefik:{{ reverse_proxy_image_version }}
 letsencrypt_proxy_companion_image: jrcs/letsencrypt-nginx-proxy-companion:v1.12
 fluentd_image: registry.docker.innoactive.de/hub_fluentd:0.2.0
 customization_image: registry.docker.innoactive.de/hub_customization:latest
@@ -51,7 +50,7 @@ image_versions:
   hub: "{{ hub_image }}"
   portal: "{{ portal_image }}"
   reverse_proxy: "{{ reverse_proxy_image }}"
-  reverse_proxy_config_generator: "{{ reverse_proxy_config_generator_image }}"
+  # reverse_proxy_config_generator: "{{ reverse_proxy_config_generator_image }}"
   letsencrypt_proxy_companion: "{{ letsencrypt_proxy_companion_image }}"
   fluentd: "{{ fluentd_image }}"
   customization: "{{ customization_image }}"
@@ -61,6 +60,7 @@ hub_configuration:
   # hostname can contain multiple hostnames but we only need one
   # for most following options
   primary_hostname: "{{ hostname.split(',')[0] | trim }}"
+  secondary_hostnames: "{{ hostname.split(',') | difference(hostname.split(',')[0] | trim) }}"
   secret_key: "{{ secret_key }}"
   from_email: "{{ from_email }}"
   admin_email: "{{ admin_email }}"
@@ -185,6 +185,7 @@ volume_names:
 
 network_names:
   main: "{{ hub_service_prefix }}_network"
+  internal: "internal_routing"
 
 container_names:
   main: "{{ hub_service_prefix }}_web"
@@ -192,8 +193,8 @@ container_names:
   database: "{{ hub_service_prefix }}_db"
   message_queue: "{{ hub_service_prefix }}_mq"
   mailserver: "{{ hub_service_prefix }}_mailer"
-  reverse_proxy: "{{ hub_service_prefix }}_nginx"
-  reverse_proxy_config_generator: "{{ hub_service_prefix }}_nginx_gen"
+  reverse_proxy: "{{ hub_service_prefix }}_traefik"
+  # reverse_proxy_config_generator: "{{ hub_service_prefix }}_nginx_gen"
   letsencrypt_proxy_companion: "{{ hub_service_prefix }}_letsencrypt"
   discovery_portal: "{{ hub_service_prefix }}_portal"
   customization: "{{ hub_service_prefix }}_customization"

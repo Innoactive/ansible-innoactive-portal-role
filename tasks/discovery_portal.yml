@@ -22,8 +22,9 @@
       set_fact:
         discovery_portal_oauth2_client_id: "{{ discovery_portal_oauth2_client_output.stdout | from_json | json_query('client_id') }}"
         discovery_portal_oauth2_client_secret: "{{ discovery_portal_oauth2_client_output.stdout | from_json | json_query('client_secret') }}"
-  when: (portal_configuration.oauth2_client_id | default('', true) | length == 0) or
-        (portal_configuration.oauth2_client_secret | default('', true) | length == 0)
+  when:
+    (portal_configuration.oauth2_client_id | default('', true) | length == 0) or
+    (portal_configuration.oauth2_client_secret | default('', true) | length == 0)
 
 - name: Identify Client Id for Discovery Portal (Fallback)
   set_fact:
@@ -67,3 +68,10 @@
     networks_cli_compatible: true
     networks:
       - name: "{{ network_names.main }}"
+    labels:
+      {
+        traefik.enable: "true",
+        traefik.http.routers.portal.rule: "Host(`{{ portal_hostname }}`)",
+        traefik.http.routers.portal.entrypoints: "traefik_proxy-secured",
+        traefik.http.routers.portal.tls.certresolver: "mytlschallenge",
+      }

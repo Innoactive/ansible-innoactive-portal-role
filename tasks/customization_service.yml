@@ -24,8 +24,9 @@
       set_fact:
         customization_oauth2_client_id: "{{ customization_oauth2_client_output.stdout | from_json | json_query('client_id') }}"
         customization_oauth2_client_secret: "{{ customization_oauth2_client_output.stdout | from_json | json_query('client_secret') }}"
-  when: (customization_configuration.oauth2_client_id | default('', true) | length == 0) or
-        (customization_configuration.oauth2_client_secret | default('', true) | length == 0)
+  when:
+    (customization_configuration.oauth2_client_id | default('', true) | length == 0) or
+    (customization_configuration.oauth2_client_secret | default('', true) | length == 0)
 
 - name: Identify Client Id for Customization service (Fallback)
   set_fact:
@@ -72,6 +73,13 @@
     networks_cli_compatible: true
     networks:
       - name: "{{ network_names.main }}"
+    labels:
+      {
+        traefik.enable: "true",
+        traefik.http.routers.customization.rule: "Host(`{{ customization_hostname }}`)",
+        traefik.http.routers.customization.entrypoints: "traefik_proxy-secured",
+        traefik.http.routers.customization.tls.certresolver: "mytlschallenge",
+      }
 
 - name: Setup Database
   become: true
