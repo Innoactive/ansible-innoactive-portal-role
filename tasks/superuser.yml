@@ -2,19 +2,19 @@
 - name: Validate superuser credentials
   assert:
     that:
-      - hub_configuration.admin_email is defined
-      - hub_configuration.admin_email
-      - hub_configuration.admin_email|length
-      - hub_configuration.admin_password is defined
-      - hub_configuration.admin_password
-      - hub_configuration.admin_password|length
+      - admin_configuration.admin_email is defined
+      - admin_configuration.admin_email
+      - admin_configuration.admin_email|length
+      - admin_configuration.admin_password is defined
+      - admin_configuration.admin_password
+      - admin_configuration.admin_password|length
 - name: Create superuser account
   shell: "{{ lookup('template', 'run_in_django_shell.sh.j2') }}" # noqa 305
   vars:
     python_script_name: create_superuser
     admin:
-      email: "{{ hub_configuration.admin_email | mandatory }}"
-      password: "{{ hub_configuration.admin_password | mandatory }}"
+      email: "{{ admin_configuration.admin_email | mandatory }}"
+      password: "{{ admin_configuration.admin_password | mandatory }}"
   register: superuser_creation_output
   changed_when: superuser_creation_output.stdout | trim | bool
   tags:

@@ -27,13 +27,12 @@ def test_services_are_running(host):
         expected_service_names = [service_name % stack_prefix for
                                   service_name in [
                                       "%sweb",
-                                      "%schannels",
-                                      "%snginx",
-                                      "%snginx_gen",
+                                      "%straefik",
                                       "%smq",
                                       "%sdb",
                                       "%sportal",
-                                      # "%shub_fluentd"
+                                      "%scustomization",
+                                      # "%sfluentd"
                                   ]]
         actual_service_names = [container.name for container in
                                 host.docker.get_containers(status="running")]

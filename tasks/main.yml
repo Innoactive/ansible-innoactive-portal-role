@@ -6,6 +6,9 @@
     username: "{{ docker_registry.username }}"
     password: "{{ docker_registry.password }}"
 
+- name: Run service migrations
+  import_tasks: migration-3.0.0.yml
+
 - name: Setup required networks
   become: true
   import_tasks: networks.yml
@@ -31,6 +34,8 @@
     - telemetry
 
 - name: Start Hub Main Services (Application Servers)
+  vars:
+    hub_version: "{{ (image_versions.hub | default(':', True)).split(':')[1] | string }}"
   become: true
   import_tasks: main_services.yml
   tags:
@@ -50,7 +55,7 @@
 - name: Setup Hub Customization Service
   become: true
   import_tasks: customization_service.yml
-  when: hub_configuration.setup_customization_service
+  when: admin_configuration.setup_customization_service
   tags:
     - services
     - customization
@@ -58,7 +63,7 @@
 - name: Setup Hub Discovery Portal
   become: true
   import_tasks: discovery_portal.yml
-  when: hub_configuration.setup_discovery_portal
+  when: admin_configuration.setup_discovery_portal
   tags:
     - services
     - discovery_portal
@@ -66,7 +71,7 @@
 - name: Create Superuser
   become: true
   import_tasks: superuser.yml
-  when: hub_configuration.create_admin_user
+  when: admin_configuration.create_admin_user
   tags:
     - setup_tasks
     - superuser
@@ -77,11 +82,3 @@
   tags:
     - services
     - reverse_proxy
-
-- name: Make sure communication with Hub is encrypted (https)
-  become: true
-  import_tasks: secure_communication.yml
-  when: letsencrypt
-  tags:
-    - services
-    - ssl
