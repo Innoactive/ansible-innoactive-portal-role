@@ -80,11 +80,9 @@ stages:
               targetType: "inline"
               script: "molecule test -s with_cifs"
             env:
-              {
-                DOCKER_REGISTRY_USERNAME: $(DOCKER_REGISTRY_USERNAME),
-                DOCKER_REGISTRY_PASSWORD: $(DOCKER_REGISTRY_PASSWORD),
-                HCLOUD_TOKEN: $(HCLOUD_TOKEN),
-              }
+              DOCKER_REGISTRY_USERNAME: $(DOCKER_REGISTRY_USERNAME),
+              DOCKER_REGISTRY_PASSWORD: $(DOCKER_REGISTRY_PASSWORD),
+              HCLOUD_TOKEN: $(HCLOUD_TOKEN),
 
   - stage: Release
     condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
