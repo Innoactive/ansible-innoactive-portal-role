@@ -70,11 +70,9 @@ stages:
               targetType: "inline"
               script: "molecule test -s saas"
             env:
-              {
-                DOCKER_REGISTRY_USERNAME: $(DOCKER_REGISTRY_USERNAME),
-                DOCKER_REGISTRY_PASSWORD: $(DOCKER_REGISTRY_PASSWORD),
-                HCLOUD_TOKEN: $(HCLOUD_TOKEN),
-              }
+              DOCKER_REGISTRY_USERNAME: $(DOCKER_REGISTRY_USERNAME),
+              DOCKER_REGISTRY_PASSWORD: $(DOCKER_REGISTRY_PASSWORD),
+              HCLOUD_TOKEN: $(HCLOUD_TOKEN),
 
           - task: Bash@3
             displayName: "Test with cifs"
