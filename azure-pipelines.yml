@@ -43,16 +43,18 @@ stages:
             inputs:
               targetType: "inline"
               script: "pip install pipenv"
+
           - task: Bash@3
             displayName: pipenv version
             inputs:
               targetType: "inline"
               script: "pipenv --version"
+
           - task: Bash@3
+            displayName: "Install pipenv dependencies"
             inputs:
               targetType: "inline"
               script: "pipenv install --system"
-            displayName: "Install pipenv dependencies"
 
           - task: Bash@3
             displayName: "Molecule test"
