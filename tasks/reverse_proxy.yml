@@ -30,7 +30,7 @@
       --providers.docker.exposedbydefault=false
       --providers.file.filename=/dynamic.yaml
       --providers.docker.network=traefik_proxy
-      --entrypoints.traefik_proxy.address=:80
+      --entrypoints.http.address=:80
       --entrypoints.traefik_proxy-secured.address=:443
       --certificatesresolvers.mytlschallenge.acme.tlschallenge=true
       --certificatesresolvers.mytlschallenge.acme.email=admin@innoactive.de
