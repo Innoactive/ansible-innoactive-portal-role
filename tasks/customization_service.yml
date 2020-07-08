@@ -98,6 +98,10 @@
     exposed_ports:
       - "80"
     env: "{{ default_environment_variables | combine(customization_configuration.extra_environment_variables) }}"
+    comparisons:
+      # correctly recreate container when any environment variable or labels is changed or added / removed
+      env: strict
+      labels: strict
     networks_cli_compatible: true
     networks:
       - name: "{{ network_names.main }}"
