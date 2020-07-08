@@ -188,6 +188,7 @@ volume_names:
   customization: "{{ hub_service_prefix }}_customization_media"
   database: "{{ hub_service_prefix }}_database"
   message_queue: "{{ hub_service_prefix }}_message_queue"
+  tls_certificates: "{{ hub_service_prefix }}_tls_certificates"
 
 network_names:
   main: "{{ hub_service_prefix }}_network"

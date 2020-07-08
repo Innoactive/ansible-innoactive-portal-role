@@ -1,4 +1,8 @@
 ---
+- name: Create a volume to hold the certificates for TLS / SSL
+  docker_volume:
+    name: "{{ volume_names.tls_certificates }}"
+
 - name: Enable Let's Encrypt (Staging)
   when: letsencrypt_test
   set_fact:
@@ -51,7 +55,7 @@
     labels: "{{ traefik_labels | combine(letsencrypt | ternary(http_to_https_redirect_labels, {})) }}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # <== Volume for docker admin
-      - ./letsencrypt:/letsencrypt # <== Volume for certs (TLS)
+      - "{{ volume_names.tls_certificates }}:/letsencrypt" # <== Volume for certs (TLS)
     networks_cli_compatible: true
     networks:
       - name: "{{ network_names.main }}"
