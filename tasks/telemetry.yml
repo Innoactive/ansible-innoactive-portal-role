@@ -30,7 +30,7 @@
       - "24284:24284/udp"
       - "24443:24443"
     env:
-      FLUENTD_HOSTNAME: "{{ hub_configuration.primary_hostname }}"
+      FLUENTD_HOSTNAME: "{{ fluentd_configuration.hostname }}"
       FLUENTD_SHARED_KEY: "{{ telemetry.shared_key }}"
       FLUENTD_TLS_PRIVATE_KEY_PASSPHRASE: "{{ telemetry.tls_privatekey_passphrase }}"
       FLUENTD_SALT: "{{ telemetry.salt }}"

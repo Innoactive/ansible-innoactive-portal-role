@@ -3,43 +3,62 @@
   docker_volume:
     name: "{{ volume_names.tls_certificates }}"
 
-- name: Start Reverse Proxy (nginx)
+- name: Enable Let's Encrypt (Staging)
+  when: letsencrypt_test
+  set_fact:
+    traefik_letsencrypt_environment_variables:
+      TRAEFIK_CERTIFICATESRESOLVERS_lets-encrypt_ACME_CASERVER: https://acme-staging-v02.api.letsencrypt.org/directory
+
+- name: Enable Traefik Dashboard
+  when: traefik_dashboard
+  set_fact:
+    traefik_dashboard_environment_variables:
+      TREAFIK_API: 'true'
+      TRAEFIK_API_INSECURE: 'true'
+      TRAEFIK_API_DASHBOARD: 'true'
+      TRAEFIK_API_DEBUG: 'true'
+
+- name: Start Reverse Proxy (traefik)
+  vars:
+    env_vars:
+      # Configure Traefik using env vars https://docs.traefik.io/reference/static-configuration/env/
+      ## Provider Settings - https://docs.traefik.io/providers/docker/#provider-configuration
+      TRAEFIK_PROVIDERS_DOCKER: "true" # <== Enabling docker as the provider for traefik
+      TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT: "false" # <== Don't expose every container to traefik, only expose enabled ones
+      TRAEFIK_PROVIDERS_DOCKER_NETWORK: traefik_proxy # <== Operate on the docker network named traefik_proxy
+      ## Entrypoints Settings - https://docs.traefik.io/routing/entrypoints/#configuration
+      TRAEFIK_ENTRYPOINTS_http_ADDRESS: :80 # <== Defining an entrypoint for port :80 named http
+      TRAEFIK_ENTRYPOINTS_https_ADDRESS: :443 # <== Defining an entrypoint for https on port :443 named https
+      ## Certificate Settings (Let's Encrypt) -  https://docs.traefik.io/https/acme/#configuration-examples
+      TRAEFIK_CERTIFICATESRESOLVERS_lets-encrypt: "{{ letsencrypt | ternary('true', 'false') }}"
+      TRAEFIK_CERTIFICATESRESOLVERS_lets-encrypt_ACME_EMAIL: admin@innoactive.de
+      TRAEFIK_CERTIFICATESRESOLVERS_lets-encrypt_ACME_STORAGE: /letsencrypt/acme.json
+      TRAEFIK_CERTIFICATESRESOLVERS_lets-encrypt_ACME_HTTPCHALLENGE: "true"
+      TRAEFIK_CERTIFICATESRESOLVERS_lets-encrypt_ACME_HTTPCHALLENGE_ENTRYPOINT: http
+    letsencrypt_staging_env_vars: "{{ traefik_letsencrypt_environment_variables | default({}) }}"
+    traefik_dashboard_env_vars: "{{ traefik_dashboard_environment_variables | default({}) }}"
+    traefik_labels:
+      # Define a middleware that can redirect from http to https
+      traefik.enable: "true"
+    http_to_https_redirect_labels:
+      # match any host and force redirect to https
+      traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
+      traefik.http.routers.http-to-https.rule: hostregexp(`{host:.+}`)
+      traefik.http.routers.http-to-https.entrypoints: http
+      traefik.http.routers.http-to-https.middlewares: redirect-to-https
   docker_container:
     name: "{{ container_names.reverse_proxy }}"
     image: "{{ image_versions.reverse_proxy }}"
-    restart_policy: always
-    published_ports:
-      - "80:80"
-      - "443:443"
-    volumes_from:
-      - "{{ container_names.main }}"
+    restart_policy: unless-stopped
+    published_ports: "{{ ['80:80','443:443'] + (traefik_dashboard | ternary(['8080:8080'],[])) }}"
+    env: "{{ env_vars | combine(letsencrypt_staging_env_vars) |combine(traefik_dashboard_env_vars) }}"
+    labels: "{{ traefik_labels | combine(letsencrypt | ternary(http_to_https_redirect_labels, {})) }}"
     volumes:
-      - /etc/nginx/conf.d
-      - /etc/nginx/vhost.d
-      - /usr/share/nginx/html
-      - /docker-gen-templates
-      - "{{ volume_names.tls_certificates }}:/etc/nginx/certs"
+      - /var/run/docker.sock:/var/run/docker.sock # <== Volume for docker admin
+      - "{{ volume_names.tls_certificates }}:/letsencrypt" # <== Volume for certs (TLS)
     networks_cli_compatible: true
     networks:
       - name: "{{ network_names.main }}"
         aliases:
-          - nginx
+          - traefik
   register: reverse_proxy_result
-
-- name: Start Reverse Proxy Auto-Configuration-Service
-  docker_container:
-    name: "{{ container_names.reverse_proxy_config_generator }}"
-    image: "{{ image_versions.reverse_proxy_config_generator }}"
-    restart_policy: always
-    # recreate this container whenever the nginx container has been changed (otherwise configs won't be updated)
-    recreate: "{{ reverse_proxy_result.changed }}"
-    command: >-
-      -notify-sighup {{ container_names.reverse_proxy }} -watch -wait 5s:30s /docker-gen-templates/nginx.tmpl
-      /etc/nginx/conf.d/default.conf
-    volumes_from:
-      - "{{ container_names.reverse_proxy }}"
-    volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:ro
-    networks_cli_compatible: true
-    networks:
-      - name: "{{ network_names.main }}"

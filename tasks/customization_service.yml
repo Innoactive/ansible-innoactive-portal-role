@@ -9,9 +9,9 @@
         client_id: false
         client_secret: false
         redirect_uris:
-          - "{{ hub_configuration.protocol }}://%s/services/customization/hub/callback/' % '{{ hub_configuration.primary_hostname }}"
-          - "{{ hub_configuration.protocol }}://%s/hub_services/customization/hub/callback/' % '{{ hub_configuration.primary_hostname }}"
-          - "{{ hub_configuration.protocol }}://%s/hub/callback/' % '{{ customization_configuration.hostname }}"
+          - "{{ admin_configuration.protocol }}://%s/services/customization/hub/callback/' % '{{ admin_configuration.hostname }}"
+          - "{{ admin_configuration.protocol }}://%s/hub_services/customization/hub/callback/' % '{{ admin_configuration.hostname }}"
+          - "{{ admin_configuration.protocol }}://%s/hub/callback/' % '{{ customization_configuration.hostname }}"
       register: customization_oauth2_client_output
       changed_when: customization_oauth2_client_output.stdout | from_json | json_query('changed')
       # ansible lint has an issue where it cannot bypass rules (like 305) within blocks
@@ -24,8 +24,9 @@
       set_fact:
         customization_oauth2_client_id: "{{ customization_oauth2_client_output.stdout | from_json | json_query('client_id') }}"
         customization_oauth2_client_secret: "{{ customization_oauth2_client_output.stdout | from_json | json_query('client_secret') }}"
-  when: (customization_configuration.oauth2_client_id | default('', true) | length == 0) or
-        (customization_configuration.oauth2_client_secret | default('', true) | length == 0)
+  when:
+    (customization_configuration.oauth2_client_id | default('', true) | length == 0) or
+    (customization_configuration.oauth2_client_secret | default('', true) | length == 0)
 
 - name: Identify Client Id for Customization service (Fallback)
   set_fact:
@@ -45,19 +46,47 @@
   docker_volume:
     name: "{{ volume_names.customization }}"
 
+- name: Support alternative hostnames
+  set_fact:
+    alternative_customization_hostnames_traefik_labels:
+      # redirect alternative domains to primary
+      # GET & HEAD (can be redirected)
+      traefik.http.middlewares.redirect-alternative-customization.redirectregex.regex: "(.*://)([^/]+)(.*)"
+      traefik.http.middlewares.redirect-alternative-customization.redirectregex.replacement: "${1}{{ customization_configuration.hostname }}${3}"
+      traefik.http.routers.customization-alternative.rule: Host({{ alias_customization_hostnames }}) && Method(`GET`,`HEAD`)
+      traefik.http.routers.customization-alternative.middlewares: redirect-alternative-customization
+      traefik.http.routers.customization-alternative.tls: "{{ letsencrypt | ternary('true', 'false') }}"
+      traefik.http.routers.customization-alternative.tls.certresolver: lets-encrypt
+
+      # POST / PUT / PATCH / DELETE (cannot be redirected, because of failing preflight requests)
+      traefik.http.routers.customization-alternative-post.rule: Host({{ alias_customization_hostnames }}) && Method(`POST`,`PUT`,`PATCH`,`DELETE`,`OPTIONS`)
+      traefik.http.routers.customization-alternative-post.tls: "{{ letsencrypt | ternary('true', 'false') }}"
+      traefik.http.routers.customization-alternative-post.tls.certresolver: lets-encrypt
+  vars:
+    # ensure alternative domains are supported in both old and new formats (old.domain and customization.portal.old.domain)
+    alternative_customization_hostnames:  "{{ customization_configuration.alias_hostnames | map('regex_replace', '^(.*)$', '\\1') | list }}"
+    alias_customization_hostnames: "{{ alternative_customization_hostnames | map('regex_replace', '^(.*)$', '`\\1`') | join(',') }}"
+  when: customization_configuration.alias_hostnames | default([]) | length > 0
+
 - name: Start Customization Service
   vars:
     default_environment_variables:
-      API_ROOT: "{{ hub_configuration.protocol }}://{{ hub_configuration.primary_hostname }}"
-      CUSTOMIZATION_API_ROOT: "{{ hub_configuration.protocol }}://{{ customization_configuration.hostname }}/api"
+      API_ROOT: "{{ admin_configuration.protocol }}://{{ admin_configuration.hostname }}"
+      CUSTOMIZATION_API_ROOT: "{{ admin_configuration.protocol }}://{{ customization_configuration.hostname }}/api"
       DB_HOST: db
       DB_NAME: customization
       DB_PASSWORD: postgres
       DB_USER: postgres
-      LETSENCRYPT_HOST: "{{ customization_configuration.hostname }}"
       OAUTH_CLIENT_ID: "{{ customization_oauth2_client_id }}"
       OAUTH_CLIENT_SECRET: "{{ customization_oauth2_client_secret }}"
       VIRTUAL_HOST: "{{ customization_configuration.hostname }}"
+    traefik_labels:
+      traefik.enable: "true"
+      traefik.http.routers.customization.rule: Host(`{{ customization_configuration.hostname }}`)
+      traefik.http.routers.customization.tls: "{{ letsencrypt | ternary('true', 'false') }}"
+      traefik.http.routers.customization.tls.certresolver: lets-encrypt
+    alternative_domain_labels: "{{ alternative_customization_hostnames_traefik_labels | default({}) }}"
+    redirect_http_labels: "{{ http_redirect_traefik_labels | default({}) }}"
   docker_container:
     name: "{{ container_names.customization }}"
     image: "{{ image_versions.customization }}"
@@ -72,13 +101,14 @@
     networks_cli_compatible: true
     networks:
       - name: "{{ network_names.main }}"
+    labels: "{{ traefik_labels | combine(alternative_domain_labels) }}"
 
 - name: Setup Database
   become: true
   # yamllint disable rule:line-length
   command: "docker exec {{ container_names.customization }} python manage.py create_db"
   # yamllint enable rule:line-length
-  when: hub_configuration.setup_database
+  when: admin_configuration.setup_database
   # TODO: technically, this is not correct, it should only be changed if database has been created for the first time
   changed_when: false
   tags:
@@ -89,7 +119,7 @@
   # yamllint disable rule:line-length
   command: "docker exec {{ container_names.customization }} python manage.py migrate"
   # yamllint enable rule:line-length
-  when: hub_configuration.setup_database
+  when: admin_configuration.setup_database
   register: customization_migration_result
   changed_when: '"Applying" in customization_migration_result.stdout'
   tags:
@@ -115,7 +145,7 @@
       menu_entry_name: Customization
       url_prefix: customization
       fa_icon: paint-brush
-      script_url: "{{ hub_configuration.protocol }}://{{ customization_configuration.hostname }}/main.js"
+      script_url: "{{ admin_configuration.protocol }}://{{ customization_configuration.hostname }}/main.js"
       init_function: customizationAppRender
   register: customization_micro_frontend_raw
   changed_when: customization_micro_frontend_raw.stdout | trim | bool
