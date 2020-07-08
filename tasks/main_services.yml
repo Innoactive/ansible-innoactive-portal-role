@@ -100,6 +100,10 @@
     env: "{{ base_server_environment_variables | combine(admin_configuration.extra_environment_variables) }}" # noqa 204
     # yamllint enable rule:line-length
     labels: "{{ traefik_labels | combine(alternative_admin_domain_labels) }}"
+    comparisons:
+      # correctly recreate container when any environment variable or labels is changed or added / removed
+      env: strict
+      labels: strict
     networks_cli_compatible: true
     networks:
       - name: "{{ network_names.main }}"
