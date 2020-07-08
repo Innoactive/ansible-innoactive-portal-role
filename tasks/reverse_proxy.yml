@@ -56,6 +56,10 @@
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # <== Volume for docker admin
       - "{{ volume_names.tls_certificates }}:/letsencrypt" # <== Volume for certs (TLS)
+    comparisons:
+      # correctly recreate container when any environment variable or labels is changed or added / removed
+      env: strict
+      labels: strict
     networks_cli_compatible: true
     networks:
       - name: "{{ network_names.main }}"
