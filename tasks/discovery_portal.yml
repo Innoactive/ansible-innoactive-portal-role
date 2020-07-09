@@ -9,7 +9,7 @@
         client_id: false
         client_secret: false
         redirect_uris:
-          - "{{ hub_configuration.protocol }}://%s/hub/callback/' % '{{ portal_configuration.hostname }}"
+          - "{{ admin_configuration.protocol }}://%s/hub/callback/' % '{{ portal_configuration.hostname }}"
       register: discovery_portal_oauth2_client_output
       changed_when: discovery_portal_oauth2_client_output.stdout | from_json | json_query('changed')
       # ansible lint has an issue where it cannot bypass rules (like 305) within blocks
@@ -22,8 +22,9 @@
       set_fact:
         discovery_portal_oauth2_client_id: "{{ discovery_portal_oauth2_client_output.stdout | from_json | json_query('client_id') }}"
         discovery_portal_oauth2_client_secret: "{{ discovery_portal_oauth2_client_output.stdout | from_json | json_query('client_secret') }}"
-  when: (portal_configuration.oauth2_client_id | default('', true) | length == 0) or
-        (portal_configuration.oauth2_client_secret | default('', true) | length == 0)
+  when:
+    (portal_configuration.oauth2_client_id | default('', true) | length == 0) or
+    (portal_configuration.oauth2_client_secret | default('', true) | length == 0)
 
 - name: Identify Client Id for Discovery Portal (Fallback)
   set_fact:
@@ -41,20 +42,42 @@
 
 - name: Find Out Customization Service Endpoint
   set_fact:
-    customization_api_root: "{{ hub_configuration.protocol }}://{{ customization_configuration.hostname }}"
-  when: hub_configuration.setup_customization_service
+    customization_api_root: "{{ admin_configuration.protocol }}://{{ customization_configuration.hostname }}"
+  when: admin_configuration.setup_customization_service
+
+- name: Support alternative hostnames
+  set_fact:
+    alternative_portal_hostnames_traefik_labels:
+      # redirect alternative domains to primary
+      # GET & HEAD (can be redirected)
+      traefik.http.middlewares.redirect-alternative-portal.redirectregex.regex: "(.*://)([^/]+)(.*)"
+      traefik.http.middlewares.redirect-alternative-portal.redirectregex.replacement: "${1}{{ portal_configuration.hostname }}${3}"
+      traefik.http.routers.portal-alternative.rule: Host({{ traefik_portal_alternative_hostnames }}) && Method(`GET`,`HEAD`)
+      traefik.http.routers.portal-alternative.middlewares: redirect-alternative-portal
+      traefik.http.routers.portal-alternative.tls: "{{ letsencrypt | ternary('true', 'false') }}"
+      traefik.http.routers.portal-alternative.tls.certresolver: lets-encrypt
+  vars:
+    traefik_portal_alternative_hostnames: "{{ portal_configuration.alias_hostnames | map('regex_replace', '^(.*)$', '`\\1`') | join(',') }}"
+  when: portal_configuration.alias_hostnames | default([]) | length > 0
 
 - name: Start Discovery Portal Service
   vars:
     default_environment_variables:
       VIRTUAL_HOST: "{{ portal_configuration.hostname }}"
       LETSENCRYPT_HOST: "{{ portal_configuration.hostname }}"
-      API_ROOT: "{{ hub_configuration.protocol }}://{{ hub_configuration.primary_hostname }}"
+      API_ROOT: "{{ admin_configuration.protocol }}://{{ admin_configuration.hostname }}"
       CUSTOMIZATION_API_ROOT: "{{ customization_api_root | default('', true) }}"
       OAUTH_CLIENT_ID: "{{ discovery_portal_oauth2_client_id }}"
       OAUTH_SECRET: "{{ discovery_portal_oauth2_client_secret }}"
       ENABLED_FEATURES: "{{ portal_configuration.enabled_features }}"
       SENTRY_DSN: "{{ portal_configuration.sentry_dsn }}"
+    traefik_labels:
+      traefik.enable: "true"
+      traefik.http.routers.portal.rule: Host(`{{ portal_configuration.hostname }}`)
+      traefik.http.routers.portal.tls: "{{ letsencrypt | ternary('true', 'false') }}"
+      traefik.http.routers.portal.tls.certresolver: lets-encrypt
+    alternative_portal_domain_labels: "{{ alternative_portal_hostnames_traefik_labels | default({}) }}"
+    redirect_http_labels: "{{ http_redirect_traefik_labels | default({}) }}"
   docker_container:
     name: "{{ container_names.discovery_portal }}"
     image: "{{ image_versions.portal }}"
@@ -64,6 +87,11 @@
     exposed_ports:
       - "80"
     env: "{{ default_environment_variables | combine(portal_configuration.extra_environment_variables) }}"
+    labels: "{{ traefik_labels | combine(alternative_portal_domain_labels) }}"
+    comparisons:
+      # correctly recreate container when any environment variable or labels is changed or added / removed
+      env: strict
+      labels: allow_more_present
     networks_cli_compatible: true
     networks:
       - name: "{{ network_names.main }}"

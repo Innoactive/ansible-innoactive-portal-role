@@ -1,0 +1,21 @@
+# Migration to be run when upgrading the Hub / Portal from a Version < 3.0.0 to >= 3.0.0
+---
+- name: Remove deprecated reverse proxy (nginx)
+  docker_container:
+    name: "{{ hub_service_prefix }}_nginx"
+    state: absent
+
+- name: Remove deprecated reverse proxy configuration generator
+  docker_container:
+    name: "{{ hub_service_prefix }}_nginx_gen"
+    state: absent
+
+- name: Remove deprecated Let's encrypt container
+  docker_container:
+    name: "{{ hub_service_prefix }}_letsencrypt"
+    state: absent
+
+- name: Remove dedicated channels container (now part of web)
+  docker_container:
+    name: "{{ hub_service_prefix }}_channels"
+    state: absent

@@ -1,7 +1,6 @@
 # Ansible Innoactive Hub Role
 
-![](https://github.com/Innoactive/ansible-innoactive-hub-role/workflows/Integration/badge.svg)
-![](https://github.com/Innoactive/ansible-innoactive-hub-role/workflows/Release/badge.svg)
+[![Build Status](https://dev.azure.com/Innoactive/Open-Source/_apis/build/status/Innoactive.ansible-innoactive-hub-role?branchName=develop)](https://dev.azure.com/Innoactive/Open-Source/_build/latest?definitionId=29&branchName=develop)
 
 This role sets up a host to run the Innoactive Hub - XR platform.
 
@@ -40,12 +39,35 @@ The username to use to authenticate against the specified docker registry.
 
 The password to use to authenticate against the specified docker registry.
 
-### Innoactive Hub
+### Innoactive Portal
 
-    hostname:
+    portal_hostname:
 
-The hostname under which the Hub instance will be available (this needs to be publicly reachable). Can also be a comma-
-separated list of hostnames, the Hub will then be accessible on all of these hostnames.
+**Mandatory** hostname under which the Portal will be available (this needs to be publicly reachable).
+
+    portal_alias_hostnames: []
+
+Alternative or legacy hostnames array. Users accessing it will be redirected to portal_hostname.
+
+    admin_hostname:
+
+**Mandatory** hostname under which the portal control panel will be available.
+
+    admin_alias_hostnames: []
+
+Alternative or legacy hostnames array. Users accessing it will be redirected to admin_hostname.
+
+    customization_hostname:
+
+**Mandatory** hostname under shich the customization service will be available.
+
+    customization_alias_hostnames: []
+
+Alternative or legacy hostnames array. Users accessing it will be redirected to customization_hostname.
+
+    fluentd_hostname:
+
+**Mandatory** hostname under which the fluentd service will be available.
 
     secret_key:
 
@@ -94,6 +116,10 @@ Whether or not to allow one and the same user being authenticated in the same ap
     extra_environment_variables: {}
 
 Optional mapping of additional environment variables to be passed on to the Hub (e.g. to unlock hidden features).
+
+    traefik_dashboard:
+
+Optional boolean allowing to enable the [traefiks dashboard](https://docs.traefik.io/operations/dashboard/) and therefore see the current routing configuration.
 
 #### Media Files
 
@@ -172,9 +198,9 @@ The version of the Innoactive Hub's Portal container.
 
 The version of the Innoactive Hub's Main Service container.
 
-    reverse_proxy_image_version: 1.2.1
+    reverse_proxy_image_version: 2.2
 
-The version of the reverse proxy image to be used.
+The version of the reverse proxy ([traefik]) image to be used.
 
 ### Secured Communication
 
@@ -247,7 +273,7 @@ The OAuth2 Client Secret that the Launcher uses.
 
 Whether or not to setup the discovery portal for this instance.
 
-    portal_hostname: "portal.{{ hub_configuration.primay_hostname  }}"
+    portal_hostname: "portal.{{ admin_configuration.primay_hostname  }}"
 
 The hostname under which the discovery portal should be publicly availabe. This defaults to `portal.<hostname-of-hub-instance>`.
 
@@ -279,7 +305,7 @@ Optional mapping of additional environment variables to be passed on to the Port
 
 Whether or not to setup the customization service for this instance.
 
-    customization_hostname: "customization.{{ hub_configuration.primary_hostname  }}"
+    customization_hostname: "{{ customization_configuration.hostname  }}"
 
 The hostname under which the customization service should be publicly availabe. This defaults to `customization.<hostname-of-hub-instance>`.
 
@@ -390,8 +416,11 @@ users too:
             setup_wmc: true
             letsencrypt: true
             secret_key: not-secret-at-all-but-okay-for-tests
-            hostname: my.hub.hostname.com
             admin_email: admin@innoactive.de
+            portal_hostname: portal.my.hostname.com
+            admin_hostname: admin.portal.my.hostname.com
+            customization_hostname: customization.portal.my.hostname.com
+            fluentd_hostname: fluentd.portal.my.hostname.com
 
 ## Upgrading from 1.x to 2.x
 
@@ -446,3 +475,5 @@ available as `<api-token-for-hcloud>` simply run:
 ## Author Information
 
 An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+
+[traefik]: https://hub.docker.com/_/traefik
