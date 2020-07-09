@@ -96,10 +96,8 @@
       - "{{ volume_names.media }}:/media"
       - "{{ volume_names.static }}:/static"
       - "{{ jwt_key_path }}:{{ jwt_key_path }}"
-    # yamllint disable rule:line-length
-    env: "{{ base_server_environment_variables | combine(admin_configuration.extra_environment_variables) }}" # noqa 204
-    # yamllint enable rule:line-length
-    labels: "{{ traefik_labels | combine(alternative_admin_domain_labels) }}"
+    env: "{{ base_server_environment_variables | combine(admin_configuration.extra_environment_variables) | dictsort }}"
+    labels: "{{ traefik_labels | combine(alternative_admin_domain_labels) | dictsort }}"
     comparisons:
       # correctly recreate container when any environment variable or labels is changed or added / removed
       env: strict

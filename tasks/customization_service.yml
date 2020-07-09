@@ -97,7 +97,8 @@
       - "{{ volume_names.customization }}:/usr/app/media"
     exposed_ports:
       - "80"
-    env: "{{ default_environment_variables | combine(customization_configuration.extra_environment_variables) }}"
+    env: "{{ default_environment_variables | combine(customization_configuration.extra_environment_variables) | dictsort }}"
+    labels: "{{ traefik_labels | combine(alternative_domain_labels) | dictsort }}"
     comparisons:
       # correctly recreate container when any environment variable or labels is changed or added / removed
       env: strict
@@ -105,7 +106,6 @@
     networks_cli_compatible: true
     networks:
       - name: "{{ network_names.main }}"
-    labels: "{{ traefik_labels | combine(alternative_domain_labels) }}"
 
 - name: Setup Database
   become: true

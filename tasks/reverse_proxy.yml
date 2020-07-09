@@ -51,8 +51,8 @@
     image: "{{ image_versions.reverse_proxy }}"
     restart_policy: unless-stopped
     published_ports: "{{ ['80:80','443:443'] + (traefik_dashboard | ternary(['8080:8080'],[])) }}"
-    env: "{{ env_vars | combine(letsencrypt_staging_env_vars) |combine(traefik_dashboard_env_vars) }}"
-    labels: "{{ traefik_labels | combine(letsencrypt | ternary(http_to_https_redirect_labels, {})) }}"
+    env: "{{ env_vars | combine(letsencrypt_staging_env_vars) | combine(traefik_dashboard_env_vars) | dictsort }}"
+    labels: "{{ traefik_labels | combine(letsencrypt | ternary(http_to_https_redirect_labels, {})) | dictsort }}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # <== Volume for docker admin
       - "{{ volume_names.tls_certificates }}:/letsencrypt" # <== Volume for certs (TLS)
