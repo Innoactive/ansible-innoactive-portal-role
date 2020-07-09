@@ -87,7 +87,11 @@
     exposed_ports:
       - "80"
     env: "{{ default_environment_variables | combine(portal_configuration.extra_environment_variables) }}"
+    labels: "{{ traefik_labels | combine(alternative_portal_domain_labels) }}"
+    comparisons:
+      # correctly recreate container when any environment variable or labels is changed or added / removed
+      env: strict
+      labels: allow_more_present
     networks_cli_compatible: true
     networks:
       - name: "{{ network_names.main }}"
-    labels: "{{ traefik_labels | combine(alternative_portal_domain_labels) }}"
