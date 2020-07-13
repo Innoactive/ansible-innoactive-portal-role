@@ -51,24 +51,23 @@
       traefik.http.routers.channels-alternative.priority: "100"
   when: admin_configuration.alias_hostnames | default([]) | length > 0
 
-- name: Upload JWT Server certificates
-  copy:
-    src: "{{ jwt_local_key_path }}/"
-    dest: "{{ jwt_key_path }}/"
+- name: JWT Handling
   when:
     - jwt_key_path | default('', true) | trim | length > 0
     - jwt_local_key_path | default('', true) | trim | length > 0
-
-- name: Add jwt keys
-  vars:
-    jwt_environment_variables:
-      JWT_PRIVATE_KEY_PATH: "{{ jwt_key_path + '/' + jwt_privatekey }}"
-      JWT_PUBLIC_KEY_PATH: "{{ jwt_key_path + '/' + jwt_publickey }}"
-  set_fact:
-    base_server_environment_variables: "{{ base_server_environment_variables | combine (jwt_environment_variables) }}"
-  when:
-    - jwt_key_path | default('', true) | trim | length > 0
-    - jwt_local_key_path | default('', true) | trim | length > 0
+  block:
+    - name: Upload JWT Server certificates
+      copy:
+        src: "{{ jwt_local_key_path }}/"
+        dest: "{{ jwt_key_path }}/"
+    - name: Add jwt keys
+      register: jwtstep
+      vars:
+        jwt_environment_variables:
+          JWT_PRIVATE_KEY_PATH: "{{ jwt_key_path + '/' + jwt_privatekey }}"
+          JWT_PUBLIC_KEY_PATH: "{{ jwt_key_path + '/' + jwt_publickey }}"
+      set_fact:
+        base_server_environment_variables: "{{ base_server_environment_variables | combine (jwt_environment_variables) }}"
 
 - name: Start Django Application Server
   vars:
@@ -84,6 +83,11 @@
       traefik.http.routers.channels.tls.certresolver: lets-encrypt
     alternative_admin_domain_labels: "{{ alternative_admin_hostnames_traefik_labels | default({}) }}"
     redirect_http_labels: "{{ http_redirect_traefik_labels | default({}) }}"
+    base_volumes:
+      - "{{ volume_names.media }}:/media"
+      - "{{ volume_names.static }}:/static"
+    jwt_volumes:
+      - "{{ jwt_key_path }}:{{ jwt_key_path }}"
   docker_container:
     name: "{{ container_names.main }}"
     image: "{{ image_versions.hub }}"
@@ -92,10 +96,7 @@
     restart_policy: unless-stopped
     exposed_ports:
       - "8000"
-    volumes:
-      - "{{ volume_names.media }}:/media"
-      - "{{ volume_names.static }}:/static"
-      - "{{ jwt_key_path }}:{{ jwt_key_path }}"
+    volumes: "{{ base_volumes + ([] if (jwtstep is skipped) else jwt_volumes) }}"
     env: "{{ base_server_environment_variables | combine(admin_configuration.extra_environment_variables) }}"
     labels: "{{ traefik_labels | combine(alternative_admin_domain_labels) }}"
     comparisons:
