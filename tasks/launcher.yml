@@ -15,5 +15,14 @@
   changed_when: launcher_oauth_client_output.stdout | from_json | json_query('changed')
   tags:
     - requires_database
-  when: (launcher_configuration.oauth2_client_id | default('', true) | length == 0) or
-        (launcher_configuration.oauth2_client_secret | default('', true) | length == 0)
+
+- name: Identify Client Id for Customization Service
+  set_fact:
+    launcher_oauth2_client_id: "{{ launcher_oauth_client_output.stdout | from_json | json_query('client_id') }}"
+    launcher_oauth2_client_secret: "{{ launcher_oauth_client_output.stdout | from_json | json_query('client_secret') }}"
+
+- name: Validate client credentials
+  assert:
+    that:
+      - launcher_oauth2_client_id | default('', true) | length > 0
+      - launcher_oauth2_client_secret | default('', true) | length > 0
