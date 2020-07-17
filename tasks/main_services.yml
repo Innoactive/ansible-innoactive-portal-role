@@ -33,7 +33,7 @@
     alternative_admin_hostnames_traefik_labels:
       # redirect alternative domains to primary
       # GET & HEAD (can be redirected)
-      traefik.http.middlewares.redirect-alternative.redirectregex.regex: "(.*://)([^/]+)(.*)"
+      traefik.http.middlewares.redirect-alternative.redirectregex.regex: "(.*?://)([^/]+)(.*)"
       traefik.http.middlewares.redirect-alternative.redirectregex.replacement: "${1}{{ admin_configuration.hostname }}${3}"
       traefik.http.routers.web-alternative.rule: Host({{ traefik_admin_alternative_hostnames }}) && Method(`GET`,`HEAD`)
       traefik.http.routers.web-alternative.middlewares: redirect-alternative

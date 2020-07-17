@@ -50,7 +50,7 @@
     alternative_portal_hostnames_traefik_labels:
       # redirect alternative domains to primary
       # GET & HEAD (can be redirected)
-      traefik.http.middlewares.redirect-alternative-portal.redirectregex.regex: "(.*://)([^/]+)(.*)"
+      traefik.http.middlewares.redirect-alternative-portal.redirectregex.regex: "(.*?://)([^/]+)(.*)"
       traefik.http.middlewares.redirect-alternative-portal.redirectregex.replacement: "${1}{{ portal_configuration.hostname }}${3}"
       traefik.http.routers.portal-alternative.rule: Host({{ traefik_portal_alternative_hostnames }}) && Method(`GET`,`HEAD`)
       traefik.http.routers.portal-alternative.middlewares: redirect-alternative-portal
