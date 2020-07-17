@@ -33,7 +33,7 @@
     alternative_admin_hostnames_traefik_labels:
       # redirect alternative domains to primary
       # GET & HEAD (can be redirected)
-      traefik.http.middlewares.redirect-alternative.redirectregex.regex: "(.*://)([^/]+)(.*)"
+      traefik.http.middlewares.redirect-alternative.redirectregex.regex: "(.*?://)([^/]+)(.*)"
       traefik.http.middlewares.redirect-alternative.redirectregex.replacement: "${1}{{ admin_configuration.hostname }}${3}"
       traefik.http.routers.web-alternative.rule: Host({{ traefik_admin_alternative_hostnames }}) && Method(`GET`,`HEAD`)
       traefik.http.routers.web-alternative.middlewares: redirect-alternative
@@ -136,7 +136,7 @@
   shell: "{{ lookup('template', 'run_in_django_shell.sh.j2') }}" # noqa 305
   vars:
     python_script_name: change_site_name_and_domain
-    site_name: "{{ admin_configuration.hostname }}"
+    site_name: "{{ admin_configuration.hostname | truncate(49, True) }}"
     domain: "{{ admin_configuration.hostname }}"
   register: site_update_output
   changed_when: site_update_output.stdout | trim | bool

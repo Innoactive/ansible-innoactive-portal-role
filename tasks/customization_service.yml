@@ -51,7 +51,7 @@
     alternative_customization_hostnames_traefik_labels:
       # redirect alternative domains to primary
       # GET & HEAD (can be redirected)
-      traefik.http.middlewares.redirect-alternative-customization.redirectregex.regex: "(.*://)([^/]+)(.*)"
+      traefik.http.middlewares.redirect-alternative-customization.redirectregex.regex: "(.*?://)([^/]+)(.*)"
       traefik.http.middlewares.redirect-alternative-customization.redirectregex.replacement: "${1}{{ customization_configuration.hostname }}${3}"
       traefik.http.routers.customization-alternative.rule: Host({{ alias_customization_hostnames }}) && Method(`GET`,`HEAD`)
       traefik.http.routers.customization-alternative.middlewares: redirect-alternative-customization
