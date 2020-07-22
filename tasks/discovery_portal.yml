@@ -22,17 +22,6 @@
       set_fact:
         discovery_portal_oauth2_client_id: "{{ discovery_portal_oauth2_client_output.stdout | from_json | json_query('client_id') }}"
         discovery_portal_oauth2_client_secret: "{{ discovery_portal_oauth2_client_output.stdout | from_json | json_query('client_secret') }}"
-  when:
-    (portal_configuration.oauth2_client_id | default('', true) | length == 0) or
-    (portal_configuration.oauth2_client_secret | default('', true) | length == 0)
-
-- name: Identify Client Id for Discovery Portal (Fallback)
-  set_fact:
-    discovery_portal_oauth2_client_id: "{{ portal_configuration.oauth2_client_id }}"
-    discovery_portal_oauth2_client_secret: "{{ portal_configuration.oauth2_client_secret }}"
-  when:
-    - portal_configuration.oauth2_client_id | default('', true) | length > 0
-    - portal_configuration.oauth2_client_secret | default('', true) | length > 0
 
 - name: Validate client credentials
   assert:
