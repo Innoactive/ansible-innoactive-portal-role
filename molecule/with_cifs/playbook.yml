@@ -14,7 +14,6 @@
     admin_hostname: "admin.portal.{{ public_hostname }}"
     portal_hostname: "portal.{{ public_hostname }}"
     customization_hostname: "customization.portal.{{ public_hostname }}"
-    fluentd_hostname: "fluentd.portal.{{ public_hostname }}"
     admin_email: admin@innoactive.de
     admin_password: sup3rs3cur3pa55w0rdf0rt3st1ng
     # change the default prefix to easily identify test containers / services

@@ -65,10 +65,6 @@ Alternative or legacy hostnames array. Users accessing it will be redirected to 
 
 Alternative or legacy hostnames array. Users accessing it will be redirected to customization_hostname.
 
-    fluentd_hostname:
-
-**Mandatory** hostname under which the fluentd service will be available.
-
     secret_key:
 
 A user-defined, secret key used for salting hashes within the Hub's application. Never expose this to anyone!
@@ -215,42 +211,6 @@ When using [Let's Encrypt](https://letsencrypt.org/) to issue SSL / TLS certific
 used to issue certificates by Let's Encrypt's [staging environment](https://letsencrypt.org/docs/staging-environment/)
 instead of the production environment.
 
-### Telemetry Service / Analytics / Fluentd (Optional)
-
-To enable the Hub's telemetry service / event database ("fluentd"), the following options need to be provided. This
-service is entirely optional and if one of the values is not provided, it will not be set up.
-
-    telemetry_shared_key:
-
-A shared key used for authenticating trusted services running within the same stack. This shared key is e.g. used to log
-event from another application server running on docker as well (like the django application) to the event collector.
-
-    telemetry_salt:
-
-Add some entropy to the hashing of sensitive user data within the events.
-
-    telemetry_tls_privatekey:
-
-Path to a valid TLS private key (on the local machine) that needs to be password protected. Used to decrypt incoming data
-that has been encrypted using the TLS certificate.
-
-    telemetry_tls_privatekey_passphrase:
-
-Passphrase to unlock the TLS private key above.
-
-    telemetry_tls_certificate:
-
-TLS certificate that clients use to send their events in an encrypted and secure way.
-
-    telemetry_tls_ca_certificate:
-
-TLS certificate of the Certificate authority, i.e. the authority that signed the TLS certificate of both the event server
-and the client certificate of any client sending data (used to validate the client certificate).
-
-    telemetry_certificate_path: /etc/hub/fluentd/ssl
-
-Path to which to upload the certificates for the telemetry service to encrypt traffic.
-
 ### Innoactive Hub Launcher
 
 To enable the Innoactive Hub Launcher (a standalone application capable of retrieving content from the Hub) to access
@@ -385,7 +345,6 @@ The available Tags are:
   - _reverse_proxy_ Controls whether or not the discovery portal service will be set up
   - _discovery_portal_ Controls whether or not to start the reverse proxy service
   - _customization_ Controls whether or not the customization service for the discovery portal will be set up
-  - _telemetry_ Controls whether or not the telemetry / analytics service will be set up
 
 - _setup_tasks_ Controls whether or not to run any setup tasks like database migrations, collection of static files, etc.
 
@@ -420,7 +379,6 @@ users too:
             portal_hostname: portal.my.hostname.com
             admin_hostname: admin.portal.my.hostname.com
             customization_hostname: customization.portal.my.hostname.com
-            fluentd_hostname: fluentd.portal.my.hostname.com
 
 ## Upgrading from 1.x to 2.x
 
