@@ -10,6 +10,7 @@
         client_secret: "{{ customization_configuration.oauth2_client_secret }}"
         redirect_uris:
           - "{{ admin_configuration.protocol }}://%s/services/customization/hub/callback/' % '{{ admin_configuration.hostname }}"
+          - "{{ admin_configuration.protocol }}://%s/microservices/customization/hub/callback/' % '{{ admin_configuration.hostname }}"
           - "{{ admin_configuration.protocol }}://%s/hub_services/customization/hub/callback/' % '{{ admin_configuration.hostname }}"
           - "{{ admin_configuration.protocol }}://%s/hub/callback/' % '{{ customization_configuration.hostname }}"
       register: customization_oauth2_client_output
