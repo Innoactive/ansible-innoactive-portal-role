@@ -32,24 +32,19 @@
   set_fact:
     alternative_admin_hostnames_traefik_labels:
       # redirect alternative domains to primary
-      # GET & HEAD (can be redirected)
       traefik.http.middlewares.redirect-alternative.redirectregex.regex: "(.*?://)([^/]+)(.*)"
       traefik.http.middlewares.redirect-alternative.redirectregex.replacement: "${1}{{ admin_configuration.hostname }}${3}"
-      traefik.http.routers.web-alternative.rule: Host({{ traefik_admin_alternative_hostnames }}) && Method(`GET`,`HEAD`)
+      traefik.http.routers.web-alternative.rule: Host({{ traefik_admin_alternative_hostnames }})
       traefik.http.routers.web-alternative.middlewares: redirect-alternative
       traefik.http.routers.web-alternative.tls: "{{ letsencrypt | ternary('true', 'false') }}"
       traefik.http.routers.web-alternative.tls.certresolver: lets-encrypt
 
-      # POST / PUT / PATCH / DELETE (cannot be redirected, because of failing preflight requests)
-      traefik.http.routers.web-alternative-post.rule: Host({{ traefik_admin_alternative_hostnames }}) && Method(`POST`,`PUT`,`PATCH`,`DELETE`,`OPTIONS`)
-      traefik.http.routers.web-alternative-post.tls: "{{ letsencrypt | ternary('true', 'false') }}"
-      traefik.http.routers.web-alternative-post.tls.certresolver: lets-encrypt
+      # API, OAuth and Websocket Connections / Django-Channels
+      traefik.http.routers.web-api-alternative.rule: Host({{ traefik_admin_alternative_hostnames }}) && PathPrefix(`/ws`,`/api`,`/oauth`)
+      traefik.http.routers.web-api-alternative.tls: "{{ letsencrypt | ternary('true', 'false') }}"
+      traefik.http.routers.web-api-alternative.tls.certresolver: lets-encrypt
+      traefik.http.routers.web-api-alternative.priority: "100"
 
-      # Websocket Connections / Django-Channels
-      traefik.http.routers.channels-alternative.rule: Host({{ traefik_admin_alternative_hostnames }}) && PathPrefix(`/ws`)
-      traefik.http.routers.channels-alternative.tls: "{{ letsencrypt | ternary('true', 'false') }}"
-      traefik.http.routers.channels-alternative.tls.certresolver: lets-encrypt
-      traefik.http.routers.channels-alternative.priority: "100"
   when: admin_configuration.alias_hostnames | default([]) | length > 0
 
 - name: JWT Handling
