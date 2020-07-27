@@ -20,19 +20,6 @@
     - services
     - base
 
-- name: Setup Telemetry Service
-  become: true
-  import_tasks: telemetry.yml
-  when:
-    - telemetry.shared_key | default('', true) | length > 0
-    - telemetry.tls_privatekey | default('', true) | length > 0
-    - telemetry.tls_privatekey_passphrase | default('', true) | length > 0
-    - telemetry.tls_certificate | default('', true) | length > 0
-    - telemetry.tls_ca_certificate | default('', true) | length > 0
-  tags:
-    - services
-    - telemetry
-
 - name: Start Hub Main Services (Application Servers)
   vars:
     hub_version: "{{ (image_versions.hub | default(':', True)).split(':')[1] | string }}"

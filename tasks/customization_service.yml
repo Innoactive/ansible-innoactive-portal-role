@@ -6,10 +6,11 @@
       vars:
         python_script_name: get_oauth_client_credentials
         client_name: Discovery Portal Customization Service
-        client_id: false
-        client_secret: false
+        client_id: "{{ customization_configuration.oauth2_client_id }}"
+        client_secret: "{{ customization_configuration.oauth2_client_secret }}"
         redirect_uris:
           - "{{ admin_configuration.protocol }}://%s/services/customization/hub/callback/' % '{{ admin_configuration.hostname }}"
+          - "{{ admin_configuration.protocol }}://%s/microservices/customization/hub/callback/' % '{{ admin_configuration.hostname }}"
           - "{{ admin_configuration.protocol }}://%s/hub_services/customization/hub/callback/' % '{{ admin_configuration.hostname }}"
           - "{{ admin_configuration.protocol }}://%s/hub/callback/' % '{{ customization_configuration.hostname }}"
       register: customization_oauth2_client_output
@@ -24,17 +25,6 @@
       set_fact:
         customization_oauth2_client_id: "{{ customization_oauth2_client_output.stdout | from_json | json_query('client_id') }}"
         customization_oauth2_client_secret: "{{ customization_oauth2_client_output.stdout | from_json | json_query('client_secret') }}"
-  when:
-    (customization_configuration.oauth2_client_id | default('', true) | length == 0) or
-    (customization_configuration.oauth2_client_secret | default('', true) | length == 0)
-
-- name: Identify Client Id for Customization service (Fallback)
-  set_fact:
-    customization_oauth2_client_id: "{{ customization_configuration.oauth2_client_id }}"
-    customization_oauth2_client_secret: "{{ customization_configuration.oauth2_client_secret }}"
-  when:
-    - customization_configuration.oauth2_client_id | default('', true) | length > 0
-    - customization_configuration.oauth2_client_secret | default('', true) | length > 0
 
 - name: Validate client credentials
   assert:
@@ -64,7 +54,7 @@
       traefik.http.routers.customization-alternative-post.tls.certresolver: lets-encrypt
   vars:
     # ensure alternative domains are supported in both old and new formats (old.domain and customization.portal.old.domain)
-    alternative_customization_hostnames:  "{{ customization_configuration.alias_hostnames | map('regex_replace', '^(.*)$', '\\1') | list }}"
+    alternative_customization_hostnames: "{{ customization_configuration.alias_hostnames | map('regex_replace', '^(.*)$', '\\1') | list }}"
     alias_customization_hostnames: "{{ alternative_customization_hostnames | map('regex_replace', '^(.*)$', '`\\1`') | join(',') }}"
   when: customization_configuration.alias_hostnames | default([]) | length > 0
 

@@ -30,9 +30,6 @@ sentry_dsn:
 google_analytics_tracking_id:
 extra_environment_variables: {}
 
-# Fluentd configuration
-fluentd_hostname:
-
 # Docker Image Versions
 portal_image_version: latest
 hub_image_version: latest
@@ -44,7 +41,6 @@ database_image: postgres:9.6
 hub_image: registry.docker.innoactive.de/hub_web:{{ hub_image_version }}
 portal_image: registry.docker.innoactive.de/hub_portal_web:{{ portal_image_version }}
 reverse_proxy_image: traefik:{{ reverse_proxy_image_version }}
-fluentd_image: registry.docker.innoactive.de/hub_fluentd:0.2.0
 customization_image: registry.docker.innoactive.de/hub_customization:latest
 
 image_versions:
@@ -54,11 +50,7 @@ image_versions:
   hub: "{{ hub_image }}"
   portal: "{{ portal_image }}"
   reverse_proxy: "{{ reverse_proxy_image }}"
-  fluentd: "{{ fluentd_image }}"
   customization: "{{ customization_image }}"
-
-fluentd_configuration:
-  hostname: "{{ fluentd_hostname }}"
 
 admin_configuration:
   hostname: "{{ admin_hostname }}"
@@ -120,15 +112,6 @@ customization_configuration:
   oauth2_client_secret: "{{ customization_oauth_client_secret }}"
   extra_environment_variables: "{{ customization_extra_environment_variables }}"
 
-# Telemetry configuration
-telemetry_certificate_path: /etc/hub/fluentd/ssl
-telemetry_shared_key:
-telemetry_salt:
-telemetry_tls_privatekey_passphrase:
-telemetry_tls_privatekey:
-telemetry_tls_certificate:
-telemetry_tls_ca_certificate:
-
 # JWT configuration
 jwt_key_path: /etc/hub/jwt
 jwt_privatekey: jwt-key
@@ -137,14 +120,6 @@ jwt_local_key_path:
 jwt:
   privatekey: "{{ jwt_privatekey }}"
   publickey: "{{ jwt_publickey }}"
-
-telemetry:
-  shared_key: "{{ telemetry_shared_key }}"
-  salt: "{{ telemetry_salt }}"
-  tls_privatekey: "{{ telemetry_tls_privatekey }}"
-  tls_privatekey_passphrase: "{{ telemetry_tls_privatekey_passphrase }}"
-  tls_certificate: "{{ telemetry_tls_certificate }}"
-  tls_ca_certificate: "{{ telemetry_tls_ca_certificate }}"
 
 # Secure Communications (SSL / TLS)
 letsencrypt: true
@@ -184,7 +159,6 @@ media_volume_mount:
 volume_names:
   media: "{{ hub_service_prefix }}_media"
   static: "{{ hub_service_prefix }}_static"
-  telemetry_logs: "{{ hub_service_prefix }}_fluentd_logs"
   customization: "{{ hub_service_prefix }}_customization_media"
   database: "{{ hub_service_prefix }}_database"
   message_queue: "{{ hub_service_prefix }}_message_queue"
@@ -202,4 +176,3 @@ container_names:
   reverse_proxy: "{{ hub_service_prefix }}_traefik"
   discovery_portal: "{{ hub_service_prefix }}_portal"
   customization: "{{ hub_service_prefix }}_customization"
-  telemetry: "{{ hub_service_prefix }}_fluentd"
