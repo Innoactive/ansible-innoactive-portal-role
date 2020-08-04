@@ -27,6 +27,7 @@
       EMAIL_USE_TLS: "{{ mail_configuration.smtp.use_tls | ternary('True', 'False') | string }}"
       EMAIL_USE_SSL: "{{ mail_configuration.smtp.use_ssl | ternary('True', 'False') | string }}"
       CUSTOMIZATION_SERVICE_API_URL: "{{ admin_configuration.protocol }}://{{ customization_configuration.hostname }}/api"
+      PORTAL_URL: "{{ admin_configuration.protocol }}://{{ portal_configuration.hostname }}"
 
 - name: Support alternative hostnames
   set_fact:
