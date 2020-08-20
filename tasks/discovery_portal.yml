@@ -6,8 +6,8 @@
       vars:
         python_script_name: get_oauth_client_credentials
         client_name: Application Discovery Portal
-        client_id: false
-        client_secret: false
+        client_id: "{{ portal_configuration.oauth2_client_secret }}"
+        client_secret: "{{ portal_configuration.oauth2_client_secret }}"
         redirect_uris:
           - "{{ admin_configuration.protocol }}://%s/hub/callback/' % '{{ portal_configuration.hostname }}"
       register: discovery_portal_oauth2_client_output
