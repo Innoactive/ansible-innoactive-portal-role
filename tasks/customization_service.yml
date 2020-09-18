@@ -68,7 +68,7 @@
       DB_USER: postgres
       OAUTH_CLIENT_ID: "{{ customization_oauth2_client_id }}"
       OAUTH_CLIENT_SECRET: "{{ customization_oauth2_client_secret }}"
-      VIRTUAL_HOST: "{{ customization_configuration.hostname }}"
+      VIRTUAL_HOST: "{{ ([customization_configuration.hostname] + customization_configuration.alias_hostnames) | join(',') | mandatory }}"
     traefik_labels:
       traefik.enable: "true"
       traefik.http.routers.customization.rule: Host(`{{ customization_configuration.hostname }}`)
