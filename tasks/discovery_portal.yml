@@ -57,7 +57,7 @@
       API_ROOT: "{{ admin_configuration.protocol }}://{{ admin_configuration.hostname }}"
       CUSTOMIZATION_API_ROOT: "{{ customization_api_root | default('', true) }}"
       OAUTH_CLIENT_ID: "{{ discovery_portal_oauth2_client_id }}"
-      OAUTH_SECRET: "{{ discovery_portal_oauth2_client_secret }}"
+      OAUTH_CLIENT_SECRET: "{{ discovery_portal_oauth2_client_secret }}"
       ENABLED_FEATURES: "{{ portal_configuration.enabled_features }}"
       SENTRY_DSN: "{{ portal_configuration.sentry_dsn }}"
       GOOGLE_ANALYTICS_TRACKING_ID: "{{ admin_configuration.google_analytics_id | default('') }}"
