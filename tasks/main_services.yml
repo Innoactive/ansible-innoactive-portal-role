@@ -1,9 +1,4 @@
 ---
-- name: Assert compatible Hub Version
-  assert:
-    that: hub_version.startswith('latest') or (hub_version is version('2.4.1', '>'))
-    fail_msg: "This role version does only support Hub versions newer than 2.4.1"
-
 - name: Setup required data volumes
   become: true
   import_tasks: data_volumes.yml
@@ -89,7 +84,7 @@
     name: "{{ container_names.main }}"
     image: "{{ image_versions.hub }}"
     # pull image if version is latest
-    pull: "{{ hub_version.startswith('latest') }}"
+    pull: "{{ (image_versions.hub | default(':', True)).split(':')[1] == 'latest' }}"
     restart_policy: unless-stopped
     exposed_ports:
       - "8000"

@@ -21,8 +21,6 @@
     - base
 
 - name: Start Hub Main Services (Application Servers)
-  vars:
-    hub_version: "{{ (image_versions.hub | default(':', True)).split(':')[1] | string }}"
   become: true
   import_tasks: main_services.yml
   tags:
