@@ -9,6 +9,7 @@
     setup_wmc: false
     letsencrypt: false
     secret_key: not-secret-at-all-but-okay-for-tests
+    base_hostname: portal.localhost
     admin_hostname: admin.portal.localhost
     portal_hostname: portal.localhost
     customization_hostname: customization.portal.localhost
