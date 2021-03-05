@@ -3,6 +3,11 @@
   docker_volume:
     name: "{{ volume_names.tls_certificates }}"
 
+- name: Create a custom folder that can contain additional configuration for traefik
+  file:
+    path: "{{ traefik_extra_config_path }}"
+    state: directory
+
 - name: Enable Let's Encrypt (Staging)
   when: letsencrypt_test
   set_fact:
@@ -56,6 +61,7 @@
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # <== Volume for docker admin
       - "{{ volume_names.tls_certificates }}:/letsencrypt" # <== Volume for certs (TLS)
+      - "{{ traefik.extra_config_path }}:{{ traefik.docker_extra_config_path }}" # <== folder for additional configuration
     comparisons:
       # correctly recreate container when any environment variable or labels is changed or added / removed
       env: strict

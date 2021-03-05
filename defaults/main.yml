@@ -30,6 +30,11 @@ sentry_dsn:
 google_analytics_tracking_id:
 extra_environment_variables: {}
 
+# Traefik settings
+traefik:
+  extra_config_path: /etc/hub/traefik
+  docker_extra_config_path: /custom_config
+
 # Docker Image Versions
 portal_image_version: latest
 hub_image_version: latest
