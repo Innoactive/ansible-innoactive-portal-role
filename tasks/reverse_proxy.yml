@@ -5,7 +5,7 @@
 
 - name: Create a custom folder that can contain additional configuration for traefik
   file:
-    path: "{{ traefik_extra_config_path }}"
+    path: "{{ traefik.extra_config_path }}"
     state: directory
 
 - name: Enable Let's Encrypt (Staging)
