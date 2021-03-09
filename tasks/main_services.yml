@@ -132,7 +132,7 @@
   shell: "{{ lookup('template', 'run_in_django_shell.sh.j2') }}" # noqa 305
   vars:
     python_script_name: change_site_name_and_domain
-    site_name: "{{ admin_configuration.hostname | truncate(49, True) }}"
+    site_name: "{{ admin_configuration.hostname[:49] }}"
     domain: "{{ admin_configuration.hostname }}"
   register: site_update_output
   changed_when: site_update_output.stdout | trim | bool
