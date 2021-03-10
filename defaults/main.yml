@@ -23,7 +23,6 @@ setup_discovery_portal: true
 setup_customization_service: true
 hub_offering: "lean"
 concurrent_access_tokens: true
-traefik_dashboard: false
 # Error Tracking configuration
 sentry_dsn:
 # Google Analytics configuration
@@ -31,9 +30,14 @@ google_analytics_tracking_id:
 extra_environment_variables: {}
 
 # Traefik settings
+traefik_dashboard: false
+traefik_extra_config_path: /etc/hub/traefik
+traefik_docker_extra_config_path: /custom_config
+
 traefik:
-  extra_config_path: /etc/hub/traefik
-  docker_extra_config_path: /custom_config
+  dashboard: "{{ traefik_dashboard }}"
+  extra_config_path: "{{ traefik_extra_config_path }}"
+  docker_extra_config_path: "{{ traefik_docker_extra_config_path }}"
 
 # Docker Image Versions
 portal_image_version: latest
