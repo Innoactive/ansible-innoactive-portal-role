@@ -3,6 +3,11 @@
   docker_volume:
     name: "{{ volume_names.tls_certificates }}"
 
+- name: Create a custom folder that can contain additional configuration for traefik
+  file:
+    path: "{{ traefik.extra_config_path }}"
+    state: directory
+
 - name: Enable Let's Encrypt (Staging)
   when: letsencrypt_test
   set_fact:
@@ -10,7 +15,7 @@
       TRAEFIK_CERTIFICATESRESOLVERS_lets-encrypt_ACME_CASERVER: https://acme-staging-v02.api.letsencrypt.org/directory
 
 - name: Enable Traefik Dashboard
-  when: traefik_dashboard
+  when: traefik.dashboard
   set_fact:
     traefik_dashboard_environment_variables:
       TREAFIK_API: 'true'
@@ -50,12 +55,13 @@
     name: "{{ container_names.reverse_proxy }}"
     image: "{{ image_versions.reverse_proxy }}"
     restart_policy: unless-stopped
-    published_ports: "{{ ['80:80','443:443'] + (traefik_dashboard | ternary(['8080:8080'],[])) }}"
+    published_ports: "{{ ['80:80','443:443'] + (traefik.dashboard | ternary(['8080:8080'],[])) }}"
     env: "{{ env_vars | combine(letsencrypt_staging_env_vars) | combine(traefik_dashboard_env_vars) }}"
     labels: "{{ traefik_labels | combine(letsencrypt | ternary(http_to_https_redirect_labels, {})) }}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # <== Volume for docker admin
       - "{{ volume_names.tls_certificates }}:/letsencrypt" # <== Volume for certs (TLS)
+      - "{{ traefik.extra_config_path }}:{{ traefik.docker_extra_config_path }}" # <== folder for additional configuration
     comparisons:
       # correctly recreate container when any environment variable or labels is changed or added / removed
       env: strict
