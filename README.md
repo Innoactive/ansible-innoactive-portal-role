@@ -117,6 +117,15 @@ Optional mapping of additional environment variables to be passed on to the Hub 
 
 Optional boolean allowing to enable the [traefiks dashboard](https://docs.traefik.io/operations/dashboard/) and therefore see the current routing configuration.
 
+    traefik_extra_config_path:
+
+Optional string to configure a folder that gets mapped in the traefik container. This is useful to provide additional configuration files for traefik such as a usersfile for [basic authentication](https://doc.traefik.io/traefik/middlewares/basicauth/). Defaults to `/etc/hub/traefik`
+
+    traefik_docker_extra_config_path:
+
+Optional string to configure a folder within the traefik container where the extra config folder is mapped to. Defaults to `/custom_config`
+
+
 #### Media Files
 
 The Hub's files (user uploads like applications, assets, ...) are stored within a dedicated docker volume. To ensure
