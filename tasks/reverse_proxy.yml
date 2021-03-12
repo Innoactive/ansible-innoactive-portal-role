@@ -67,6 +67,7 @@
       env: strict
       labels: allow_more_present
     networks_cli_compatible: true
+    network_mode: default
     networks:
       - name: "{{ network_names.main }}"
         aliases:

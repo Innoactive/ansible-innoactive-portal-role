@@ -13,6 +13,7 @@
     volumes:
       - "{{ volume_names.database }}:/var/lib/postgresql/data"
     networks_cli_compatible: true
+    network_mode: default
     networks:
       - name: "{{ network_names.main }}"
         aliases:
@@ -30,6 +31,7 @@
       - "{{ volume_names.message_queue }}:/data"
     restart_policy: unless-stopped
     networks_cli_compatible: true
+    network_mode: default
     networks:
       - name: "{{ network_names.main }}"
         aliases:
