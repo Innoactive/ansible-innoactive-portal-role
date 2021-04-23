@@ -5,14 +5,16 @@ verify_ssl = true
 
 [dev-packages]
 pylint = "*"
-molecule = {extras = ["docker"],version = "==2.22"}
+molecule = {extras = ["docker"],version = "*"}
 autopep8 = "*"
 
 [packages]
 ansible = "*"
-molecule = {extras = ["hetznercloud","docker"],version = "==2.22"}
+molecule = {extras = ["hetznercloud", "docker"],version = "*"}
 paramiko = "*"
 jmespath = "*"
+pytest-testinfra = "*"
+molecule-hetznercloud = "1.1.0"
 
 [requires]
 python_version = "3.9"

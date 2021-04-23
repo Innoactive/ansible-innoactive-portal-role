@@ -5,8 +5,8 @@ dependency:
     role-file: molecule/requirements.yml
 driver:
   name: hetznercloud
-lint:
-  name: yamllint
+lint: |
+    yamllint .
 platforms:
   - name: molecule-hub${INSTANCE_NAME_SUFFIX}
     server_type: cx11
@@ -19,8 +19,8 @@ provisioner:
   env:
     LOCAL_MOUNT_PATH: /tmp/localmount
   log: true
-  lint:
-    name: ansible-lint
+  lint: |
+    ansible-lint
 verifier:
   name: testinfra
   directory: ./tests/
@@ -32,5 +32,5 @@ verifier:
     # see https://docs.pytest.org/en/latest/warnings.html#deprecationwarning-and-pendingdeprecationwarning
     # yamllint enable rule:line-length
     PYTHONWARNINGS: "ignore:.*U.*mode is deprecated:DeprecationWarning"
-  lint:
-    name: flake8
+  lint: |
+    flake8

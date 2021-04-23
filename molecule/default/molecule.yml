@@ -5,8 +5,8 @@ dependency:
     role-file: molecule/requirements.yml
 driver:
   name: docker
-lint:
-  name: yamllint
+lint: |
+    yamllint .
 platforms:
   - name: molecule-docker${INSTANCE_NAME_SUFFIX}
     image: debian:stretch-slim
@@ -18,18 +18,15 @@ provisioner:
   name: ansible
   log: true
   playbooks:
-    converge: playbook.yml
+    converge: converge.yml
     prepare: prepare.yml
     cleanup: cleanup.yml
   env:
     ANSIBLE_ROLES_PATH: $HOME/.ansible/roles
     DOCKER_REGISTRY_USERNAME: ${DOCKER_REGISTRY_USERNAME}
     DOCKER_REGISTRY_PASSWORD: ${DOCKER_REGISTRY_PASSWORD}
-  lint:
-    name: ansible-lint
-    options:
-      exclude:
-        - $HOME/.ansible/roles
+  lint: |
+    ansible-lint
 verifier:
   name: testinfra
   directory: ./tests/
@@ -39,8 +36,8 @@ verifier:
     # see https://docs.pytest.org/en/latest/warnings.html#deprecationwarning-and-pendingdeprecationwarning
     # yamllint enable rule:line-length
     PYTHONWARNINGS: "ignore:.*U.*mode is deprecated:DeprecationWarning"
-  lint:
-    name: flake8
+  lint: |
+    flake8
   options:
     # show which tests where executed in test output
     v: 1
