@@ -10,9 +10,11 @@ autopep8 = "*"
 
 [packages]
 ansible = "*"
-molecule = {extras = ["hetznercloud","docker"],version = "*"}
+molecule = {extras = ["hetznercloud", "docker"],version = "*"}
 paramiko = "*"
 jmespath = "*"
+pytest-testinfra = "*"
+molecule-hetznercloud = "1.1.0"
 
 [requires]
-python_version = "3.7"
+python_version = "3.9"
