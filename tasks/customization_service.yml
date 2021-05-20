@@ -96,6 +96,9 @@
     network_mode: default
     networks:
       - name: "{{ network_names.main }}"
+        aliases:
+          - redis
+          - "{{ customization_configuration.hostname }}"
 
 - name: Setup Database
   become: true
