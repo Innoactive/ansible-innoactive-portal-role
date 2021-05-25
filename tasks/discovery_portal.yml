@@ -43,8 +43,8 @@
       traefik.http.middlewares.redirect-alternative-portal.redirectregex.replacement: "${1}{{ portal_configuration.hostname }}${3}"
       traefik.http.routers.portal-alternative.rule: Host({{ traefik_portal_alternative_hostnames }}) && Method(`GET`,`HEAD`)
       traefik.http.routers.portal-alternative.middlewares: redirect-alternative-portal
-      traefik.http.routers.portal-alternative.tls: "{{ letsencrypt | ternary('true', 'false') }}"
-      traefik.http.routers.portal-alternative.tls.certresolver: lets-encrypt
+      traefik.http.routers.portal-alternative.tls: "{{ traefik.enable_tls | ternary('true', 'false') }}"
+      traefik.http.routers.portal-alternative.tls.certresolver: "{{ traefik.certificate_resolver }}"
   vars:
     traefik_portal_alternative_hostnames: "{{ portal_configuration.alias_hostnames | map('regex_replace', '^(.*)$', '`\\1`') | join(',') }}"
   when: portal_configuration.alias_hostnames | default([]) | length > 0
@@ -64,8 +64,8 @@
     traefik_labels:
       traefik.enable: "true"
       traefik.http.routers.portal.rule: Host(`{{ portal_configuration.hostname }}`)
-      traefik.http.routers.portal.tls: "{{ letsencrypt | ternary('true', 'false') }}"
-      traefik.http.routers.portal.tls.certresolver: lets-encrypt
+      traefik.http.routers.portal.tls: "{{ traefik.enable_tls | ternary('true', 'false') }}"
+      traefik.http.routers.portal.tls.certresolver: "{{ traefik.certificate_resolver }}"
     alternative_portal_domain_labels: "{{ alternative_portal_hostnames_traefik_labels | default({}) }}"
     redirect_http_labels: "{{ http_redirect_traefik_labels | default({}) }}"
   docker_container:

@@ -44,13 +44,13 @@
       traefik.http.middlewares.redirect-alternative-customization.redirectregex.replacement: "${1}{{ customization_configuration.hostname }}${3}"
       traefik.http.routers.customization-alternative.rule: Host({{ alias_customization_hostnames }})
       traefik.http.routers.customization-alternative.middlewares: redirect-alternative-customization
-      traefik.http.routers.customization-alternative.tls: "{{ letsencrypt | ternary('true', 'false') }}"
-      traefik.http.routers.customization-alternative.tls.certresolver: lets-encrypt
+      traefik.http.routers.customization-alternative.tls: "{{ traefik.enable_tls | ternary('true', 'false') }}"
+      traefik.http.routers.customization-alternative.tls.certresolver: "{{ traefik.certificate_resolver }}"
 
       # API (cannot be redirected, because of failing CORS)
       traefik.http.routers.customization-alternative-post.rule: Host({{ alias_customization_hostnames }}) && PathPrefix(`/api`)
-      traefik.http.routers.customization-alternative-post.tls: "{{ letsencrypt | ternary('true', 'false') }}"
-      traefik.http.routers.customization-alternative-post.tls.certresolver: lets-encrypt
+      traefik.http.routers.customization-alternative-post.tls: "{{ traefik.enable_tls | ternary('true', 'false') }}"
+      traefik.http.routers.customization-alternative-post.tls.certresolver: "{{ traefik.certificate_resolver }}"
   vars:
     # ensure alternative domains are supported in both old and new formats (old.domain and customization.portal.old.domain)
     alternative_customization_hostnames: "{{ customization_configuration.alias_hostnames | map('regex_replace', '^(.*)$', '\\1') | list }}"
@@ -72,8 +72,8 @@
     traefik_labels:
       traefik.enable: "true"
       traefik.http.routers.customization.rule: Host(`{{ customization_configuration.hostname }}`)
-      traefik.http.routers.customization.tls: "{{ letsencrypt | ternary('true', 'false') }}"
-      traefik.http.routers.customization.tls.certresolver: lets-encrypt
+      traefik.http.routers.customization.tls: "{{ traefik.enable_tls | ternary('true', 'false') }}"
+      traefik.http.routers.customization.tls.certresolver: "{{ traefik.certificate_resolver }}"
     alternative_domain_labels: "{{ alternative_customization_hostnames_traefik_labels | default({}) }}"
     redirect_http_labels: "{{ http_redirect_traefik_labels | default({}) }}"
   docker_container:
