@@ -125,6 +125,21 @@ Optional string to configure a folder that gets mapped in the traefik container.
 
 Optional string to configure a folder within the traefik container where the extra config folder is mapped to. Defaults to `/custom_config`
 
+    traefik_enable_tls
+
+Optional bool to enable / disable tsl. Defaults to `true`
+
+    traefik_certificate_resolver
+
+Optional string to set a custom certificate resolver. Useful when using self signed certificates instaed of lets-encrypt. Defaults to `lets-encrypt`
+
+    traefik_extra_env_vars
+
+Optional key-value pair to set additional environment variables on the traefik container. Defaults to `{}`
+
+    traefik_extra_labels
+
+Optional key-value pair to set additional labels on the traefik container.  Defaults to `{}`
 
 #### Media Files
 
