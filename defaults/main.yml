@@ -49,7 +49,7 @@ traefik:
   enable_tls: "{{ traefik_enable_tls }}"
   enable_lets_encrypt: "{{ letsencrypt }}"
   enable_lets_encrypt_test: "{{ letsencrypt_test }}"
-  certificate_resolver: "{{ traefik_certificate_resolver }}"
+  certificate_resolver: "{{ traefik_enable_tls | ternary(traefik_certificate_resolver, '') }}"
   extra_env_vars: "{{ traefik_extra_env_vars }}"
   extra_labels: "{{ traefik_extra_labels }}"
 
