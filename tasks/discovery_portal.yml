@@ -86,3 +86,5 @@
     network_mode: default
     networks:
       - name: "{{ network_names.main }}"
+        aliases:
+          - "{{ portal_configuration.hostname }}"

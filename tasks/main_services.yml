@@ -106,6 +106,7 @@
       - name: "{{ network_names.main }}"
         aliases:
           - web
+          - "{{ admin_configuration.hostname }}"
 
 - name: Run Database Migrations
   command: "docker exec {{ container_names.main }} python manage.py migrate"
