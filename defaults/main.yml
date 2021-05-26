@@ -29,15 +29,29 @@ sentry_dsn:
 google_analytics_tracking_id:
 extra_environment_variables: {}
 
+# Secure Communications (SSL / TLS)
+letsencrypt: true
+letsencrypt_test: false
+
 # Traefik settings
 traefik_dashboard: false
 traefik_extra_config_path: /etc/hub/traefik
 traefik_docker_extra_config_path: /custom_config
+traefik_enable_tls: true
+traefik_certificate_resolver: lets-encrypt
+traefik_extra_env_vars: {}
+traefik_extra_labels: {}
 
 traefik:
   dashboard: "{{ traefik_dashboard }}"
   extra_config_path: "{{ traefik_extra_config_path }}"
   docker_extra_config_path: "{{ traefik_docker_extra_config_path }}"
+  enable_tls: "{{ traefik_enable_tls }}"
+  enable_lets_encrypt: "{{ letsencrypt }}"
+  enable_lets_encrypt_test: "{{ letsencrypt_test }}"
+  certificate_resolver: "{{ traefik_enable_tls | ternary(traefik_certificate_resolver, '') }}"
+  extra_env_vars: "{{ traefik_extra_env_vars }}"
+  extra_labels: "{{ traefik_extra_labels }}"
 
 # Docker Image Versions
 portal_image_version: latest
@@ -75,7 +89,7 @@ admin_configuration:
   setup_customization_service: "{{ setup_customization_service }}"
   google_analytics_id: "{{ google_analytics_tracking_id }}"
   sentry_dsn: "{{ sentry_dsn }}"
-  protocol: "{{ 'https' if letsencrypt else 'http' }}"
+  protocol: "{{ 'https' if traefik.enable_tls else 'http' }}"
   create_admin_user: "{{ create_admin_user }}"
   hub_offering: "{{ hub_offering }}"
   concurrent_access_tokens: "{{ concurrent_access_tokens }}"
@@ -129,10 +143,6 @@ jwt_local_key_path:
 jwt:
   privatekey: "{{ jwt_privatekey }}"
   publickey: "{{ jwt_publickey }}"
-
-# Secure Communications (SSL / TLS)
-letsencrypt: true
-letsencrypt_test: false
 
 # Mail Configuration
 smtp_host:
