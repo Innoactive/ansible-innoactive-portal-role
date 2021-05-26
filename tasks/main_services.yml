@@ -37,13 +37,13 @@
       traefik.http.middlewares.redirect-alternative.redirectregex.replacement: "${1}{{ admin_configuration.hostname }}${3}"
       traefik.http.routers.web-alternative.rule: Host({{ traefik_admin_alternative_hostnames }})
       traefik.http.routers.web-alternative.middlewares: redirect-alternative
-      traefik.http.routers.web-alternative.tls: "{{ letsencrypt | ternary('true', 'false') }}"
-      traefik.http.routers.web-alternative.tls.certresolver: lets-encrypt
+      traefik.http.routers.web-alternative.tls: "{{ traefik.enable_tls | ternary('true', 'false') }}"
+      traefik.http.routers.web-alternative.tls.certresolver: "{{ traefik.certificate_resolver }}"
 
       # API, OAuth and Websocket Connections / Django-Channels
       traefik.http.routers.web-api-alternative.rule: Host({{ traefik_admin_alternative_hostnames }}) && PathPrefix(`/ws`,`/api`,`/oauth`)
-      traefik.http.routers.web-api-alternative.tls: "{{ letsencrypt | ternary('true', 'false') }}"
-      traefik.http.routers.web-api-alternative.tls.certresolver: lets-encrypt
+      traefik.http.routers.web-api-alternative.tls: "{{ traefik.enable_tls | ternary('true', 'false') }}"
+      traefik.http.routers.web-api-alternative.tls.certresolver: "{{ traefik.certificate_resolver }}"
       traefik.http.routers.web-api-alternative.priority: "100"
 
   when: admin_configuration.alias_hostnames | default([]) | length > 0
@@ -71,13 +71,13 @@
     traefik_labels:
       traefik.enable: "true"
       traefik.http.routers.web.rule: Host(`{{ admin_configuration.hostname }}`)
-      traefik.http.routers.web.tls: "{{ letsencrypt | ternary('true', 'false') }}"
-      traefik.http.routers.web.tls.certresolver: lets-encrypt
+      traefik.http.routers.web.tls: "{{ traefik.enable_tls | ternary('true', 'false') }}"
+      traefik.http.routers.web.tls.certresolver: "{{ traefik.certificate_resolver }}"
 
       # Websocket Connections / Django-Channels
       traefik.http.routers.channels.rule: Host(`{{ admin_configuration.hostname }}`) && PathPrefix(`/ws`)
-      traefik.http.routers.channels.tls: "{{ letsencrypt | ternary('true', 'false') }}"
-      traefik.http.routers.channels.tls.certresolver: lets-encrypt
+      traefik.http.routers.channels.tls: "{{ traefik.enable_tls | ternary('true', 'false') }}"
+      traefik.http.routers.channels.tls.certresolver: "{{ traefik.certificate_resolver }}"
     alternative_admin_domain_labels: "{{ alternative_admin_hostnames_traefik_labels | default({}) }}"
     redirect_http_labels: "{{ http_redirect_traefik_labels | default({}) }}"
     base_volumes:
@@ -106,6 +106,7 @@
       - name: "{{ network_names.main }}"
         aliases:
           - web
+          - "{{ admin_configuration.hostname }}"
 
 - name: Run Database Migrations
   command: "docker exec {{ container_names.main }} python manage.py migrate"
