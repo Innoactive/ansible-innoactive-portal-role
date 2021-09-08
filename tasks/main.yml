@@ -7,7 +7,7 @@
     password: "{{ docker_registry.password }}"
 
 - name: Run service migrations
-  import_tasks: migration-3.0.0.yml
+  import_tasks: migration.yml
 
 - name: Setup required networks
   become: true
@@ -67,3 +67,18 @@
   tags:
     - services
     - reverse_proxy
+
+- name: Start CloudXR Management Services
+  become: true
+  import_tasks: cloudxr_management_service.yml
+  tags:
+    - services
+    - cloudxr_management
+  when: cloudxr_configuration.enabled
+
+- name: Start Session Management Services
+  become: true
+  import_tasks: session_management_service.yml
+  tags:
+    - services
+    - session_management

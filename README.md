@@ -236,6 +236,102 @@ When using [Let's Encrypt](https://letsencrypt.org/) to issue SSL / TLS certific
 used to issue certificates by Let's Encrypt's [staging environment](https://letsencrypt.org/docs/staging-environment/)
 instead of the production environment.
 
+### CloudXR Management Service
+
+    cloudxr_enabled:
+
+**Mandatory** If false, the container is not deployed. Defaults to `false`
+
+    cloudxr_default_region:
+
+**Mandatory** Default region if ip lookup did not work
+
+    cloudxr_instance:
+
+The instance (customer). Defaults to `instance_name` variable.
+
+    cloudxr_max_cloud_instances:
+
+**Mandatory** The maximum started instance across all regions.
+
+    cloudxr_machine_max_keep_alive_age:
+
+**Mandatory** The keepalive age time untill machine is destroyed. Format: hh:MM:ss (04:00:00)
+
+    cloudxr_management_sentry_dsn:
+
+The sentry DSN
+
+    cloudxr_ip_stack_api_token:
+
+**Mandatory** The IP address lookup is required to select the closest cloudXR region. The token must be obtained on [this](https://ipstack.com/) website
+
+    cloudxr_azure_enabled:
+
+**Mandatory if azure** enable azure integration. This option is mutually exclusive with `cloudxr_aws_enabled`
+
+    cloudxr_azure_client_id:
+
+**Mandatory if azure** azure clientID to control the scale set
+
+    cloudxr_azure_secret:
+
+**Mandatory if azure** azure client secret to control the scale set
+
+    cloudxr_azure_subscription:
+
+**Mandatory if azure** azure subscription where the scaleset is deployed
+
+    cloudxr_azure_tenant_id:
+
+**Mandatory if azure** azure tenant where the scaleset is deployed
+
+    cloudxr_aws_enabled:
+
+**Mandatory if aws** enable AWS integration. This option is mutually exclusive with `cloudxr_azure_enabled`
+
+    cloudxr_aws_access_key_id:
+
+**Mandatory if aws** access key id to the aws scaling group
+
+    cloudxr_aws_secret_access_key:
+
+**Mandatory if aws** access key secret to the aws scaling group
+
+    cloudxr_aws_regions:
+
+**Mandatory if aws** all regions where scaling groups are deployed (as they cannot be detected automatically)
+
+### Session Management Service
+
+    session_management_image_version:
+
+The version of the session mangement contianer. This defaults to `latest`
+
+    session_management_sentry_dsn:
+
+The sentry dsn url
+
+    session_management_environment:
+
+The environment `Production`, `Staging`, `Developtment`. This defaults to `Production`
+
+    session_management_cors_origin:
+
+If custom CORS origin(s) are required it can be set here separated by `,` (comma)
+
+    session_management_oauth_client_id:
+
+**Mandatory** the OAuth clientID
+
+    session_management_oauth_client_secret:
+
+**Mandatory** the OAuth client secret
+
+    session_management_log_level:
+
+The log level. This defaults to `Warning`
+
 ### Innoactive Portal Desktop Client (f.k.a Hub Launcher)
 
 To enable the Innoactive Portal Desktop Client (a standalone application capable of retrieving content from the Portal) to access
@@ -266,15 +362,6 @@ The hostname under which the Portal frontend should be publicly availabe. This d
 
 Allows to explicitly define the oauth client id to be used by the portal to communicate with the Portal backend. If not defined,
 an oauth client will automatically be retrieved.
-
-    portal_oauth_client_secret:
-
-Allows to explicitly define the oauth client secret to be used by the portal to communicate with the Portal backend. If not defined,
-an oauth client will automatically be retrieved.
-
-    portal_enabled_features:
-
-Enables specific features on the Portal frontend. Can be used to enable the legacy `reality` feature.
 
     portal_sentry_dsn:
 

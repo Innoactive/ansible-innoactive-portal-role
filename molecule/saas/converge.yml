@@ -21,7 +21,7 @@
       local:
         path: "{{ lookup('env', 'LOCAL_MOUNT_PATH') }}"
     # change the default prefix to easily identify test containers / services
-    hub_service_prefix: molecule_test_hub
+    service_prefix: molecule_test_hub
     jwt_local_key_path: "{{ (playbook_dir + '/../sample_keys/jwt') | realpath }}"
     # we are running on a hetzner machine and need a publicly accessible hostname
     # we can get it by reversing the ip4 address, prefixing it with static. and

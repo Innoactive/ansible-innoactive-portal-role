@@ -3,6 +3,7 @@
   shell: "{{ lookup('template', 'run_in_django_shell.sh.j2') }}" # noqa 305
   vars:
     python_script_name: get_oauth_client_credentials
+    authorization_type: GRANT_DEVICE_AUTH
     client_name: Innoactive Hub Launcher
     client_id: "{{ launcher_configuration.oauth2_client_id }}"
     client_secret: "{{ launcher_configuration.oauth2_client_secret }}"

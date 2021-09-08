@@ -85,7 +85,7 @@
     jwt_volumes:
       - "{{ jwt_key_path }}:{{ jwt_key_path }}"
   docker_container:
-    name: "{{ container_names.main }}"
+    name: "{{ container_names.backend }}"
     image: "{{ image_versions.portal_backend }}"
     # pull image if version is latest
     pull: "{{ portal_backend_version_is_latest }}"
@@ -105,7 +105,7 @@
           - web
 
 - name: Run Database Migrations
-  command: "docker exec {{ container_names.main }} python manage.py migrate"
+  command: "docker exec {{ container_names.backend }} python manage.py migrate"
   register: migration_result
   changed_when: '"Applying" in migration_result.stdout'
   when: admin_configuration.setup_database
@@ -115,7 +115,7 @@
 
 - name: Collect static files for WMC
   # yamllint disable rule:line-length
-  command: "docker exec {{ container_names.main }} python manage.py collectstatic -v 0 -c --no-input"
+  command: "docker exec {{ container_names.backend }} python manage.py collectstatic -v 0 -c --no-input"
   register: collect_static_result
   # yamllint enable rule:line-length
   when: admin_configuration.setup_wmc

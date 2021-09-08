@@ -17,7 +17,7 @@
     admin_email: admin@innoactive.de
     admin_password: sup3rs3cur3pa55w0rdf0rt3st1ng
     # change the default prefix to easily identify test containers / services
-    hub_service_prefix: molecule_test_hub
+    service_prefix: molecule_test_hub
     # mount media volume
     media_volume_mount:
       cifs:

@@ -5,11 +5,12 @@
       shell: "{{ lookup('template', 'run_in_django_shell.sh.j2') }}" # noqa 305
       vars:
         python_script_name: get_oauth_client_credentials
+        authorization_type: GRANT_AUTHORIZATION_CODE
         client_name: Application Discovery Portal
         client_id: "{{ portal_configuration.oauth2_client_id }}"
-        client_secret: "{{ portal_configuration.oauth2_client_secret }}"
+        client_secret: ""
         redirect_uris:
-          - "{{ admin_configuration.protocol }}://%s/hub/callback/' % '{{ portal_configuration.hostname }}"
+          - "{{ admin_configuration.protocol }}://%s/oauth/callback' % '{{ portal_configuration.hostname }}"
       register: discovery_portal_oauth2_client_output
       changed_when: discovery_portal_oauth2_client_output.stdout | from_json | json_query('changed')
       # ansible lint has an issue where it cannot bypass rules (like 305) within blocks
@@ -21,13 +22,11 @@
     - name: Identify Client Id for Discovery Portal
       set_fact:
         discovery_portal_oauth2_client_id: "{{ discovery_portal_oauth2_client_output.stdout | from_json | json_query('client_id') }}"
-        discovery_portal_oauth2_client_secret: "{{ discovery_portal_oauth2_client_output.stdout | from_json | json_query('client_secret') }}"
 
 - name: Validate client credentials
   assert:
     that:
       - discovery_portal_oauth2_client_id | default('', true) | length > 0
-      - discovery_portal_oauth2_client_secret | default('', true) | length > 0
 
 - name: Find Out Customization Service Endpoint
   set_fact:
@@ -49,18 +48,16 @@
     traefik_portal_alternative_hostnames: "{{ portal_configuration.alias_hostnames | map('regex_replace', '^(.*)$', '`\\1`') | join(',') }}"
   when: portal_configuration.alias_hostnames | default([]) | length > 0
 
-- name: Start Discovery Portal Service
+- name: Start Portal container
   vars:
     default_environment_variables:
-      VIRTUAL_HOST: "{{ portal_configuration.hostname }}"
-      LETSENCRYPT_HOST: "{{ portal_configuration.hostname }}"
-      API_ROOT: "{{ admin_configuration.protocol }}://{{ admin_configuration.hostname }}"
-      CUSTOMIZATION_API_ROOT: "{{ customization_api_root | default('', true) }}"
-      OAUTH_CLIENT_ID: "{{ discovery_portal_oauth2_client_id }}"
-      OAUTH_CLIENT_SECRET: "{{ discovery_portal_oauth2_client_secret }}"
-      ENABLED_FEATURES: "{{ portal_configuration.enabled_features }}"
-      SENTRY_DSN: "{{ portal_configuration.sentry_dsn }}"
-      GOOGLE_ANALYTICS_TRACKING_ID: "{{ admin_configuration.google_analytics_id | default('') }}"
+      SPA_sentryDSN: "{{ portal_configuration.sentry_dsn }}"
+      SPA_portalBackendRootUrl: "{{ admin_configuration.protocol }}://{{ admin_configuration.hostname }}"
+      SPA_portalOAuth2ClientId: "{{ discovery_portal_oauth2_client_id }}"
+      SPA_portalCustomizationRootUrl: "{{ customization_api_root | default('', true) }}"
+      SPA_portalCloudRenderingSessionManagementRootUrl: "{{ portal_configuration.cloud_rendering_session_service_url }}"
+      SPA_desktopClientOAuth2ClientId: "{{ launcher_oauth_client_id }}"
+      SPA_desktopClientOAuth2ClientSecret: "{{ launcher_oauth_client_secret }}"
     traefik_labels:
       traefik.enable: "true"
       traefik.http.routers.portal.rule: Host(`{{ portal_configuration.hostname }}`)
@@ -71,18 +68,54 @@
   docker_container:
     name: "{{ container_names.discovery_portal }}"
     image: "{{ image_versions.portal }}"
-    # pull image if version is latest
-    pull: "{{ portal_version_is_latest }}"
+    network_mode: default
     restart_policy: unless-stopped
-    exposed_ports:
-      - "80"
+    container_default_behavior: no_defaults
+    pull: "{{ portal_version_is_latest }}"
     env: "{{ default_environment_variables | combine(portal_configuration.extra_environment_variables) }}"
     labels: "{{ traefik_labels | combine(alternative_portal_domain_labels) }}"
-    comparisons:
-      # correctly recreate container when any environment variable or labels is changed or added / removed
-      env: strict
-      labels: allow_more_present
+
     networks_cli_compatible: true
-    network_mode: default
     networks:
       - name: "{{ network_names.main }}"
+
+# we need to proxy requests to the signalling server as the cloud rendering machines hosting the signalling server are only
+# accessible via ws (so no secure websockets - wss) and browsers do not allow requests from secure environments (e.g. https)
+# to insecure environments (e.g. ws / http)
+# FIXME: remove once signalling is a standalone service
+- name: Start Proxy for Signalling Server (Interactive Spectator)
+  tags:
+    - portal2_signalling
+  vars:
+    signalling_proxy_path: /etc/portal2/fluentd
+    nginx_config_file_path: "{{ signalling_proxy_path }}/nginx.conf"
+  block:
+    - name: Create directory to hold config files
+      file:
+        path: "{{ signalling_proxy_path }}/"
+        state: directory
+
+    - name: Upload nginx configuration
+      copy:
+        src: "{{ playbook_dir }}/../files/signalling-proxy/nginx.conf"
+        dest: "{{ nginx_config_file_path }}"
+
+    - name: Start nginx proxy container
+      docker_container:
+        name: portal_frontend2_signalling_proxy
+        image: "nginx:alpine"
+        network_mode: default
+        restart_policy: unless-stopped
+        container_default_behavior: no_defaults
+        volumes:
+          - "{{ nginx_config_file_path }}:/etc/nginx/conf.d/default.conf"
+        labels:
+          traefik.enable: "true"
+          traefik.http.routers.signalling-ws-proxy.rule: Host(`{{ portal_configuration.hostname }}`) && PathPrefix(`/signalling/`)
+          traefik.http.routers.signalling-ws-proxy.entrypoints: http
+          traefik.http.routers.signalling-ws-proxy.tls: "true"
+          traefik.http.routers.signalling-ws-proxy.tls.certresolver: lets-encrypt
+          traefik.http.routers.signalling-ws-proxy.priority: "1000"
+        networks_cli_compatible: true
+        networks:
+          - name: "{{ network_names.main }}"
