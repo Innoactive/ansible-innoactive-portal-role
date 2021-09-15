@@ -1,7 +1,7 @@
 ---
 - name: Assert compatible Hub Version
   assert:
-    that: hub_version.startswith('latest') or (hub_version is version('2.4.1', '>'))
+    that: ('latest' in portal_backend_version) or (portal_backend_version is version('2.4.1', '>'))
     fail_msg: "This role version does only support Hub versions newer than 2.4.1"
 
 - name: Setup required data volumes
@@ -87,9 +87,9 @@
       - "{{ jwt_key_path }}:{{ jwt_key_path }}"
   docker_container:
     name: "{{ container_names.main }}"
-    image: "{{ image_versions.hub }}"
+    image: "{{ image_versions.portal_backend }}"
     # pull image if version is latest
-    pull: "{{ hub_version.startswith('latest') }}"
+    pull: "{{ portal_backend_version_is_latest }}"
     restart_policy: unless-stopped
     exposed_ports:
       - "8000"
@@ -157,14 +157,9 @@
     - defaults
     - requires_database
 
-# FIXME: This group should be delivered already within the software
-- name: Setup Default User Group with Permissions
-  shell: "{{ lookup('template', 'run_in_django_shell.sh.j2') }}" # noqa 305
-  vars:
-    python_script_name: create_user_group_with_perms
-    group_name: Users
-    perms:
-      - assets.view_application
+- name: Legacy User permissions (Backend Version < 4)
+  set_fact:
+    extra_default_user_group_permissions:
       - assets.view_asset
       - assets.add_asset
       - assets.view_audio
@@ -186,6 +181,15 @@
       - core.view_space
       - core.change_space
       - core.add_space
+  when: not portal_backend_v4_or_newer
+
+# FIXME: This group should be delivered already within the software
+- name: Setup Default User Group with Permissions
+  shell: "{{ lookup('template', 'run_in_django_shell.sh.j2') }}" # noqa 305
+  vars:
+    python_script_name: create_user_group_with_perms
+    group_name: Users
+    perms: "{{ (extra_default_user_group_permissions | default([])) + ['assets.view_application'] }}"
   register: users_group_output
   changed_when: users_group_output.stdout | trim | bool
   tags:

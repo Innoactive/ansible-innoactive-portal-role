@@ -72,7 +72,7 @@
     name: "{{ container_names.discovery_portal }}"
     image: "{{ image_versions.portal }}"
     # pull image if version is latest
-    pull: "{{ (image_versions.portal | default(':', True)).split(':')[1] == 'latest' }}"
+    pull: "{{ portal_version_is_latest }}"
     restart_policy: unless-stopped
     exposed_ports:
       - "80"

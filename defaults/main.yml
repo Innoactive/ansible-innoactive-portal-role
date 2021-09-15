@@ -54,14 +54,16 @@ traefik:
   extra_labels: "{{ traefik_extra_labels }}"
 
 # Docker Image Versions
+# legacy parameter for portal_backend_image_version is hub_image_version
+portal_backend_image_version: "{{ hub_image_version | default('latest') }}"
 portal_image_version: latest
-hub_image_version: latest
 reverse_proxy_image_version: 2.2
 
 mailserver_image: namshi/smtp:latest
 message_queue_image: redis:5
 database_image: postgres:9.6
-hub_image: registry.docker.innoactive.de/hub_web:{{ hub_image_version }}
+# legacy parameter to specify portal backend image is hub_image. Defaults to registry.docker.innoactive.de/portal_backend:latest
+portal_backend_image: registry.docker.innoactive.de/{{ hub_image | default('portal_backend') }}:{{ portal_backend_image_version }}
 portal_image: registry.docker.innoactive.de/hub_portal_web:{{ portal_image_version }}
 reverse_proxy_image: traefik:{{ reverse_proxy_image_version }}
 customization_image: registry.docker.innoactive.de/hub_customization:latest
@@ -70,7 +72,7 @@ image_versions:
   mailserver: "{{ mailserver_image }}"
   message_queue: "{{ message_queue_image }}"
   database: "{{ database_image }}"
-  hub: "{{ hub_image }}"
+  portal_backend: "{{ portal_backend_image }}"
   portal: "{{ portal_image }}"
   reverse_proxy: "{{ reverse_proxy_image }}"
   customization: "{{ customization_image }}"
@@ -195,3 +197,12 @@ container_names:
   reverse_proxy: "{{ hub_service_prefix }}_traefik"
   discovery_portal: "{{ hub_service_prefix }}_portal"
   customization: "{{ hub_service_prefix }}_customization"
+
+# Calculated defaults
+portal_backend_version: "{{ (image_versions.portal_backend | default(':', True)).split(':') | last | string }}"
+portal_backend_version_is_latest: "{{ portal_backend_version.startswith('latest') }}"
+portal_version: "{{ (image_versions.portal | default(':', True)).split(':') | last | string }}"
+portal_version_is_latest: "{{ portal_version.startswith('latest') }}"
+customization_service_version: "{{ (image_versions.customization | default(':', True)).split(':') | last | string }}"
+customization_service_version_is_latest: "{{ customization_service_version.startswith('latest') }}"
+portal_backend_v4_or_newer: "{{ ('latest' in portal_backend_version) or (portal_backend_version is version('4.0.0', '>=')) }}"
