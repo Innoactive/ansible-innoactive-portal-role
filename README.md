@@ -1,8 +1,8 @@
-# Ansible Innoactive Hub Role
+# Ansible Innoactive Portal Role
 
-[![Build Status](https://dev.azure.com/Innoactive/Open-Source/_apis/build/status/Innoactive.ansible-innoactive-hub-role?branchName=develop)](https://dev.azure.com/Innoactive/Open-Source/_build/latest?definitionId=29&branchName=develop)
+[![Build Status](https://dev.azure.com/Innoactive/Open-Source/_apis/build/status/Innoactive.ansible-innoactive-portal-role?branchName=develop)](https://dev.azure.com/Innoactive/Open-Source/_build/latest?definitionId=29&branchName=develop)
 
-This role sets up a host to run the Innoactive Hub - XR platform.
+This role sets up a host to run the Innoactive Portal - XR platform.
 
 ## Requirements
 
@@ -10,10 +10,10 @@ Since the deployment uses [json_query](https://docs.ansible.com/ansible/latest/u
 to extract important values from json data structures, the respective pip package [jmespath](http://jmespath.org/) needs
 to be installed locally via pip.
 
-Also, the Innoactive Hub's images are distributed via Innoactive's private Docker registry so in order to access and deploy
+Also, the Innoactive Portal's images are distributed via Innoactive's private Docker registry so in order to access and deploy
 them, credentials to access the docker registry at `registry.docker.innoactive.de` are required.
 
-Since the Innoactive Hub consists of a number of services each of which is bundled as a docker container, this role requires the ansible host to have [docker](https://www.docker.com/) installed (API level >= 1.20) and ready to use. To ensure this, you can e.g. use the excellent ansible role [geerlingguy.docker](https://galaxy.ansible.com/geerlingguy/docker).
+Since the Innoactive Portal consists of a number of services each of which is bundled as a docker container, this role requires the ansible host to have [docker](https://www.docker.com/) installed (API level >= 1.20) and ready to use. To ensure this, you can e.g. use the excellent ansible role [geerlingguy.docker](https://galaxy.ansible.com/geerlingguy/docker).
 
 Additionally, ansible's [docker module](https://docs.ansible.com/ansible/latest/modules/docker_container_module.html) requires the docker pip module to be installed in order for Python to be able to communicate with the running docker service. Installing this package can e.g. either be done via the native ansible [pip module(https://docs.ansible.com/ansible/latest/modules/pip_module.html)] or via a dedicated role like [geerlingguy.pip](https://galaxy.ansible.com/geerlingguy/pip).
 
@@ -29,7 +29,7 @@ Available variables are listed below, along with default values (see `defaults/m
 
     registry_hostname: registry.docker.innoactive.de
 
-The registry from which to pull images of the Hub's containers.
+The registry from which to pull images of the Portal's containers.
 
     registry_username:
 
@@ -67,7 +67,7 @@ Alternative or legacy hostnames array. Users accessing it will be redirected to 
 
     secret_key:
 
-A user-defined, secret key used for salting hashes within the Hub's application. Never expose this to anyone!
+A user-defined, secret key used for salting hashes within the Portal's backend service. Never expose this to anyone!
 
     from_email:
 
@@ -79,11 +79,11 @@ E-Mail address of the main admin user, used to notify upon errors, expired certi
 
     admin_password:
 
-Password of the main admin user to login to the Hub instance and manage other users or content.
+Password of the main admin user to login to the Portal backend and manage other users or content.
 
     create_admin_user: true
 
-Whether to ensure the creation of an admin user on the Hub instance, may be skipped if users are setup manually.
+Whether to ensure the creation of an admin user on the Portal backend, may be skipped if users are setup manually.
 
     setup_database: true
 
@@ -91,7 +91,8 @@ Whether to run database migrations and setup the database.
 
     setup_wmc: true
 
-Whether to make the static frontend assets available on the Hub instance (styles, images, scripts). I.e. setup the frontend.
+Whether to make the static frontend assets available on the Portal backend (styles, images, scripts). I.e. setup the control panel (f.k.a
+Web Management Console or WMC).
 
     sentry_dsn:
 
@@ -99,19 +100,19 @@ DSN for [Sentry](https://sentry.io/welcome/) to automatically track runtime erro
 
     google_analytics_tracking_id:
 
-Tracking ID of a Google Analytics Property to monitor usage of the Hub.
+Tracking ID of a Google Analytics Property to monitor usage of the Portal Backend.
 
     hub_offering: "lean"
 
-Whether to display the "extended" feature set in the menu or a "lean" subset.
+Whether to display the "extended" feature set in the menu or a "lean" subset. *Only supported for `portal_backend_image_version < 4`*
 
     concurrent_access_tokens: true
 
-Whether or not to allow one and the same user being authenticated in the same application (OAuth2 client) multiple times.
+Whether or not to allow one and the same user being authenticated in the same application (OAuth2 client) multiple times. *Only supported for `portal_backend_image_version < 4`*
 
     extra_environment_variables: {}
 
-Optional mapping of additional environment variables to be passed on to the Hub (e.g. to unlock hidden features).
+Optional mapping of additional environment variables to be passed on to the Portal Backend (e.g. to unlock hidden features).
 
     traefik_dashboard:
 
@@ -143,7 +144,7 @@ Optional key-value pair to set additional labels on the traefik container.  Defa
 
 #### Media Files
 
-The Hub's files (user uploads like applications, assets, ...) are stored within a dedicated docker volume. To ensure
+The Portal Backend's files (user uploads like applications, assets, ...) are stored within a dedicated docker volume. To ensure
 sufficient space, backing this volume with an external storage via cifs or a locally mounted disk can make sense.
 To enable the volume storage for media files, we need to decide whether to use the local or cifs mount options and
 specify those accordingly:
@@ -207,16 +208,16 @@ An absolute path on the filesystem pointing to an existing directory.
 
 #### Versioning
 
-It is possible to deploy different versions of the Innoactive Hub's services by specifying the following variables.
+It is possible to deploy different versions of Innoactive Portal's services by specifying the following variables.
 Available versions for the docker container images can be found in our registry at `registry.docker.innoactive.de`.
 
     portal_image_version: latest
 
-The version of the Innoactive Hub's Portal container.
+The version of Innoactive Portal's frontend container.
 
-    hub_image_version: latest
+    portal_backend_image_version: latest
 
-The version of the Innoactive Hub's Main Service container.
+The version of Innoactive Portal's backend container. Legacy parameter: `hub_image_version: latest`
 
     reverse_proxy_image_version: 2.2
 
@@ -235,10 +236,10 @@ When using [Let's Encrypt](https://letsencrypt.org/) to issue SSL / TLS certific
 used to issue certificates by Let's Encrypt's [staging environment](https://letsencrypt.org/docs/staging-environment/)
 instead of the production environment.
 
-### Innoactive Hub Launcher
+### Innoactive Portal Desktop Client (f.k.a Hub Launcher)
 
-To enable the Innoactive Hub Launcher (a standalone application capable of retrieving content from the Hub) to access
-data from the Hub, a suitable OAuth2 Client with the specified client credentials can be created if the following
+To enable the Innoactive Portal Desktop Client (a standalone application capable of retrieving content from the Portal) to access
+data from the Portal, a suitable OAuth2 Client with the specified client credentials can be created if the following
 parameters are provided (if none are provided, Launcher client will not be setup):
 
     launcher_oauth_client_id:
@@ -249,31 +250,31 @@ The OAuth2 Client ID that the Launcher uses.
 
 The OAuth2 Client Secret that the Launcher uses.
 
-### Additional Hub Services
+### Additional Portal Services
 
-#### Innoactive Discovery Portal
+#### Innoactive Portal Frontend
 
     setup_discovery_portal: true
 
-Whether or not to setup the discovery portal for this instance.
+Whether or not to setup the Portal frontend for this instance.
 
     portal_hostname: "portal.{{ admin_configuration.primay_hostname  }}"
 
-The hostname under which the discovery portal should be publicly availabe. This defaults to `portal.<hostname-of-hub-instance>`.
+The hostname under which the Portal frontend should be publicly availabe. This defaults to `portal.<hostname-of-portal-instance>`.
 
     portal_oauth_client_id:
 
-Allows to explicitly define the oauth client id to be used by the portal to communicate with the Hub. If not defined,
+Allows to explicitly define the oauth client id to be used by the portal to communicate with the Portal backend. If not defined,
 an oauth client will automatically be retrieved.
 
     portal_oauth_client_secret:
 
-Allows to explicitly define the oauth client secret to be used by the portal to communicate with the Hub. If not defined,
+Allows to explicitly define the oauth client secret to be used by the portal to communicate with the Portal backend. If not defined,
 an oauth client will automatically be retrieved.
 
     portal_enabled_features:
 
-Enables specific features on the hub portal. Can be used to enable the legacy `reality` feature.
+Enables specific features on the Portal frontend. Can be used to enable the legacy `reality` feature.
 
     portal_sentry_dsn:
 
@@ -291,21 +292,21 @@ Whether or not to setup the customization service for this instance.
 
     customization_hostname: "{{ customization_configuration.hostname  }}"
 
-The hostname under which the customization service should be publicly availabe. This defaults to `customization.<hostname-of-hub-instance>`.
+The hostname under which the customization service should be publicly availabe. This defaults to `customization.<hostname-of-portal-instance>`.
 
     customization_oauth_client_id:
 
-Allows to explicitly define the oauth client id to be used by the portal to communicate with the Hub. If not defined,
+Allows to explicitly define the oauth client id to be used by the portal to communicate with the Portal backend. If not defined,
 an oauth client will automatically be retrieved.
 
     customization_oauth_client_secret:
 
-Allows to explicitly define the oauth client secret to be used by the portal to communicate with the Hub. If not defined,
+Allows to explicitly define the oauth client secret to be used by the portal to communicate with the Portal backend. If not defined,
 an oauth client will automatically be retrieved.
 
     customization_extra_environment_variables: {}
 
-Optional mapping of additional environment variables to be passed on to the Hub (e.g. to unlock hidden features).
+Optional mapping of additional environment variables to be passed on to the Portal Backend (e.g. to unlock hidden features).
 
 ### Mail Setup
 
@@ -342,7 +343,7 @@ for other roles, or variables that are used from other roles.
 
 - [geerlingguy.pip](https://github.com/geerlingguy/ansible-role-pip)
 
-If the server to which to apply the Innoactive Hub role to does not come with docker pre-installed, it is helpful to also
+If the server to which to apply the Innoactive Portal role to does not come with docker pre-installed, it is helpful to also
 use:
 
 - [geerlingguy.docker](https://github.com/geerlingguy/ansible-role-docker)
@@ -360,11 +361,11 @@ The available Tags are:
   - _docker_ Controls whether the docker role dependency is being executed (might want to skip if Docker already installed)
   - _pip_ Controls whether the pip role dependency is being executed
 
-- _services_ Controls whether or not all of the Hub's Services are being setup. More specifically, the individual services
+- _services_ Controls whether or not all of the Portal's Services are being setup. More specifically, the individual services
   can be controlled with the following tags:
 
   - _base_ Controls whether base services will be set up (Database, Message Queue, Mailserver)
-  - _main_ Controls whether main Hub services will be set up (Django application)
+  - _main_ Controls whether main Portal services will be set up (Django application / Backend)
   - _ssl_ Controls whether or not the Let's Encrypt service will be set up
   - _reverse_proxy_ Controls whether or not the discovery portal service will be set up
   - _discovery_portal_ Controls whether or not to start the reverse proxy service
@@ -372,11 +373,11 @@ The available Tags are:
 
 - _setup_tasks_ Controls whether or not to run any setup tasks like database migrations, collection of static files, etc.
 
-  - _user_groups_ Controls whether or not to create an _Admins_ and _Users_ default group on the Hub instance. Both groups
+  - _user_groups_ Controls whether or not to create an _Admins_ and _Users_ default group on the Portal instance. Both groups
     come with some predefined permissions to get started more easily. _Admins_ can do everything whereas _Users_ only can
     view and manage (upload) assets, applications, etc.
   - _superuser_ Controls whether or not to create a superuser account
-  - _launcher_ Controls whether or not to create an oauth2 client for the Innoactive Hub Launcher
+  - _launcher_ Controls whether or not to create an oauth2 client for the Innoactive Portal Desktop Client
 
 - _requires_database_ Allows to skip all tasks that require a running database (e.g. because the database should not be
   filled with data as a previous dump should be imported)
@@ -390,7 +391,7 @@ users too:
       roles:
         - role: geerlingguy.docker
           become: true
-        - role: innoactive.hub
+        - role: innoactive.portal
           vars:
             # main configuration parameters
             registry_username: username-for-registry.docker.innoactive.de
@@ -406,8 +407,8 @@ users too:
 
 ## Upgrading from 1.x to 2.x
 
-With version 2 of this role, we've introduced a breaking change by ensuring that data created by the Hub is stored in
-named docker volumes rather than anonymous ones (which can easily get lost). To ease the transition from Hub instances
+With version 2 of this role, we've introduced a breaking change by ensuring that data created by the Portal is stored in
+named docker volumes rather than anonymous ones (which can easily get lost). To ease the transition from Portal instances
 that were deployed with Version 1.x of this role, we've created a simple ansible playbook that helps by migrating all
 data previously stored in anonymous volumes to the new set of named volumes. After running this playbook on the host in
 question, Version 2.x of this role can simply be applied without the fear of losing data. See
@@ -430,10 +431,10 @@ The password to use when authenticating against registry.docker.innoactive.de.
 ### Docker
 
 The first scenario applies the role to a local instance by using docker (and exposing the host's docker socket to the
-docker containerp) so the Hub's containers are run as [siblings](https://stackoverflow.com/a/33003273/1142028) to the main
+docker containerp) so the Portal's containers are run as [siblings](https://stackoverflow.com/a/33003273/1142028) to the main
 molecule container.
 
-Testing the role with the docker driver bypasses some of the Hub's functionality like securing communication with
+Testing the role with the docker driver bypasses some of the Portal's functionality like securing communication with
 letsencrypt (which does not work if the host is not exposed to the internet).
 
 To test the role using the scenario around the [docker driver](https://molecule.readthedocs.io/en/stable/configuration.html#docker)

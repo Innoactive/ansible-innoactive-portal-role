@@ -1,11 +1,22 @@
-from dynamic_preferences.registries import global_preferences_registry
 import json
 
-from microservices.models import HubService
+from microservices.models import {{ micro_frontend.v3 | ternary("HubService", "MicroFrontend") }} as _MicroFrontend
 
-if HubService.objects.filter(name='{{ micro_frontend.name }}').exists() is False:
+{% if micro_frontend.v3 %}
+# enabling micro frontends is only required on backend versions < 4
+from dynamic_preferences.registries import global_preferences_registry
+
+# enable micro frontends feature on the Hub as a whole
+# We instantiate a manager for our global preferences
+# see https://django-dynamic-preferences.readthedocs.io/en/latest/quickstart.html#retrieve-and-update-preferences
+global_preferences = global_preferences_registry.manager()
+# enable micro frontends
+global_preferences['feature__enable_microservices'] = True
+{% endif %}
+
+if _MicroFrontend.objects.filter(name='{{ micro_frontend.name }}').exists() is False:
     # create entry for customization micro frontend
-    HubService.objects.create(name='{{ micro_frontend.name }}',
+    _MicroFrontend.objects.create(name='{{ micro_frontend.name }}',
         menu_entry_name='{{ micro_frontend.menu_entry_name }}',
         url_prefix='{{ micro_frontend.url_prefix }}',
         fa_icon='{{ micro_frontend.fa_icon }}',
@@ -14,12 +25,5 @@ if HubService.objects.filter(name='{{ micro_frontend.name }}').exists() is False
     created = True
 else:
     created = False
-
-# enable micro frontends feature on the Hub as a whole
-# We instantiate a manager for our global preferences
-# see https://django-dynamic-preferences.readthedocs.io/en/latest/quickstart.html#retrieve-and-update-preferences
-global_preferences = global_preferences_registry.manager()
-# enable micro frontends
-global_preferences['feature__enable_microservices'] = True
 
 print(created)
