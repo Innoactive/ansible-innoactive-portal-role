@@ -9,12 +9,13 @@ molecule = {extras = ["docker"],version = "*"}
 autopep8 = "*"
 
 [packages]
-ansible = "*"
 molecule = {extras = ["hetznercloud", "docker"],version = "*"}
 paramiko = "*"
 jmespath = "*"
 pytest-testinfra = "*"
-molecule-hetznercloud = "1.1.0"
+molecule-hetznercloud = "~=1.1"
+molecule-docker = "==0.2.4"
+ansible = "*"
 
 [requires]
 python_version = "3.9"
