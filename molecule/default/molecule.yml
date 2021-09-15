@@ -8,7 +8,7 @@ driver:
 lint: |
     yamllint .
 platforms:
-  - name: molecule-docker${INSTANCE_NAME_SUFFIX}
+  - name: molecule-docker
     image: debian:stretch-slim
     privileged: true
     volumes:
