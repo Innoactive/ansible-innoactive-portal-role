@@ -80,7 +80,7 @@
     name: "{{ container_names.customization }}"
     image: "{{ image_versions.customization }}"
     # pull image if version is latest
-    pull: "{{ (image_versions.customization | default(':', True)).split(':')[1] == 'latest' }}"
+    pull: "{{ customization_service_version_is_latest }}"
     restart_policy: unless-stopped
     volumes:
       - "{{ volume_names.customization }}:/usr/app/media"
@@ -143,6 +143,7 @@
       init_function: customizationAppRender
   register: customization_micro_frontend_raw
   changed_when: customization_micro_frontend_raw.stdout | trim | bool
-  when: ('latest' in hub_image_version) or (hub_image_version is version('1.20.0', '>='))
+  # micro services are part of the backend since version 1.20.0
+  when: ('latest' in portal_backend_version) or (portal_backend_version is version('1.20.0', '>='))
   tags:
     - setup_tasks
