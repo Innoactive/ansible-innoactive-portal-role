@@ -16,6 +16,8 @@
     admin_password: sup3rs3cur3pa55w0rdf0rt3st1ng
     # change the default prefix to easily identify test containers / services
     service_prefix: molecule_test_hub
+    # since the default case (using docker) mounts files from the local machine, we need to override the path
+    signalling_proxy_configuration_path: "{{ playbook_dir }}/../../files/signalling-proxy/"
   roles:
     - role: geerlingguy.docker
       vars:

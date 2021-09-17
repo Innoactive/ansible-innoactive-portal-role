@@ -85,19 +85,18 @@
 # FIXME: remove once signalling is a standalone service
 - name: Start Proxy for Signalling Server (Interactive Spectator)
   tags:
-    - portal2_signalling
+    - signalling
   vars:
-    signalling_proxy_path: /etc/portal2/fluentd
-    nginx_config_file_path: "{{ signalling_proxy_path }}/nginx.conf"
+    nginx_config_file_path: "{{ signalling_proxy_configuration_path }}/nginx.conf"
   block:
     - name: Create directory to hold config files
       file:
-        path: "{{ signalling_proxy_path }}/"
+        path: "{{ signalling_proxy_configuration_path }}/"
         state: directory
 
     - name: Upload nginx configuration
       copy:
-        src: "{{ playbook_dir }}/../files/signalling-proxy/nginx.conf"
+        src: signalling-proxy/nginx.conf
         dest: "{{ nginx_config_file_path }}"
 
     - name: Start nginx proxy container

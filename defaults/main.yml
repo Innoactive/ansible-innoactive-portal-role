@@ -252,3 +252,6 @@ portal_version: "{{ (image_versions.portal | default(':', True)).split(':') | la
 portal_version_is_latest: "{{ portal_version.startswith('latest') }}"
 customization_service_version: "{{ (image_versions.customization | default(':', True)).split(':') | last | string }}"
 customization_service_version_is_latest: "{{ customization_service_version.startswith('latest') }}"
+
+# Signalling Proxy Settings
+signalling_proxy_configuration_path: /etc/portal/signalling
