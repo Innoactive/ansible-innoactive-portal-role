@@ -12,7 +12,6 @@
   set_fact:
     traefik_admin_alternative_hostnames: "{{ admin_configuration.alias_hostnames | map('regex_replace', '^(.*)$', '`\\1`') | join(',') }}"
     base_server_environment_variables:
-      VIRTUAL_PORT: "8000"
       DJANGO_ALLOWED_HOSTS: "{{ ([admin_configuration.hostname] + admin_configuration.alias_hostnames) | join(',') | mandatory }}"
       DJANGO_SECRET_KEY: "{{ admin_configuration.secret_key | mandatory }}"
       FROM_EMAIL: "{{ admin_configuration.from_email | default('admin@' + portal_configuration.hostname, true) }}"
@@ -91,8 +90,6 @@
     # pull image if version is latest
     pull: "{{ portal_backend_version_is_latest }}"
     restart_policy: unless-stopped
-    exposed_ports:
-      - "8000"
     volumes: "{{ base_volumes + ([] if (jwtstep is skipped) else jwt_volumes) }}"
     env: "{{ base_server_environment_variables | combine(admin_configuration.extra_environment_variables) }}"
     labels: "{{ traefik_labels | combine(alternative_admin_domain_labels) }}"
