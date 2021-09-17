@@ -194,15 +194,6 @@ customization_configuration:
   oauth2_client_secret: "{{ customization_oauth_client_secret }}"
   extra_environment_variables: "{{ customization_extra_environment_variables }}"
 
-# JWT configuration
-jwt_key_path: /etc/hub/jwt
-jwt_privatekey: jwt-key
-jwt_publickey: jwt-key.pub
-jwt_local_key_path:
-jwt:
-  privatekey: "{{ jwt_privatekey }}"
-  publickey: "{{ jwt_publickey }}"
-
 # Mail Configuration
 smtp_host:
 smtp_port:

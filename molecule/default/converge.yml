@@ -16,9 +16,6 @@
     admin_password: sup3rs3cur3pa55w0rdf0rt3st1ng
     # change the default prefix to easily identify test containers / services
     service_prefix: molecule_test_hub
-    jwt_local_key_path: "{{ (playbook_dir + '/../sample_keys/jwt') | realpath }}"
-    # Because docker in docker uses the host system instead of the actual remote
-    jwt_key_path: "{{ jwt_local_key_path }}"
   roles:
     - role: geerlingguy.docker
       vars:
