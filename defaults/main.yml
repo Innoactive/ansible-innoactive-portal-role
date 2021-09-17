@@ -18,11 +18,9 @@ admin_email:
 admin_password:
 create_admin_user: true
 setup_database: true
-setup_wmc: true
+setup_control_panel: "{{ setup_wmc | default(True) }}"
 setup_discovery_portal: true
 setup_customization_service: true
-hub_offering: "lean"
-concurrent_access_tokens: true
 # Error Tracking configuration
 sentry_dsn:
 # Google Analytics configuration
@@ -86,21 +84,18 @@ image_versions:
 admin_configuration:
   hostname: "{{ admin_hostname }}"
   alias_hostnames: "{{ admin_alias_hostnames | trim }}"
-
   secret_key: "{{ secret_key }}"
   from_email: "{{ from_email }}"
   admin_email: "{{ admin_email }}"
   admin_password: "{{ admin_password }}"
   setup_database: "{{ setup_database }}"
-  setup_wmc: "{{ setup_wmc }}"
+  setup_control_panel: "{{ setup_control_panel }}"
   setup_discovery_portal: "{{ setup_discovery_portal }}"
   setup_customization_service: "{{ setup_customization_service }}"
   google_analytics_id: "{{ google_analytics_tracking_id }}"
   sentry_dsn: "{{ sentry_dsn }}"
   protocol: "{{ 'https' if traefik.enable_tls else 'http' }}"
   create_admin_user: "{{ create_admin_user }}"
-  hub_offering: "{{ hub_offering }}"
-  concurrent_access_tokens: "{{ concurrent_access_tokens }}"
   extra_environment_variables: "{{ extra_environment_variables }}"
 
 # Portal Configuration
@@ -255,4 +250,3 @@ portal_version: "{{ (image_versions.portal | default(':', True)).split(':') | la
 portal_version_is_latest: "{{ portal_version.startswith('latest') }}"
 customization_service_version: "{{ (image_versions.customization | default(':', True)).split(':') | last | string }}"
 customization_service_version_is_latest: "{{ customization_service_version.startswith('latest') }}"
-portal_backend_v4_or_newer: "{{ ('latest' in portal_backend_version) or (portal_backend_version is version('4.0.0', '>=')) }}"

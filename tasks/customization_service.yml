@@ -142,7 +142,6 @@
       fa_icon: paint-brush
       script_url: "{{ admin_configuration.protocol }}://{{ customization_configuration.hostname }}/main.js"
       init_function: customizationAppRender
-      v3: "{{ not portal_backend_v4_or_newer }}"
   register: customization_micro_frontend_raw
   changed_when: customization_micro_frontend_raw.stdout | trim | bool
   # micro services are part of the backend since version 1.20.0

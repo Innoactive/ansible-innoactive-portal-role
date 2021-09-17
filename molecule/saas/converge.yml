@@ -6,7 +6,7 @@
     registry_username: "{{ lookup('env','DOCKER_REGISTRY_USERNAME') }}"
     registry_password: "{{ lookup('env','DOCKER_REGISTRY_PASSWORD') }}"
     setup_database: true
-    setup_wmc: true
+    setup_control_panel: true
     letsencrypt: true
     # do not issue certificates from production letsencrypt server
     letsencrypt_test: true

@@ -89,10 +89,10 @@ Whether to ensure the creation of an admin user on the Portal backend, may be sk
 
 Whether to run database migrations and setup the database.
 
-    setup_wmc: true
+    setup_control_panel: true
 
 Whether to make the static frontend assets available on the Portal backend (styles, images, scripts). I.e. setup the control panel (f.k.a
-Web Management Console or WMC).
+Web Management Console or WMC). Legacy Option: `setup_wmc: true`
 
     sentry_dsn:
 
@@ -101,14 +101,6 @@ DSN for [Sentry](https://sentry.io/welcome/) to automatically track runtime erro
     google_analytics_tracking_id:
 
 Tracking ID of a Google Analytics Property to monitor usage of the Portal Backend.
-
-    hub_offering: "lean"
-
-Whether to display the "extended" feature set in the menu or a "lean" subset. *Only supported for `portal_backend_image_version < 4`*
-
-    concurrent_access_tokens: true
-
-Whether or not to allow one and the same user being authenticated in the same application (OAuth2 client) multiple times. *Only supported for `portal_backend_image_version < 4`*
 
     extra_environment_variables: {}
 
@@ -484,7 +476,7 @@ users too:
             registry_username: username-for-registry.docker.innoactive.de
             registry_password: password-for-registry.docker.innoactive.de
             setup_database: true
-            setup_wmc: true
+            setup_control_panel: true
             letsencrypt: true
             secret_key: not-secret-at-all-but-okay-for-tests
             admin_email: admin@innoactive.de
