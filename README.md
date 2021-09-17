@@ -342,9 +342,9 @@ The OAuth2 Client Secret that the Launcher uses. (Legacy option: `launcher_oauth
 
 #### Innoactive Portal Frontend
 
-    setup_discovery_portal: true
+    setup_portal_frontend: true
 
-Whether or not to setup the Portal frontend for this instance.
+Whether or not to setup the Portal frontend for this instance. (Legacy parameter: `setup_discovery_portal: true`)
 
     portal_hostname: "portal.{{ admin_configuration.primay_hostname  }}"
 
@@ -363,7 +363,7 @@ DSN for [Sentry](https://sentry.io/welcome/) to automatically track runtime erro
 
 Optional mapping of additional environment variables to be passed on to the Portal (e.g. to unlock hidden features).
 
-#### Innoactive Customization Service (for Discovery Portal)
+#### Portal Customization Service
 
     setup_customization_service: true
 
@@ -446,9 +446,9 @@ The available Tags are:
   - _base_ Controls whether base services will be set up (Database, Message Queue, Mailserver)
   - _main_ Controls whether main Portal services will be set up (Django application / Backend)
   - _ssl_ Controls whether or not the Let's Encrypt service will be set up
-  - _reverse_proxy_ Controls whether or not the discovery portal service will be set up
-  - _discovery_portal_ Controls whether or not to start the reverse proxy service
-  - _customization_ Controls whether or not the customization service for the discovery portal will be set up
+  - _reverse_proxy_ Controls whether or not to start the reverse proxy service
+  - _frontend_ Controls whether or not the Portal frontend will be set up
+  - _customization_ Controls whether or not the Portal's customization service will be set up
 
 - _setup_tasks_ Controls whether or not to run any setup tasks like database migrations, collection of static files, etc.
 
@@ -483,15 +483,6 @@ users too:
             portal_hostname: portal.my.hostname.com
             admin_hostname: admin.portal.my.hostname.com
             customization_hostname: customization.portal.my.hostname.com
-
-## Upgrading from 1.x to 2.x
-
-With version 2 of this role, we've introduced a breaking change by ensuring that data created by the Portal is stored in
-named docker volumes rather than anonymous ones (which can easily get lost). To ease the transition from Portal instances
-that were deployed with Version 1.x of this role, we've created a simple ansible playbook that helps by migrating all
-data previously stored in anonymous volumes to the new set of named volumes. After running this playbook on the host in
-question, Version 2.x of this role can simply be applied without the fear of losing data. See
-[here](migration/anonymous_to_named_volumes.yml) for the migration playbook.
 
 ## Testing
 

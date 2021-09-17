@@ -1,6 +1,0 @@
----
-- name: Stop Portal 1.0 container
-  docker_container:
-    name: hub_portal
-    state: absent
-  when: not setup_discovery_portal

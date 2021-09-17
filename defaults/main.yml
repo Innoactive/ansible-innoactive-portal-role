@@ -9,7 +9,7 @@ docker_registry:
   username: "{{ registry_username }}"
   password: "{{ registry_password }}"
 
-# Main Hub Configuration parameters
+# Main Portal Backend Configuration parameters
 admin_hostname:
 admin_alias_hostnames: []
 secret_key:
@@ -19,7 +19,7 @@ admin_password:
 create_admin_user: true
 setup_database: true
 setup_control_panel: "{{ setup_wmc | default(True) }}"
-setup_discovery_portal: true
+setup_portal_frontend: "{{ setup_discovery_portal | default(True) }}"
 setup_customization_service: true
 # Error Tracking configuration
 sentry_dsn:
@@ -90,7 +90,7 @@ admin_configuration:
   admin_password: "{{ admin_password }}"
   setup_database: "{{ setup_database }}"
   setup_control_panel: "{{ setup_control_panel }}"
-  setup_discovery_portal: "{{ setup_discovery_portal }}"
+  setup_portal_frontend: "{{ setup_portal_frontend }}"
   setup_customization_service: "{{ setup_customization_service }}"
   google_analytics_id: "{{ google_analytics_tracking_id }}"
   sentry_dsn: "{{ sentry_dsn }}"
@@ -240,7 +240,7 @@ container_names:
   message_queue: "{{ service_prefix }}_mq"
   mailserver: "{{ service_prefix }}_mailer"
   reverse_proxy: "{{ service_prefix }}_traefik"
-  discovery_portal: "{{ service_prefix }}_frontend"
+  portal_frontend: "{{ service_prefix }}_frontend"
   customization: "{{ service_prefix }}_customization"
   cloudxr_management: "{{ service_prefix }}_cloudxr_management"
   session_management: "{{ service_prefix }}_session_management"

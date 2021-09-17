@@ -18,7 +18,7 @@
         - skip_ansible_lint
         - requires_database
 
-    - name: Identify Client Id for Discovery Portal
+    - name: Identify Client Id for Session Management Service
       set_fact:
         session_management_oauth2_client_id: "{{ session_management_oauth2_client_output.stdout | from_json | json_query('client_id') }}"
         session_management_oauth2_client_secret: "{{ session_management_oauth2_client_output.stdout | from_json | json_query('client_secret') }}"
