@@ -27,15 +27,15 @@
     - services
     - main
 
-- name: Setup Hub Launcher
+- name: Setup Portal Desktop Client
   become: true
-  import_tasks: launcher.yml
+  import_tasks: desktop_client.yml
   when:
-    - launcher_configuration.oauth2_client_id | default('', true) | length > 0
-    - launcher_configuration.oauth2_client_secret | default('', true) | length > 0
+    - desktop_client_configuration.oauth2_client_id | default('', true) | length > 0
+    - desktop_client_configuration.oauth2_client_secret | default('', true) | length > 0
   tags:
     - setup_tasks
-    - launcher
+    - desktop_client
 
 - name: Setup Hub Customization Service
   become: true

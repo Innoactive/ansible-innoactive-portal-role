@@ -1,8 +1,8 @@
 ---
-- name: Assert compatible Hub Version
+- name: Assert compatible Backend Version
   assert:
-    that: ('latest' in portal_backend_version) or (portal_backend_version is version('2.4.1', '>'))
-    fail_msg: "This role version does only support Hub versions newer than 2.4.1"
+    that: ('latest' in portal_backend_version) or (portal_backend_version is version('4.0.0', '>='))
+    fail_msg: This role version does only support Portal Backend versions newer than 4.0.0
 
 - name: Setup required data volumes
   become: true

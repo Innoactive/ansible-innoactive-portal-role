@@ -56,8 +56,8 @@
       SPA_portalOAuth2ClientId: "{{ discovery_portal_oauth2_client_id }}"
       SPA_portalCustomizationRootUrl: "{{ customization_api_root | default('', true) }}"
       SPA_portalCloudRenderingSessionManagementRootUrl: "{{ portal_configuration.cloud_rendering_session_service_url }}"
-      SPA_desktopClientOAuth2ClientId: "{{ launcher_oauth_client_id }}"
-      SPA_desktopClientOAuth2ClientSecret: "{{ launcher_oauth_client_secret }}"
+      SPA_desktopClientOAuth2ClientId: "{{ desktop_client_configuration.oauth2_client_id }}"
+      SPA_desktopClientOAuth2ClientSecret: "{{ desktop_client_configuration.oauth2_client_secret }}"
     traefik_labels:
       traefik.enable: "true"
       traefik.http.routers.portal.rule: Host(`{{ portal_configuration.hostname }}`)

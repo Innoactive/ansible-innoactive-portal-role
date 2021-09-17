@@ -328,15 +328,15 @@ The log level. This defaults to `Warning`
 
 To enable the Innoactive Portal Desktop Client (a standalone application capable of retrieving content from the Portal) to access
 data from the Portal, a suitable OAuth2 Client with the specified client credentials can be created if the following
-parameters are provided (if none are provided, Launcher client will not be setup):
+parameters are provided (if none are provided, Desktop Client client will not be setup):
 
-    launcher_oauth_client_id:
+    desktop_client_oauth2_client_id:
 
-The OAuth2 Client ID that the Launcher uses.
+The OAuth2 Client ID that the Launcher uses. (Legacy option: `launcher_oauth_client_id`)
 
-    launcher_oauth_client_secret:
+    desktop_client_oauth2_client_secret:
 
-The OAuth2 Client Secret that the Launcher uses.
+The OAuth2 Client Secret that the Launcher uses. (Legacy option: `launcher_oauth_client_secret`)
 
 ### Additional Portal Services
 
