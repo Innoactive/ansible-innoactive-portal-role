@@ -1,0 +1,31 @@
+---
+- name: Start CloudXR management container
+  docker_container:
+    name: "{{ container_names.cloudxr_management }}"
+    image: "{{ image_versions.cloudxr_management }}"
+    restart_policy: unless-stopped
+    network_mode: default
+    pull: "{{ 'latest' in image_versions.cloudxr_management }}"
+    exposed_ports:
+      - 5000:5000
+    env:
+      Instance: "{{ cloudxr_configuration.instance }}"
+      MachineMaxKeepAliveAge: "{{ cloudxr_configuration.max_keep_avlive_age }}"
+      IpStackApiToken: "{{ cloudxr_configuration.ip_stack_api_token }}"
+      Sentry__Dsn: "{{ cloudxr_configuration.sentry_dsn }}"
+      Sentry__ServerName: "{{ cloudxr_configuration.instance }}"
+      MaxCloudInstances: "{{ cloudxr_configuration.max_cloud_instances }}"
+      DefaultRegion: "{{ cloudxr_configuration.defaultRegion }}"
+      Azure__Enabled: "{{ cloudxr_configuration.azure_enabled }}"
+      Azure__ClientId: "{{ cloudxr_configuration.azure_client_id }}"
+      Azure__Secret: "{{ cloudxr_configuration.azure_client_secret }}"
+      Azure__Subscription: "{{ cloudxr_configuration.azure_subscription }}"
+      Azure__TenantId: "{{ cloudxr_configuration.azure_tenant_id }}"
+      AWS__Enabled: "{{ cloudxr_configuration.aws_enabled }}"
+      AWS__AccessKeyId: "{{ cloudxr_configuration.aws_access_key_id }}"
+      AWS__SecretAccessKey: "{{ cloudxr_configuration.aws_secret_access_key }}"
+      AWS__Regions: "{{ cloudxr_configuration.aws_regions }}"
+
+    networks_cli_compatible: true
+    networks:
+      - name: "{{ network_names.main }}"

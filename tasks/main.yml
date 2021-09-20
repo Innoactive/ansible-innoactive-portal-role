@@ -6,38 +6,35 @@
     username: "{{ docker_registry.username }}"
     password: "{{ docker_registry.password }}"
 
-- name: Run service migrations
-  import_tasks: migration-3.0.0.yml
-
 - name: Setup required networks
   become: true
   import_tasks: networks.yml
 
-- name: Start Hub Base Services (Database, Message Queue, Mailserver)
+- name: Start Portal Base Services (Database, Message Queue, Mailserver)
   become: true
   import_tasks: base_services.yml
   tags:
     - services
     - base
 
-- name: Start Hub Main Services (Application Servers)
+- name: Start Portal Backend
   become: true
-  import_tasks: main_services.yml
+  import_tasks: backend.yml
   tags:
     - services
     - main
 
-- name: Setup Hub Launcher
+- name: Setup Portal Desktop Client
   become: true
-  import_tasks: launcher.yml
+  import_tasks: desktop_client.yml
   when:
-    - launcher_configuration.oauth2_client_id | default('', true) | length > 0
-    - launcher_configuration.oauth2_client_secret | default('', true) | length > 0
+    - desktop_client_configuration.oauth2_client_id | default('', true) | length > 0
+    - desktop_client_configuration.oauth2_client_secret | default('', true) | length > 0
   tags:
     - setup_tasks
-    - launcher
+    - desktop_client
 
-- name: Setup Hub Customization Service
+- name: Setup Portal Customization Service
   become: true
   import_tasks: customization_service.yml
   when: admin_configuration.setup_customization_service
@@ -45,13 +42,13 @@
     - services
     - customization
 
-- name: Setup Hub Discovery Portal
+- name: Setup Portal Frontend
   become: true
-  import_tasks: discovery_portal.yml
-  when: admin_configuration.setup_discovery_portal
+  import_tasks: frontend.yml
+  when: admin_configuration.setup_portal_frontend
   tags:
     - services
-    - discovery_portal
+    - frontend
 
 - name: Create Superuser
   become: true
@@ -61,9 +58,24 @@
     - setup_tasks
     - superuser
 
-- name: Start Hub Reverse Proxy Services
+- name: Start Portal Reverse Proxy Service
   become: true
   import_tasks: reverse_proxy.yml
   tags:
     - services
     - reverse_proxy
+
+- name: Start CloudXR Management Services
+  become: true
+  import_tasks: cloudxr_management_service.yml
+  tags:
+    - services
+    - cloudxr_management
+  when: cloudxr_configuration.enabled
+
+- name: Start Session Management Services
+  become: true
+  import_tasks: session_management_service.yml
+  tags:
+    - services
+    - session_management

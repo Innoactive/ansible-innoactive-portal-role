@@ -6,7 +6,7 @@
     registry_username: "{{ lookup('env','DOCKER_REGISTRY_USERNAME') }}"
     registry_password: "{{ lookup('env','DOCKER_REGISTRY_PASSWORD') }}"
     setup_database: true
-    setup_wmc: false
+    setup_control_panel: false
     letsencrypt: false
     secret_key: not-secret-at-all-but-okay-for-tests
     admin_hostname: admin.portal.localhost
@@ -15,10 +15,9 @@
     admin_email: admin@innoactive.de
     admin_password: sup3rs3cur3pa55w0rdf0rt3st1ng
     # change the default prefix to easily identify test containers / services
-    hub_service_prefix: molecule_test_hub
-    jwt_local_key_path: "{{ (playbook_dir + '/../sample_keys/jwt') | realpath }}"
-    # Because docker in docker uses the host system instead of the actual remote
-    jwt_key_path: "{{ jwt_local_key_path }}"
+    service_prefix: molecule_test_hub
+    # since the default case (using docker) mounts files from the local machine, we need to override the path
+    signalling_proxy_configuration_path: "{{ playbook_dir }}/../../files/signalling-proxy/"
   roles:
     - role: geerlingguy.docker
       vars:

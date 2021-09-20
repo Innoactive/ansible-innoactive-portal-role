@@ -5,7 +5,8 @@
       shell: "{{ lookup('template', 'run_in_django_shell.sh.j2') }}" # noqa 305
       vars:
         python_script_name: get_oauth_client_credentials
-        client_name: Discovery Portal Customization Service
+        authorization_type: GRANT_AUTHORIZATION_CODE
+        client_name: Portal Customization Service
         client_id: "{{ customization_configuration.oauth2_client_id }}"
         client_secret: "{{ customization_configuration.oauth2_client_secret }}"
         redirect_uris:
@@ -135,13 +136,12 @@
   vars:
     python_script_name: enable_micro_frontend
     micro_frontend:
-      name: Discovery Portal Customization
+      name: Portal Customization
       menu_entry_name: Customization
       url_prefix: customization
       fa_icon: paint-brush
       script_url: "{{ admin_configuration.protocol }}://{{ customization_configuration.hostname }}/main.js"
       init_function: customizationAppRender
-      v3: "{{ not portal_backend_v4_or_newer }}"
   register: customization_micro_frontend_raw
   changed_when: customization_micro_frontend_raw.stdout | trim | bool
   # micro services are part of the backend since version 1.20.0
