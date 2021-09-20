@@ -135,7 +135,7 @@ cloudxr_aws_regions:
 cloudxr_configuration:
   enabled: "{{ cloudxr_enabled }}"
   defaultRegion: "{{ cloudxr_default_region }}"
-  instance: "{{ cloudxr_instance | default(instance_name, true) }}"
+  instance: "{{ cloudxr_instance }}"
   max_cloud_instances: "{{ cloudxr_max_cloud_instances }}"
   max_keep_avlive_age: "{{ cloudxr_machine_max_keep_alive_age }}"
   sentry_dsn: "{{ cloudxr_management_sentry_dsn }}"

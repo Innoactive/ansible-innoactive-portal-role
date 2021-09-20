@@ -48,7 +48,6 @@
       PortalBackend__ClientSecret: "{{ session_management_oauth2_client_secret }}"
       CloudXRManagement__BaseUrl: "http://{{ container_names.cloudxr_management }}:5000"
       Sentry__Dsn: "{{ session_management_configuration.sentry_dsn }}"
-      Sentry__ServerName: "{{ instance_name }}"
       CorsOrigins: "{{ session_management_configuration.CorsOrigins | default(admin_configuration.protocol + '://' + portal_hostname, true) }}"
       Serilog__MinimumLevel: "{{ session_management_configuration.log_level | default('Warning', true) }}"
       ASPNETCORE_ENVIRONMENT: "{{ session_management_configuration.environment | default('Production', true) }}"
