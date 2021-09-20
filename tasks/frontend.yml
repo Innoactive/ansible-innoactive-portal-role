@@ -101,7 +101,7 @@
 
     - name: Start nginx proxy container
       docker_container:
-        name: portal_frontend2_signalling_proxy
+        name: "{{ container_names.portal_frontend }}_signalling_proxy"
         image: "nginx:alpine"
         network_mode: default
         restart_policy: unless-stopped
