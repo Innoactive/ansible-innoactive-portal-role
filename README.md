@@ -15,7 +15,7 @@ them, credentials to access the docker registry at `registry.docker.innoactive.d
 
 Since the Innoactive Portal consists of a number of services each of which is bundled as a docker container, this role requires the ansible host to have [docker](https://www.docker.com/) installed (API level >= 1.20) and ready to use. To ensure this, you can e.g. use the excellent ansible role [geerlingguy.docker](https://galaxy.ansible.com/geerlingguy/docker).
 
-Additionally, ansible's [docker module](https://docs.ansible.com/ansible/latest/modules/docker_container_module.html) requires the docker pip module to be installed in order for Python to be able to communicate with the running docker service. Installing this package can e.g. either be done via the native ansible [pip module(https://docs.ansible.com/ansible/latest/modules/pip_module.html)] or via a dedicated role like [geerlingguy.pip](https://galaxy.ansible.com/geerlingguy/pip).
+Additionally, ansible's [docker module](https://docs.ansible.com/ansible/latest/modules/docker_container_module.html) requires the docker pip module to be installed in order for Python to be able to communicate with the running docker service. Installing this package can e.g. either be done via the native ansible [pip module](https://docs.ansible.com/ansible/latest/modules/pip_module.html) or via a dedicated role like [geerlingguy.pip](https://galaxy.ansible.com/geerlingguy/pip).
 
 ## Installation
 
