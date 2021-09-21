@@ -67,7 +67,6 @@
     restart_policy: unless-stopped
     volumes:
       - "{{ volume_names.media }}:/media"
-      - "{{ volume_names.static }}:/static"
     env: "{{ base_server_environment_variables | combine(admin_configuration.extra_environment_variables) }}"
     labels: "{{ traefik_labels | combine(alternative_admin_domain_labels) }}"
     comparisons:

@@ -224,7 +224,6 @@ media_volume_mount:
 
 volume_names:
   media: "{{ service_prefix }}_media"
-  static: "{{ service_prefix }}_static"
   customization: "{{ service_prefix }}_customization_media"
   database: "{{ service_prefix }}_database"
   message_queue: "{{ service_prefix }}_message_queue"
