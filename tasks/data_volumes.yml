@@ -85,7 +85,3 @@
       type: local
       o: bind
   when: use_cifs_mount or use_bind_mount or use_device_mount
-
-- name: Create Hub's static data volume
-  docker_volume:
-    name: "{{ volume_names.static }}"
