@@ -15,7 +15,7 @@ them, credentials to access the docker registry at `registry.docker.innoactive.d
 
 Since the Innoactive Portal consists of a number of services each of which is bundled as a docker container, this role requires the ansible host to have [docker](https://www.docker.com/) installed (API level >= 1.20) and ready to use. To ensure this, you can e.g. use the excellent ansible role [geerlingguy.docker](https://galaxy.ansible.com/geerlingguy/docker).
 
-Additionally, ansible's [docker module](https://docs.ansible.com/ansible/latest/modules/docker_container_module.html) requires the docker pip module to be installed in order for Python to be able to communicate with the running docker service. Installing this package can e.g. either be done via the native ansible [pip module(https://docs.ansible.com/ansible/latest/modules/pip_module.html)] or via a dedicated role like [geerlingguy.pip](https://galaxy.ansible.com/geerlingguy/pip).
+Additionally, ansible's [docker module](https://docs.ansible.com/ansible/latest/modules/docker_container_module.html) requires the docker pip module to be installed in order for Python to be able to communicate with the running docker service. Installing this package can e.g. either be done via the native ansible [pip module](https://docs.ansible.com/ansible/latest/modules/pip_module.html) or via a dedicated role like [geerlingguy.pip](https://galaxy.ansible.com/geerlingguy/pip).
 
 ## Installation
 
@@ -89,10 +89,10 @@ Whether to ensure the creation of an admin user on the Portal backend, may be sk
 
 Whether to run database migrations and setup the database.
 
-    setup_wmc: true
+    setup_control_panel: true
 
 Whether to make the static frontend assets available on the Portal backend (styles, images, scripts). I.e. setup the control panel (f.k.a
-Web Management Console or WMC).
+Web Management Console or WMC). Legacy Option: `setup_wmc: true`
 
     sentry_dsn:
 
@@ -101,14 +101,6 @@ DSN for [Sentry](https://sentry.io/welcome/) to automatically track runtime erro
     google_analytics_tracking_id:
 
 Tracking ID of a Google Analytics Property to monitor usage of the Portal Backend.
-
-    hub_offering: "lean"
-
-Whether to display the "extended" feature set in the menu or a "lean" subset. *Only supported for `portal_backend_image_version < 4`*
-
-    concurrent_access_tokens: true
-
-Whether or not to allow one and the same user being authenticated in the same application (OAuth2 client) multiple times. *Only supported for `portal_backend_image_version < 4`*
 
     extra_environment_variables: {}
 
@@ -236,27 +228,123 @@ When using [Let's Encrypt](https://letsencrypt.org/) to issue SSL / TLS certific
 used to issue certificates by Let's Encrypt's [staging environment](https://letsencrypt.org/docs/staging-environment/)
 instead of the production environment.
 
+### CloudXR Management Service
+
+    cloudxr_enabled:
+
+**Mandatory** If false, the container is not deployed. Defaults to `false`
+
+    cloudxr_default_region:
+
+**Mandatory** Default region if ip lookup did not work
+
+    cloudxr_instance:
+
+The instance (customer). Defaults to `instance_name` variable.
+
+    cloudxr_max_cloud_instances:
+
+**Mandatory** The maximum started instance across all regions.
+
+    cloudxr_machine_max_keep_alive_age:
+
+**Mandatory** The keepalive age time untill machine is destroyed. Format: hh:MM:ss (04:00:00)
+
+    cloudxr_management_sentry_dsn:
+
+The sentry DSN
+
+    cloudxr_ip_stack_api_token:
+
+**Mandatory** The IP address lookup is required to select the closest cloudXR region. The token must be obtained on [this](https://ipstack.com/) website
+
+    cloudxr_azure_enabled:
+
+**Mandatory if azure** enable azure integration. This option is mutually exclusive with `cloudxr_aws_enabled`
+
+    cloudxr_azure_client_id:
+
+**Mandatory if azure** azure clientID to control the scale set
+
+    cloudxr_azure_secret:
+
+**Mandatory if azure** azure client secret to control the scale set
+
+    cloudxr_azure_subscription:
+
+**Mandatory if azure** azure subscription where the scaleset is deployed
+
+    cloudxr_azure_tenant_id:
+
+**Mandatory if azure** azure tenant where the scaleset is deployed
+
+    cloudxr_aws_enabled:
+
+**Mandatory if aws** enable AWS integration. This option is mutually exclusive with `cloudxr_azure_enabled`
+
+    cloudxr_aws_access_key_id:
+
+**Mandatory if aws** access key id to the aws scaling group
+
+    cloudxr_aws_secret_access_key:
+
+**Mandatory if aws** access key secret to the aws scaling group
+
+    cloudxr_aws_regions:
+
+**Mandatory if aws** all regions where scaling groups are deployed (as they cannot be detected automatically)
+
+### Session Management Service
+
+    session_management_image_version:
+
+The version of the session mangement contianer. This defaults to `latest`
+
+    session_management_sentry_dsn:
+
+The sentry dsn url
+
+    session_management_environment:
+
+The environment `Production`, `Staging`, `Developtment`. This defaults to `Production`
+
+    session_management_cors_origin:
+
+If custom CORS origin(s) are required it can be set here separated by `,` (comma)
+
+    session_management_oauth_client_id:
+
+**Mandatory** the OAuth clientID
+
+    session_management_oauth_client_secret:
+
+**Mandatory** the OAuth client secret
+
+    session_management_log_level:
+
+The log level. This defaults to `Warning`
+
 ### Innoactive Portal Desktop Client (f.k.a Hub Launcher)
 
 To enable the Innoactive Portal Desktop Client (a standalone application capable of retrieving content from the Portal) to access
 data from the Portal, a suitable OAuth2 Client with the specified client credentials can be created if the following
-parameters are provided (if none are provided, Launcher client will not be setup):
+parameters are provided (if none are provided, Desktop Client client will not be setup):
 
-    launcher_oauth_client_id:
+    desktop_client_oauth2_client_id:
 
-The OAuth2 Client ID that the Launcher uses.
+The OAuth2 Client ID that the Launcher uses. (Legacy option: `launcher_oauth_client_id`)
 
-    launcher_oauth_client_secret:
+    desktop_client_oauth2_client_secret:
 
-The OAuth2 Client Secret that the Launcher uses.
+The OAuth2 Client Secret that the Launcher uses. (Legacy option: `launcher_oauth_client_secret`)
 
 ### Additional Portal Services
 
 #### Innoactive Portal Frontend
 
-    setup_discovery_portal: true
+    setup_portal_frontend: true
 
-Whether or not to setup the Portal frontend for this instance.
+Whether or not to setup the Portal frontend for this instance. (Legacy parameter: `setup_discovery_portal: true`)
 
     portal_hostname: "portal.{{ admin_configuration.primay_hostname  }}"
 
@@ -267,15 +355,6 @@ The hostname under which the Portal frontend should be publicly availabe. This d
 Allows to explicitly define the oauth client id to be used by the portal to communicate with the Portal backend. If not defined,
 an oauth client will automatically be retrieved.
 
-    portal_oauth_client_secret:
-
-Allows to explicitly define the oauth client secret to be used by the portal to communicate with the Portal backend. If not defined,
-an oauth client will automatically be retrieved.
-
-    portal_enabled_features:
-
-Enables specific features on the Portal frontend. Can be used to enable the legacy `reality` feature.
-
     portal_sentry_dsn:
 
 DSN for [Sentry](https://sentry.io/welcome/) to automatically track runtime errors within the Portal.
@@ -284,7 +363,7 @@ DSN for [Sentry](https://sentry.io/welcome/) to automatically track runtime erro
 
 Optional mapping of additional environment variables to be passed on to the Portal (e.g. to unlock hidden features).
 
-#### Innoactive Customization Service (for Discovery Portal)
+#### Portal Customization Service
 
     setup_customization_service: true
 
@@ -367,9 +446,9 @@ The available Tags are:
   - _base_ Controls whether base services will be set up (Database, Message Queue, Mailserver)
   - _main_ Controls whether main Portal services will be set up (Django application / Backend)
   - _ssl_ Controls whether or not the Let's Encrypt service will be set up
-  - _reverse_proxy_ Controls whether or not the discovery portal service will be set up
-  - _discovery_portal_ Controls whether or not to start the reverse proxy service
-  - _customization_ Controls whether or not the customization service for the discovery portal will be set up
+  - _reverse_proxy_ Controls whether or not to start the reverse proxy service
+  - _frontend_ Controls whether or not the Portal frontend will be set up
+  - _customization_ Controls whether or not the Portal's customization service will be set up
 
 - _setup_tasks_ Controls whether or not to run any setup tasks like database migrations, collection of static files, etc.
 
@@ -397,22 +476,13 @@ users too:
             registry_username: username-for-registry.docker.innoactive.de
             registry_password: password-for-registry.docker.innoactive.de
             setup_database: true
-            setup_wmc: true
+            setup_control_panel: true
             letsencrypt: true
             secret_key: not-secret-at-all-but-okay-for-tests
             admin_email: admin@innoactive.de
             portal_hostname: portal.my.hostname.com
             admin_hostname: admin.portal.my.hostname.com
             customization_hostname: customization.portal.my.hostname.com
-
-## Upgrading from 1.x to 2.x
-
-With version 2 of this role, we've introduced a breaking change by ensuring that data created by the Portal is stored in
-named docker volumes rather than anonymous ones (which can easily get lost). To ease the transition from Portal instances
-that were deployed with Version 1.x of this role, we've created a simple ansible playbook that helps by migrating all
-data previously stored in anonymous volumes to the new set of named volumes. After running this playbook on the host in
-question, Version 2.x of this role can simply be applied without the fear of losing data. See
-[here](migration/anonymous_to_named_volumes.yml) for the migration playbook.
 
 ## Testing
 

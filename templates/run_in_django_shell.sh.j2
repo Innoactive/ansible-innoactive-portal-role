@@ -1,4 +1,4 @@
-docker exec -i {{ container_names.main }} python manage.py shell <<EOF
+docker exec -i {{ container_names.backend }} python manage.py shell <<EOF
 
 {% include 'python/%s.py.j2' % python_script_name %}
 

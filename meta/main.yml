@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: Benedikt Reiser
-  description: Ansible Role to make a host serve as as Innoactive Hub instance
+  description: Ansible Role to setup an instance of the Innoactive Portal on a host
   company: Innoactive GmbH
 
   # If the issue tracker for your role is not on github, uncomment the

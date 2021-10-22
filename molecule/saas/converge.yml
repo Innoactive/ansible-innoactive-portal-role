@@ -6,7 +6,7 @@
     registry_username: "{{ lookup('env','DOCKER_REGISTRY_USERNAME') }}"
     registry_password: "{{ lookup('env','DOCKER_REGISTRY_PASSWORD') }}"
     setup_database: true
-    setup_wmc: true
+    setup_control_panel: true
     letsencrypt: true
     # do not issue certificates from production letsencrypt server
     letsencrypt_test: true
@@ -21,8 +21,7 @@
       local:
         path: "{{ lookup('env', 'LOCAL_MOUNT_PATH') }}"
     # change the default prefix to easily identify test containers / services
-    hub_service_prefix: molecule_test_hub
-    jwt_local_key_path: "{{ (playbook_dir + '/../sample_keys/jwt') | realpath }}"
+    service_prefix: molecule_test_hub
     # we are running on a hetzner machine and need a publicly accessible hostname
     # we can get it by reversing the ip4 address, prefixing it with static. and
     # suffixing it with clients.your-server.de

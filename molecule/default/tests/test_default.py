@@ -30,8 +30,9 @@ def test_services_are_running(host):
                                       "%straefik",
                                       "%smq",
                                       "%sdb",
-                                      "%sportal",
+                                      "%sfrontend",
                                       "%scustomization",
+                                      "%ssession_management",
                                   ]]
         actual_service_names = [container.name for container in
                                 host.docker.get_containers(status="running")]

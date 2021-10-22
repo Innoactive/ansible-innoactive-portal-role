@@ -1,0 +1,121 @@
+---
+- name: Get Client Credentials for Portal Frontend
+  block:
+    - name: Create / Determine existing client credentials in Application
+      shell: "{{ lookup('template', 'run_in_django_shell.sh.j2') }}" # noqa 305
+      vars:
+        python_script_name: get_oauth_client_credentials
+        authorization_type: GRANT_AUTHORIZATION_CODE
+        client_name: Portal
+        client_id: "{{ portal_configuration.oauth2_client_id }}"
+        client_secret: ""
+        redirect_uris:
+          - "{{ admin_configuration.protocol }}://%s/oauth/callback' % '{{ portal_configuration.hostname }}"
+      register: portal_frontend_oauth2_client_output
+      changed_when: portal_frontend_oauth2_client_output.stdout | from_json | json_query('changed')
+      # ansible lint has an issue where it cannot bypass rules (like 305) within blocks
+      # see https://github.com/ansible/ansible-lint/issues/484, so we need to explicitly skip
+      tags:
+        - skip_ansible_lint
+        - requires_database
+
+    - name: Identify Client Id for Portal Frontend
+      set_fact:
+        portal_frontend_oauth2_client_id: "{{ portal_frontend_oauth2_client_output.stdout | from_json | json_query('client_id') }}"
+
+- name: Validate client credentials
+  assert:
+    that:
+      - portal_frontend_oauth2_client_id | default('', true) | length > 0
+
+- name: Find Out Customization Service Endpoint
+  set_fact:
+    customization_api_root: "{{ admin_configuration.protocol }}://{{ customization_configuration.hostname }}"
+  when: admin_configuration.setup_customization_service
+
+- name: Support alternative hostnames
+  set_fact:
+    alternative_portal_hostnames_traefik_labels:
+      # redirect alternative domains to primary
+      # GET & HEAD (can be redirected)
+      traefik.http.middlewares.redirect-alternative-portal.redirectregex.regex: "(.*?://)([^/]+)(.*)"
+      traefik.http.middlewares.redirect-alternative-portal.redirectregex.replacement: "${1}{{ portal_configuration.hostname }}${3}"
+      traefik.http.routers.portal-alternative.rule: Host({{ traefik_portal_alternative_hostnames }}) && Method(`GET`,`HEAD`)
+      traefik.http.routers.portal-alternative.middlewares: redirect-alternative-portal
+      traefik.http.routers.portal-alternative.tls: "{{ traefik.enable_tls | ternary('true', 'false') }}"
+      traefik.http.routers.portal-alternative.tls.certresolver: "{{ traefik.certificate_resolver }}"
+  vars:
+    traefik_portal_alternative_hostnames: "{{ portal_configuration.alias_hostnames | map('regex_replace', '^(.*)$', '`\\1`') | join(',') }}"
+  when: portal_configuration.alias_hostnames | default([]) | length > 0
+
+- name: Start Portal container
+  vars:
+    default_environment_variables:
+      SPA_sentryDSN: "{{ portal_configuration.sentry_dsn }}"
+      SPA_portalBackendRootUrl: "{{ admin_configuration.protocol }}://{{ admin_configuration.hostname }}"
+      SPA_portalOAuth2ClientId: "{{ portal_frontend_oauth2_client_id }}"
+      SPA_portalCustomizationRootUrl: "{{ customization_api_root | default('', true) }}"
+      SPA_portalCloudRenderingSessionManagementRootUrl: "{{ portal_configuration.cloud_rendering_session_service_url }}"
+      SPA_portalSignalingService: "{{ portal_configuration.signaling_service }}"
+      SPA_desktopClientOAuth2ClientId: "{{ desktop_client_configuration.oauth2_client_id }}"
+      SPA_desktopClientOAuth2ClientSecret: "{{ desktop_client_configuration.oauth2_client_secret }}"
+    traefik_labels:
+      traefik.enable: "true"
+      traefik.http.routers.portal.rule: Host(`{{ portal_configuration.hostname }}`)
+      traefik.http.routers.portal.tls: "{{ traefik.enable_tls | ternary('true', 'false') }}"
+      traefik.http.routers.portal.tls.certresolver: "{{ traefik.certificate_resolver }}"
+    alternative_portal_domain_labels: "{{ alternative_portal_hostnames_traefik_labels | default({}) }}"
+    redirect_http_labels: "{{ http_redirect_traefik_labels | default({}) }}"
+  docker_container:
+    name: "{{ container_names.portal_frontend }}"
+    image: "{{ image_versions.portal }}"
+    network_mode: default
+    restart_policy: unless-stopped
+    container_default_behavior: no_defaults
+    pull: "{{ portal_version_is_latest }}"
+    env: "{{ default_environment_variables | combine(portal_configuration.extra_environment_variables) }}"
+    labels: "{{ traefik_labels | combine(alternative_portal_domain_labels) }}"
+
+    networks_cli_compatible: true
+    networks:
+      - name: "{{ network_names.main }}"
+
+# we need to proxy requests to the signalling server as the cloud rendering machines hosting the signalling server are only
+# accessible via ws (so no secure websockets - wss) and browsers do not allow requests from secure environments (e.g. https)
+# to insecure environments (e.g. ws / http)
+# FIXME: remove once signalling is a standalone service
+- name: Start Proxy for Signalling Server (Interactive Spectator)
+  tags:
+    - signalling
+  vars:
+    nginx_config_file_path: "{{ signalling_proxy_configuration_path }}/nginx.conf"
+  block:
+    - name: Create directory to hold config files
+      file:
+        path: "{{ signalling_proxy_configuration_path }}/"
+        state: directory
+
+    - name: Upload nginx configuration
+      copy:
+        src: signalling-proxy/nginx.conf
+        dest: "{{ nginx_config_file_path }}"
+
+    - name: Start nginx proxy container
+      docker_container:
+        name: "{{ container_names.portal_frontend }}_signalling_proxy"
+        image: "nginx:alpine"
+        network_mode: default
+        restart_policy: unless-stopped
+        container_default_behavior: no_defaults
+        volumes:
+          - "{{ nginx_config_file_path }}:/etc/nginx/conf.d/default.conf"
+        labels:
+          traefik.enable: "true"
+          traefik.http.routers.signalling-ws-proxy.rule: Host(`{{ portal_configuration.hostname }}`) && PathPrefix(`/signalling/`)
+          traefik.http.routers.signalling-ws-proxy.entrypoints: http
+          traefik.http.routers.signalling-ws-proxy.tls: "true"
+          traefik.http.routers.signalling-ws-proxy.tls.certresolver: lets-encrypt
+          traefik.http.routers.signalling-ws-proxy.priority: "1000"
+        networks_cli_compatible: true
+        networks:
+          - name: "{{ network_names.main }}"
