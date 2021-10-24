@@ -7,14 +7,15 @@ pr:
     include:
       - develop
 
+pool:
+  vmImage: "ubuntu-latest"
+
 stages:
   - stage: Lint
     displayName: Lint
     jobs:
       - job: lint
         displayName: Lint Commits
-        pool:
-          vmImage: "ubuntu-18.04"
         steps:
           - script: |
                 npm install @commitlint/cli commitlint-azure-pipelines-cli @commitlint/config-conventional
@@ -28,8 +29,6 @@ stages:
     jobs:
       - job: test
         displayName: Test
-        pool:
-          vmImage: "ubuntu-18.04"
         steps:
 
           - task: UsePythonVersion@0
