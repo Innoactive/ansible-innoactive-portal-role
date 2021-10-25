@@ -38,7 +38,7 @@
     pull: "{{ 'latest' in image_versions.session_management }}"
     labels:
       traefik.enable: "true"
-      traefik.http.routers.session_management.rule: Host(`session_management.{{ portal_hostname }}`)
+      traefik.http.routers.session_management.rule: Host(`session-management.{{ portal_hostname }}`)
       traefik.http.routers.session_management.tls: "true"
       traefik.http.routers.session_management.tls.certresolver: lets-encrypt
     env:
