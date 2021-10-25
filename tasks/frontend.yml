@@ -55,7 +55,7 @@
       SPA_portalBackendRootUrl: "{{ admin_configuration.protocol }}://{{ admin_configuration.hostname }}"
       SPA_portalOAuth2ClientId: "{{ portal_frontend_oauth2_client_id }}"
       SPA_portalCustomizationRootUrl: "{{ customization_api_root | default('', true) }}"
-      SPA_portalCloudRenderingSessionManagementRootUrl: "{{ portal_configuration.cloud_rendering_session_service_url }}"
+      SPA_portalCloudRenderingSessionManagementRootUrl: "{{ admin_configuration.protocol }}://{{ session_management_configuration.hostname }}"
       SPA_portalSignalingService: "{{ portal_configuration.signaling_service }}"
       SPA_desktopClientOAuth2ClientId: "{{ desktop_client_configuration.oauth2_client_id }}"
       SPA_desktopClientOAuth2ClientSecret: "{{ desktop_client_configuration.oauth2_client_secret }}"
