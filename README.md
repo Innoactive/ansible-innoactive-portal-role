@@ -327,6 +327,16 @@ If custom CORS origin(s) are required it can be set here separated by `,` (comma
 
 The log level. This defaults to `Warning`
 
+### VR standalone Client
+
+    vr_standalone_client_oauth2_client_id:
+
+The OAuth2 Client ID that the VR standalone Client uses.
+
+    vr_standalone_client_oauth2_client_secret:
+
+The OAuth2 Client Secret that the VR standalone Client uses.
+
 ### Innoactive Portal Desktop Client (f.k.a Hub Launcher)
 
 To enable the Innoactive Portal Desktop Client (a standalone application capable of retrieving content from the Portal) to access
@@ -340,6 +350,14 @@ The OAuth2 Client ID that the Launcher uses. (Legacy option: `launcher_oauth_cli
     desktop_client_oauth2_client_secret:
 
 The OAuth2 Client Secret that the Launcher uses. (Legacy option: `launcher_oauth_client_secret`)
+
+    desktop_client_remote_oauth2_client_id:
+
+The OAuth2 Client ID that the Remote (CloudXR) Launcher uses.
+
+    desktop_client_remote_oauth2_client_secret:
+
+The OAuth2 Client Secret that the Remote (CloudXR) Launcher uses.
 
 ### Additional Portal Services
 
