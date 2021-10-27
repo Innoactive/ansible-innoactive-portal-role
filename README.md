@@ -295,6 +295,7 @@ The sentry DSN
 **Mandatory if aws** all regions where scaling groups are deployed (as they cannot be detected automatically)
 
 ### Session Management Service
+
     session_management_hostname:
 
 **Mandatory** the hostname for the session management service.
