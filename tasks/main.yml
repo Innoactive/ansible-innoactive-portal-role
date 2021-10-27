@@ -34,6 +34,16 @@
     - setup_tasks
     - desktop_client
 
+- name: Setup VR Client
+  become: true
+  import_tasks: vr_standalone_client.yml
+  when:
+    - vr_standalone_client.oauth2_client_id | default('', true) | length > 0
+    - vr_standalone_client.oauth2_client_secret | default('', true) | length > 0
+  tags:
+    - setup_tasks
+    - vr_client
+
 - name: Setup Portal Customization Service
   become: true
   import_tasks: customization_service.yml
