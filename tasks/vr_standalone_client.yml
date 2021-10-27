@@ -9,8 +9,7 @@
         client_name: VR Standalone Client
         client_id: "{{ vr_standalone_client.oauth2_client_id }}"
         client_secret: "{{ vr_standalone_client.oauth2_client_secret }}"
-        redirect_uris: 
-          "http://127.0.0.1:51236/"
+        redirect_uris: []
       register: vr_standalone_oauth2_client_output
       changed_when: vr_standalone_oauth2_client_output.stdout | from_json | json_query('changed')
       # ansible lint has an issue where it cannot bypass rules (like 305) within blocks

@@ -354,11 +354,11 @@ The OAuth2 Client Secret that the Launcher uses. (Legacy option: `launcher_oauth
 
     desktop_client_remote_oauth2_client_id:
 
-The OAuth2 Client ID that the Remote (CloudXR) Launcher uses.
+The OAuth2 Client ID that the Remote (Cloud Rendering) Launcher uses.
 
     desktop_client_remote_oauth2_client_secret:
 
-The OAuth2 Client Secret that the Remote (CloudXR) Launcher uses.
+The OAuth2 Client Secret that the Remote (Cloud Rendering) Launcher uses.
 
 ### Additional Portal Services
 
