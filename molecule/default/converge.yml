@@ -12,6 +12,7 @@
     admin_hostname: admin.portal.localhost
     portal_hostname: portal.localhost
     customization_hostname: customization.portal.localhost
+    session_management_hostname: session-management.portal.localhost
     admin_email: admin@innoactive.de
     admin_password: sup3rs3cur3pa55w0rdf0rt3st1ng
     # change the default prefix to easily identify test containers / services

@@ -5,7 +5,7 @@
       shell: "{{ lookup('template', 'run_in_django_shell.sh.j2') }}" # noqa 305
       vars:
         python_script_name: get_oauth_client_credentials
-        authorization_type: GRANT_AUTHORIZATION_CODE
+        authorization_type: GRANT_TOKEN_EXCHANGE
         client_name: Session Management Service
         client_id: "{{ session_management_configuration.oauth2_client_id }}"
         client_secret: "{{ session_management_configuration.oauth2_client_secret }}"
@@ -38,7 +38,7 @@
     pull: "{{ 'latest' in image_versions.session_management }}"
     labels:
       traefik.enable: "true"
-      traefik.http.routers.session_management.rule: Host(`session-management.{{ portal_hostname }}`)
+      traefik.http.routers.session_management.rule: Host(`{{ session_management_configuration.hostname }}`)
       traefik.http.routers.session_management.tls: "true"
       traefik.http.routers.session_management.tls.certresolver: lets-encrypt
     env:
