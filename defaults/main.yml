@@ -116,6 +116,8 @@ portal_configuration:
 
 # CloudXR Management Service
 cloudxr_enabled:
+cloudxr_log_level:
+cloudxr_environment:
 cloudxr_default_region:
 cloudxr_instance:
 cloudxr_max_cloud_instances:
@@ -133,6 +135,8 @@ cloudxr_aws_secret_access_key:
 cloudxr_aws_regions:
 
 cloudxr_configuration:
+  environment: "{{ cloudxr_environment  }}"
+  log_level: "{{ cloudxr_log_level }}"
   enabled: "{{ cloudxr_enabled }}"
   defaultRegion: "{{ cloudxr_default_region }}"
   instance: "{{ cloudxr_instance }}"
@@ -155,10 +159,10 @@ cloudxr_configuration:
 session_management_hostname:
 session_management_sentry_dsn:
 session_management_environment:
+session_management_log_level:
 session_management_cors_origin:
 session_management_oauth_client_id:
 session_management_oauth_client_secret:
-session_management_log_level:
 
 session_management_configuration:
   hostname: "{{ session_management_hostname }}"

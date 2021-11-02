@@ -234,6 +234,14 @@ instead of the production environment.
 
 **Mandatory** If false, the container is not deployed. Defaults to `false`
 
+    cloudxr_environment:
+
+The environment `Production`, `Staging`, `Developtment`. This defaults to `Production`
+
+    cloudxr_log_level:
+
+The log level. This defaults to `Warning`
+
     cloudxr_default_region:
 
 **Mandatory** Default region if ip lookup did not work
