@@ -60,6 +60,8 @@
       traefik.http.routers.channels.tls: "{{ traefik.enable_tls | ternary('true', 'false') }}"
       traefik.http.routers.channels.tls.certresolver: "{{ traefik.certificate_resolver }}"
     alternative_admin_domain_labels: "{{ alternative_admin_hostnames_traefik_labels | default({}) }}"
+    base_volumes:
+      - "{{ volume_names.media }}:/media"
     redirect_http_labels: "{{ http_redirect_traefik_labels | default({}) }}"
   docker_container:
     name: "{{ container_names.backend }}"
@@ -67,8 +69,7 @@
     # pull image if version is latest
     pull: "{{ portal_backend_version_is_latest }}"
     restart_policy: unless-stopped
-    volumes:
-      - "{{ volume_names.media }}:/media"
+    volumes: "{{ base_volumes + admin_configuration.extra_volumes }}"
     env: "{{ base_server_environment_variables | combine(admin_configuration.extra_environment_variables) }}"
     labels: "{{ traefik_labels | combine(alternative_admin_domain_labels) }}"
     comparisons:

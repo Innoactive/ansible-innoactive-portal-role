@@ -26,6 +26,7 @@ sentry_dsn:
 # Google Analytics configuration
 google_analytics_tracking_id:
 extra_environment_variables: {}
+extra_volumes: []
 
 # Secure Communications (SSL / TLS)
 letsencrypt: true
@@ -97,6 +98,7 @@ admin_configuration:
   protocol: "{{ 'https' if traefik.enable_tls else 'http' }}"
   create_admin_user: "{{ create_admin_user }}"
   extra_environment_variables: "{{ extra_environment_variables }}"
+  extra_volumes: "{{ extra_volumes }}"
 
 # Portal Configuration
 portal_hostname:
