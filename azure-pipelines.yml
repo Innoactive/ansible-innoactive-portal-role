@@ -1,11 +1,11 @@
 trigger:
-  - develop
-  - master
+  - develop-6.x
+  - master-6.x
 
 pr:
   branches:
     include:
-      - develop
+      - develop-6.x
 
 stages:
   - stage: Lint
@@ -95,7 +95,7 @@ stages:
               ANSIBLE_FORCE_COLOR: '1'
 
   - stage: Release
-    condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
+    condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master-6.x'))
     jobs:
       - job: release
         displayName: Release

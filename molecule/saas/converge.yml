@@ -16,6 +16,8 @@
     customization_hostname: "customization.portal.{{ public_hostname }}"
     admin_email: admin@innoactive.de
     admin_password: sup3rs3cur3pa55w0rdf0rt3st1ng
+    extra_volumes:
+      - "test:/test"
     # mount media volume (locally)
     media_volume_mount:
       local:

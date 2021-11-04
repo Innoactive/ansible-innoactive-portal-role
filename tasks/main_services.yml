@@ -93,7 +93,7 @@
     restart_policy: unless-stopped
     exposed_ports:
       - "8000"
-    volumes: "{{ base_volumes + ([] if (jwtstep is skipped) else jwt_volumes) }}"
+    volumes: "{{ base_volumes + ([] if (jwtstep is skipped) else jwt_volumes) + admin_configuration.extra_volumes }}"
     env: "{{ base_server_environment_variables | combine(admin_configuration.extra_environment_variables) }}"
     labels: "{{ traefik_labels | combine(alternative_admin_domain_labels) }}"
     comparisons:
