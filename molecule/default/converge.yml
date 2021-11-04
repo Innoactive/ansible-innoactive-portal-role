@@ -14,6 +14,8 @@
     customization_hostname: customization.portal.localhost
     admin_email: admin@innoactive.de
     admin_password: sup3rs3cur3pa55w0rdf0rt3st1ng
+    extra_volumes:
+      - "test:/test"
     # change the default prefix to easily identify test containers / services
     hub_service_prefix: molecule_test_hub
     jwt_local_key_path: "{{ (playbook_dir + '/../sample_keys/jwt') | realpath }}"
