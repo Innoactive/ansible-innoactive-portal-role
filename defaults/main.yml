@@ -28,6 +28,7 @@ sentry_dsn:
 # Google Analytics configuration
 google_analytics_tracking_id:
 extra_environment_variables: {}
+extra_volumes: []
 
 # Secure Communications (SSL / TLS)
 letsencrypt: true
@@ -96,6 +97,7 @@ admin_configuration:
   hub_offering: "{{ hub_offering }}"
   concurrent_access_tokens: "{{ concurrent_access_tokens }}"
   extra_environment_variables: "{{ extra_environment_variables }}"
+  extra_volumes: "{{ extra_volumes }}"
 
 # Portal Configuration
 portal_hostname:

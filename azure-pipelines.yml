@@ -1,11 +1,14 @@
 trigger:
-  - develop
-  - master
+  - develop-6.x
+  - master-6.x
 
 pr:
   branches:
     include:
-      - develop
+      - develop-6.x
+
+pool:
+  vmImage: "ubuntu-latest"
 
 stages:
   - stage: Lint
@@ -13,8 +16,6 @@ stages:
     jobs:
       - job: lint
         displayName: Lint Commits
-        pool:
-          vmImage: "ubuntu-18.04"
         steps:
           - script: |
                 npm install @commitlint/cli commitlint-azure-pipelines-cli @commitlint/config-conventional
@@ -28,8 +29,6 @@ stages:
     jobs:
       - job: test
         displayName: Test
-        pool:
-          vmImage: "ubuntu-18.04"
         steps:
 
           - task: UsePythonVersion@0
@@ -95,7 +94,7 @@ stages:
               ANSIBLE_FORCE_COLOR: '1'
 
   - stage: Release
-    condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
+    condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master-6.x'))
     jobs:
       - job: release
         displayName: Release

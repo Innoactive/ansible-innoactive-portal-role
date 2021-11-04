@@ -114,6 +114,10 @@ Whether or not to allow one and the same user being authenticated in the same ap
 
 Optional mapping of additional environment variables to be passed on to the Portal Backend (e.g. to unlock hidden features).
 
+    extra_volumes: []
+
+Optional mapping of additional volumes on the Portal Backend container.
+
     traefik_dashboard:
 
 Optional boolean allowing to enable the [traefiks dashboard](https://docs.traefik.io/operations/dashboard/) and therefore see the current routing configuration.
