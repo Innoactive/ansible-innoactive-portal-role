@@ -165,6 +165,7 @@ session_management_log_level:
 session_management_cors_origin:
 session_management_oauth_client_id:
 session_management_oauth_client_secret:
+session_management_ip_stack_api_token: "{{ cloudxr_configuration.ip_stack_api_token }}"
 
 session_management_configuration:
   hostname: "{{ session_management_hostname }}"
@@ -173,7 +174,8 @@ session_management_configuration:
   oauth2_client_secret: "{{ session_management_oauth_client_secret }}"
   environment: "{{ session_management_environment  }}"
   log_level: "{{ session_management_log_level }}"
-  CorsOrigins: "{{ session_management_cors_origin }}"
+  cors_origins: "{{ session_management_cors_origin }}"
+  ip_stack_api_token: "{{ session_management_ip_stack_api_token }}"
 
 # Standalone Configuration
 vr_standalone_client_oauth2_client_id:
