@@ -166,6 +166,10 @@ session_management_cors_origin:
 session_management_oauth_client_id:
 session_management_oauth_client_secret:
 session_management_ip_stack_api_token: "{{ cloudxr_configuration.ip_stack_api_token }}"
+session_management_adaptive_instance_scaling_enabled: true
+session_management_adaptive_instance_scaling_user_scale_ratio: 1
+session_management_adaptive_instance_scaling_max_instances_per_region: 5
+session_management_adaptive_instance_scaling_connection_is_idle_after_min: 15
 
 session_management_configuration:
   hostname: "{{ session_management_hostname }}"
@@ -176,6 +180,11 @@ session_management_configuration:
   log_level: "{{ session_management_log_level }}"
   cors_origins: "{{ session_management_cors_origin }}"
   ip_stack_api_token: "{{ session_management_ip_stack_api_token }}"
+  adaptive_instance_scaling:
+    enabled: "{{ session_management_adaptive_instance_scaling_enabled }}"
+    user_scale_ratio: "{{ session_management_adaptive_instance_scaling_user_scale_ratio }}"
+    max_instances_per_region: "{{ session_management_adaptive_instance_scaling_max_instances_per_region }}"
+    connection_is_idle_after_min: "{{ session_management_adaptive_instance_scaling_connection_is_idle_after_min }}"
 
 # Standalone Configuration
 vr_standalone_client_oauth2_client_id:
