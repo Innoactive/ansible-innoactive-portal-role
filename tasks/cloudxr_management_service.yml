@@ -14,7 +14,6 @@
       IpStackApiToken: "{{ cloudxr_configuration.ip_stack_api_token }}"
       Sentry__Dsn: "{{ cloudxr_configuration.sentry_dsn }}"
       Sentry__ServerName: "{{ cloudxr_configuration.instance }}"
-      MaxCloudInstances: "{{ cloudxr_configuration.max_cloud_instances }}"
       DefaultRegion: "{{ cloudxr_configuration.defaultRegion }}"
       Azure__Enabled: "{{ cloudxr_configuration.azure_enabled }}"
       Azure__ClientId: "{{ cloudxr_configuration.azure_client_id }}"

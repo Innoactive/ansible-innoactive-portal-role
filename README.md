@@ -254,10 +254,6 @@ The log level. This defaults to `Warning`
 
 The instance (customer). Defaults to `instance_name` variable.
 
-    cloudxr_max_cloud_instances:
-
-**Mandatory** The maximum started instance across all regions.
-
     cloudxr_machine_max_keep_alive_age:
 
 **Mandatory** The keepalive age time untill machine is destroyed. Format: hh:MM:ss (04:00:00)
