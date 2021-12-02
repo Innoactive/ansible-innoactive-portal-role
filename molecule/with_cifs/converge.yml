@@ -15,6 +15,7 @@
     portal_hostname: "portal.{{ public_hostname }}"
     customization_hostname: "customization.portal.{{ public_hostname }}"
     session_management_hostname: session-management.portal.{{ public_hostname }}"
+    session_management_ip_stack_api_token: dummy
     admin_email: admin@innoactive.de
     admin_password: sup3rs3cur3pa55w0rdf0rt3st1ng
     # change the default prefix to easily identify test containers / services
