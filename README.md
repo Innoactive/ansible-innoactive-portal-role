@@ -411,6 +411,10 @@ Optional mapping of additional environment variables to be passed on to the Port
 
 #### Portal Customization Service
 
+    customization_image_version
+
+The version of the customization container.
+
     setup_customization_service: true
 
 Whether or not to setup the customization service for this instance.
