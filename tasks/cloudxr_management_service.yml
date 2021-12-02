@@ -11,7 +11,6 @@
     env:
       Instance: "{{ cloudxr_configuration.instance }}"
       MachineMaxKeepAliveAge: "{{ cloudxr_configuration.max_keep_avlive_age }}"
-      IpStackApiToken: "{{ cloudxr_configuration.ip_stack_api_token }}"
       Sentry__Dsn: "{{ cloudxr_configuration.sentry_dsn }}"
       Sentry__ServerName: "{{ cloudxr_configuration.instance }}"
       DefaultRegion: "{{ cloudxr_configuration.defaultRegion }}"

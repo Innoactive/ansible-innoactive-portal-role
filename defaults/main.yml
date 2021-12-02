@@ -124,7 +124,6 @@ cloudxr_default_region:
 cloudxr_instance:
 cloudxr_machine_max_keep_alive_age:
 cloudxr_management_sentry_dsn:
-cloudxr_ip_stack_api_token:
 cloudxr_azure_enabled:
 cloudxr_azure_client_id:
 cloudxr_azure_secret:
@@ -143,7 +142,6 @@ cloudxr_configuration:
   instance: "{{ cloudxr_instance }}"
   max_keep_avlive_age: "{{ cloudxr_machine_max_keep_alive_age }}"
   sentry_dsn: "{{ cloudxr_management_sentry_dsn }}"
-  ip_stack_api_token: "{{ cloudxr_ip_stack_api_token }}"
 
   azure_enabled: "{{ cloudxr_azure_enabled | default('false', true) }}"
   azure_client_id: "{{ cloudxr_azure_client_id | default('false', true) }}"
@@ -163,7 +161,7 @@ session_management_log_level:
 session_management_cors_origin:
 session_management_oauth_client_id:
 session_management_oauth_client_secret:
-session_management_ip_stack_api_token: "{{ cloudxr_configuration.ip_stack_api_token }}"
+session_management_ip_stack_api_token:
 session_management_adaptive_instance_scaling_enabled: true
 session_management_adaptive_instance_scaling_user_scale_ratio: 1
 session_management_adaptive_instance_scaling_max_instances_per_region: 5
