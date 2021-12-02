@@ -262,10 +262,6 @@ The instance (customer). Defaults to `instance_name` variable.
 
 The sentry DSN
 
-    cloudxr_ip_stack_api_token:
-
-**Mandatory** The IP address lookup is required to select the closest cloudXR region. The token must be obtained on [this](https://ipstack.com/) website
-
     cloudxr_azure_enabled:
 
 **Mandatory if azure** enable azure integration. This option is mutually exclusive with `cloudxr_aws_enabled`
