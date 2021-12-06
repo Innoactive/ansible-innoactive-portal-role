@@ -59,6 +59,7 @@ portal_image_version: latest
 reverse_proxy_image_version: 2.2
 session_management_image_version: latest
 cloudxr_management_image_version: latest
+customization_image_version: latest
 
 mailserver_image: namshi/smtp:latest
 message_queue_image: redis:5
@@ -67,7 +68,7 @@ database_image: postgres:9.6
 portal_backend_image: registry.docker.innoactive.de/{{ hub_image | default('portal_backend') }}:{{ portal_backend_image_version }}
 portal_image: registry.docker.innoactive.de/portal_frontend:{{ portal_image_version }}
 reverse_proxy_image: traefik:{{ reverse_proxy_image_version }}
-customization_image: registry.docker.innoactive.de/hub_customization:latest
+customization_image: registry.docker.innoactive.de/hub_customization:{{ customization_image_version }}
 session_management_image: registry.docker.innoactive.de/session_management:{{ session_management_image_version }}
 cloudxr_management_image: registry.docker.innoactive.de/cloudxr-management:{{ cloudxr_management_image_version }}
 
