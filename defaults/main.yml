@@ -59,6 +59,7 @@ portal_image_version: latest
 reverse_proxy_image_version: 2.2
 session_management_image_version: latest
 cloudxr_management_image_version: latest
+customization_image_version: latest
 
 mailserver_image: namshi/smtp:latest
 message_queue_image: redis:5
@@ -67,7 +68,7 @@ database_image: postgres:9.6
 portal_backend_image: registry.docker.innoactive.de/{{ hub_image | default('portal_backend') }}:{{ portal_backend_image_version }}
 portal_image: registry.docker.innoactive.de/portal_frontend:{{ portal_image_version }}
 reverse_proxy_image: traefik:{{ reverse_proxy_image_version }}
-customization_image: registry.docker.innoactive.de/hub_customization:latest
+customization_image: registry.docker.innoactive.de/hub_customization:{{ customization_image_version }}
 session_management_image: registry.docker.innoactive.de/session_management:{{ session_management_image_version }}
 cloudxr_management_image: registry.docker.innoactive.de/cloudxr-management:{{ cloudxr_management_image_version }}
 
@@ -122,10 +123,8 @@ cloudxr_log_level:
 cloudxr_environment:
 cloudxr_default_region:
 cloudxr_instance:
-cloudxr_max_cloud_instances:
 cloudxr_machine_max_keep_alive_age:
 cloudxr_management_sentry_dsn:
-cloudxr_ip_stack_api_token:
 cloudxr_azure_enabled:
 cloudxr_azure_client_id:
 cloudxr_azure_secret:
@@ -142,10 +141,8 @@ cloudxr_configuration:
   enabled: "{{ cloudxr_enabled }}"
   defaultRegion: "{{ cloudxr_default_region }}"
   instance: "{{ cloudxr_instance }}"
-  max_cloud_instances: "{{ cloudxr_max_cloud_instances }}"
   max_keep_avlive_age: "{{ cloudxr_machine_max_keep_alive_age }}"
   sentry_dsn: "{{ cloudxr_management_sentry_dsn }}"
-  ip_stack_api_token: "{{ cloudxr_ip_stack_api_token }}"
 
   azure_enabled: "{{ cloudxr_azure_enabled | default('false', true) }}"
   azure_client_id: "{{ cloudxr_azure_client_id | default('false', true) }}"
@@ -165,6 +162,11 @@ session_management_log_level:
 session_management_cors_origin:
 session_management_oauth_client_id:
 session_management_oauth_client_secret:
+session_management_ip_stack_api_token:
+session_management_adaptive_instance_scaling_enabled: true
+session_management_adaptive_instance_scaling_user_scale_ratio: 1
+session_management_adaptive_instance_scaling_max_instances_per_region: 5
+session_management_adaptive_instance_scaling_connection_is_idle_after_min: 15
 
 session_management_configuration:
   hostname: "{{ session_management_hostname }}"
@@ -173,7 +175,13 @@ session_management_configuration:
   oauth2_client_secret: "{{ session_management_oauth_client_secret }}"
   environment: "{{ session_management_environment  }}"
   log_level: "{{ session_management_log_level }}"
-  CorsOrigins: "{{ session_management_cors_origin }}"
+  cors_origins: "{{ session_management_cors_origin }}"
+  ip_stack_api_token: "{{ session_management_ip_stack_api_token }}"
+  adaptive_instance_scaling:
+    enabled: "{{ session_management_adaptive_instance_scaling_enabled }}"
+    user_scale_ratio: "{{ session_management_adaptive_instance_scaling_user_scale_ratio }}"
+    max_instances_per_region: "{{ session_management_adaptive_instance_scaling_max_instances_per_region }}"
+    connection_is_idle_after_min: "{{ session_management_adaptive_instance_scaling_connection_is_idle_after_min }}"
 
 # Standalone Configuration
 vr_standalone_client_oauth2_client_id:

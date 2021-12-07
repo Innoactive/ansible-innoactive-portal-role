@@ -254,10 +254,6 @@ The log level. This defaults to `Warning`
 
 The instance (customer). Defaults to `instance_name` variable.
 
-    cloudxr_max_cloud_instances:
-
-**Mandatory** The maximum started instance across all regions.
-
     cloudxr_machine_max_keep_alive_age:
 
 **Mandatory** The keepalive age time untill machine is destroyed. Format: hh:MM:ss (04:00:00)
@@ -265,10 +261,6 @@ The instance (customer). Defaults to `instance_name` variable.
     cloudxr_management_sentry_dsn:
 
 The sentry DSN
-
-    cloudxr_ip_stack_api_token:
-
-**Mandatory** The IP address lookup is required to select the closest cloudXR region. The token must be obtained on [this](https://ipstack.com/) website
 
     cloudxr_azure_enabled:
 
@@ -336,6 +328,26 @@ If custom CORS origin(s) are required it can be set here separated by `,` (comma
 
 **Mandatory** the OAuth client secret
 
+    session_management_ip_stack_api_token
+
+**Mandatory** The IP address lookup is required to select the closest cloudXR region. The token must be obtained on [this](https://ipstack.com/) website
+
+    session_management_adaptive_instance_scaling_enabled
+
+Enables adaptive instance scaling. This defaults to `true`
+
+    session_management_adaptive_instance_scaling_user_scale_ratio
+
+User scale ratio controles the number of reserved instances created by each user. Defaults to `1`
+
+    session_management_adaptive_instance_scaling_max_instances_per_region
+
+The maximum reserved instances created in one region. Defaults to `5`
+
+    session_management_adaptive_instance_scaling_connection_is_idle_after_min
+
+The time in min after which a user is considered idle. Defaults to `15`
+
     session_management_log_level:
 
 The log level. This defaults to `Warning`
@@ -398,6 +410,10 @@ DSN for [Sentry](https://sentry.io/welcome/) to automatically track runtime erro
 Optional mapping of additional environment variables to be passed on to the Portal (e.g. to unlock hidden features).
 
 #### Portal Customization Service
+
+    customization_image_version
+
+The version of the customization container.
 
     setup_customization_service: true
 
