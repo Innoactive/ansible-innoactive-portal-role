@@ -25,7 +25,7 @@
       EMAIL_USE_SSL: "{{ mail_configuration.smtp.use_ssl | ternary('True', 'False') | string }}"
       CUSTOMIZATION_SERVICE_API_URL: "{{ admin_configuration.protocol }}://{{ customization_configuration.hostname }}/api"
       PORTAL_URL: "{{ admin_configuration.protocol }}://{{ portal_configuration.hostname }}"
-      CLOUD_RENDERING_CLIENT_APPLICATION_CLIENT_ID: "{{ desktop_client_configuration.remote_oauth2_client_id }}"
+      CLOUD_RENDERING_CLIENT_APPLICATION_CLIENT_ID: "{{ desktop_client_configuration.oauth2_client_id }}"
       DEVICE_AUTHORIZATION_VERIFICATION_URL: "{{ admin_configuration.protocol }}://{{ portal_configuration.hostname }}/connect-hmd"
 
 - name: Support alternative hostnames
