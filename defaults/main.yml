@@ -197,9 +197,14 @@ desktop_client_oauth2_client_id: "{{ launcher_oauth_client_id | default(None) }}
 # legacy parameter for desktop_client_oauth2_client_secret is launcher_oauth_client_secret
 desktop_client_oauth2_client_secret: "{{ launcher_oauth_client_secret | default(None) }}"
 
+desktop_client_remote_oauth2_client_id:
+desktop_client_remote_oauth2_client_secret:
+
 desktop_client_configuration:
   oauth2_client_id: "{{ desktop_client_oauth2_client_id }}"
   oauth2_client_secret: "{{ desktop_client_oauth2_client_secret }}"
+  remote_oauth2_client_id: "{{ desktop_client_remote_oauth2_client_id }}"
+  remote_oauth2_client_secret: "{{ desktop_client_remote_oauth2_client_secret }}"
 
 # Customization Configuration
 customization_hostname:
