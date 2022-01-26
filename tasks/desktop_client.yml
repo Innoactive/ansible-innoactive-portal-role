@@ -7,6 +7,7 @@
     client_name: Innoactive Portal Desktop Client
     client_id: "{{ desktop_client_configuration.oauth2_client_id }}"
     client_secret: "{{ desktop_client_configuration.oauth2_client_secret }}"
+    redirect_uris: []
   register: portal_desktop_client_oauth_client_output
   changed_when: portal_desktop_client_oauth_client_output.stdout | from_json | json_query('changed')
   tags:
@@ -20,6 +21,7 @@
     client_name: Innoactive Portal Desktop Client CloudXR Remote Client
     client_id: "{{ desktop_client_configuration.remote_oauth2_client_id }}"
     client_secret: "{{ desktop_client_configuration.remote_oauth2_client_secret }}"
+    redirect_uris: []
   register: portal_desktop_client_remote_oauth_client_output
   changed_when: portal_desktop_client_remote_oauth_client_output.stdout | from_json | json_query('changed')
   tags:
