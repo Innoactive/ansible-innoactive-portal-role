@@ -7,11 +7,6 @@
     client_name: Innoactive Portal Desktop Client
     client_id: "{{ desktop_client_configuration.oauth2_client_id }}"
     client_secret: "{{ desktop_client_configuration.oauth2_client_secret }}"
-    redirect_uris:
-      - "http://127.0.0.1:51236/"
-      - "http://127.0.0.1:51237/"
-      - "http://localhost:51236/"
-      - "http://localhost:51237/"
   register: portal_desktop_client_oauth_client_output
   changed_when: portal_desktop_client_oauth_client_output.stdout | from_json | json_query('changed')
   tags:
@@ -21,12 +16,10 @@
   shell: "{{ lookup('template', 'run_in_django_shell.sh.j2') }}" # noqa 305
   vars:
     python_script_name: get_oauth_client_credentials
-    authorization_type: GRANT_AUTHORIZATION_PUSH_CODE
+    authorization_type: GRANT_DEVICE_AUTH
     client_name: Innoactive Portal Desktop Client CloudXR Remote Client
     client_id: "{{ desktop_client_configuration.remote_oauth2_client_id }}"
     client_secret: "{{ desktop_client_configuration.remote_oauth2_client_secret }}"
-    redirect_uris:
-      - "http://127.0.0.1:51237"
   register: portal_desktop_client_remote_oauth_client_output
   changed_when: portal_desktop_client_remote_oauth_client_output.stdout | from_json | json_query('changed')
   tags:
