@@ -20,9 +20,8 @@
       AWS__Enabled: "{{ cloudxr_configuration.aws_enabled | ternary('true', 'false') }}"
       AWS__AccessKeyId: "{{ cloudxr_configuration.aws_access_key_id }}"
       AWS__SecretAccessKey: "{{ cloudxr_configuration.aws_secret_access_key }}"
-      AWS__Regions: "{{ cloudxr_configuration.aws_regions }}"
       AWS__Instance: "{{ cloudxr_configuration.aws_instance }}"
-      Serilog__MinimumLevel: "{{ cloudxr_configuration.log_level | default('Warning', true) }}"
+      Serilog__MinimumLevel__Default: "{{ cloudxr_configuration.log_level | default('Warning', true) }}"
       ASPNETCORE_ENVIRONMENT: "{{ cloudxr_configuration.environment | default('Production', true) }}"
 
     networks_cli_compatible: true

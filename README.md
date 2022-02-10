@@ -294,10 +294,6 @@ The sentry DSN
 
 **Mandatory if aws** access key secret to the aws scaling group
 
-    cloudxr_aws_regions:
-
-**Mandatory if aws** all regions where scaling groups are deployed (as they cannot be detected automatically)
-
 ### Session Management Service
 
     session_management_hostname:

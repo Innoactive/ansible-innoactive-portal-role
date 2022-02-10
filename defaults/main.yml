@@ -133,7 +133,6 @@ cloudxr_azure_instance:
 cloudxr_aws_enabled:
 cloudxr_aws_access_key_id:
 cloudxr_aws_secret_access_key:
-cloudxr_aws_regions:
 cloudxr_aws_instance:
 
 cloudxr_configuration:
@@ -151,7 +150,6 @@ cloudxr_configuration:
   aws_enabled: "{{ cloudxr_aws_enabled | default(false) }}"
   aws_access_key_id: "{{ cloudxr_aws_access_key_id | default('', true) }}"
   aws_secret_access_key: "{{ cloudxr_aws_secret_access_key | default('', true) }}"
-  aws_regions: "{{ cloudxr_aws_regions | default('', true) }}"
   aws_instance: "{{ cloudxr_aws_instance | default(cloudxr_instance, true) }}"
 
 # Session Management service
