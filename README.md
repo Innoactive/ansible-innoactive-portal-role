@@ -246,17 +246,17 @@ The environment `Production`, `Staging`, `Developtment`. This defaults to `Produ
 
 The log level. This defaults to `Warning`
 
-    cloudxr_default_region:
-
-**Mandatory** Default region if ip lookup did not work
-
     cloudxr_instance:
 
-The instance (customer). Defaults to `instance_name` variable.
+The instance (customer).  Same as cloud instance tag.
 
-    cloudxr_machine_max_keep_alive_age:
+    cloudxr_azure_instance:
 
-**Mandatory** The keepalive age time untill machine is destroyed. Format: hh:MM:ss (04:00:00)
+The instance (customer) on Azure. Defaults to `cloudxr_instance`
+
+    cloudxr_aws_instance:
+
+The instance (customer) on AWS. Defaults to `cloudxr_instance`
 
     cloudxr_management_sentry_dsn:
 
@@ -293,10 +293,6 @@ The sentry DSN
     cloudxr_aws_secret_access_key:
 
 **Mandatory if aws** access key secret to the aws scaling group
-
-    cloudxr_aws_regions:
-
-**Mandatory if aws** all regions where scaling groups are deployed (as they cannot be detected automatically)
 
 ### Session Management Service
 

@@ -121,38 +121,36 @@ portal_configuration:
 cloudxr_enabled:
 cloudxr_log_level:
 cloudxr_environment:
-cloudxr_default_region:
-cloudxr_instance:
-cloudxr_machine_max_keep_alive_age:
 cloudxr_management_sentry_dsn:
+cloudxr_instance:
 cloudxr_azure_enabled:
 cloudxr_azure_client_id:
 cloudxr_azure_secret:
 cloudxr_azure_subscription:
 cloudxr_azure_tenant_id:
+cloudxr_azure_instance:
+
 cloudxr_aws_enabled:
 cloudxr_aws_access_key_id:
 cloudxr_aws_secret_access_key:
-cloudxr_aws_regions:
+cloudxr_aws_instance:
 
 cloudxr_configuration:
   environment: "{{ cloudxr_environment  }}"
   log_level: "{{ cloudxr_log_level }}"
   enabled: "{{ cloudxr_enabled }}"
-  defaultRegion: "{{ cloudxr_default_region }}"
-  instance: "{{ cloudxr_instance }}"
-  max_keep_avlive_age: "{{ cloudxr_machine_max_keep_alive_age }}"
   sentry_dsn: "{{ cloudxr_management_sentry_dsn }}"
 
-  azure_enabled: "{{ cloudxr_azure_enabled | default('false', true) }}"
-  azure_client_id: "{{ cloudxr_azure_client_id | default('false', true) }}"
-  azure_client_secret: "{{ cloudxr_azure_secret | default('false', true) }}"
-  azure_subscription: "{{ cloudxr_azure_subscription | default('false', true) }}"
-  azure_tenant_id: "{{ cloudxr_azure_tenant_id | default('false', true) }}"
-  aws_enabled: "{{ cloudxr_aws_enabled | default('false', true) }}"
+  azure_enabled: "{{ cloudxr_azure_enabled | default(false) }}"
+  azure_client_id: "{{ cloudxr_azure_client_id | default('', true) }}"
+  azure_client_secret: "{{ cloudxr_azure_secret | default('', true) }}"
+  azure_subscription: "{{ cloudxr_azure_subscription | default('', true) }}"
+  azure_tenant_id: "{{ cloudxr_azure_tenant_id | default('', true) }}"
+  azure_instance: "{{ cloudxr_azure_instance | default(cloudxr_instance, true) }}"
+  aws_enabled: "{{ cloudxr_aws_enabled | default(false) }}"
   aws_access_key_id: "{{ cloudxr_aws_access_key_id | default('', true) }}"
   aws_secret_access_key: "{{ cloudxr_aws_secret_access_key | default('', true) }}"
-  aws_regions: "{{ cloudxr_aws_regions | default('', true) }}"
+  aws_instance: "{{ cloudxr_aws_instance | default(cloudxr_instance, true) }}"
 
 # Session Management service
 session_management_hostname:
