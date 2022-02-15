@@ -74,7 +74,7 @@
       # Up to version <= 1.2.0, VIRTUAL_HOST was used to specify supported hostnames. For newer versions, DJANGO_ALLOWED_HOSTS is being used.
       # FIXME: Remove VIRTUAL_HOST once support for Customization versions <= 1.2.0 is dropped
       VIRTUAL_HOST: "{{ CUSTOMIZATION_SERVICE_ALLOWED_HOSTS }}"
-      RUN_DATABASE_MIGRATIONS: "{{ admin_configuration.setup_database | ternary('True', 'False') | quote }}"
+      RUN_DATABASE_MIGRATIONS: "{{ admin_configuration.setup_database | ternary('true', 'false') }}"
     traefik_labels:
       traefik.enable: "true"
       traefik.http.routers.customization.rule: Host(`{{ customization_configuration.hostname }}`)
