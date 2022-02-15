@@ -12,7 +12,7 @@
       when:
         - media_volume_mount.cifs is defined
         - media_volume_mount.cifs.url is defined
-        - media_volume_mount.cifs.url | default('', true) | trim | length > 0
+        - media_volume_mount.cifs.url | default('', true) | trim | length > 0
 
     - name: Determine whether volume should be created via bind mount
       set_fact:
@@ -20,7 +20,7 @@
       when:
         - media_volume_mount.local is defined
         - media_volume_mount.local.path is defined
-        - media_volume_mount.local.path | default('', true) | trim | length > 0
+        - media_volume_mount.local.path | default('', true) | trim | length > 0
 
     - name: Determine whether volume should be created via a device mount
       set_fact:
@@ -28,13 +28,13 @@
       when:
         - media_volume_mount.device is defined
         - media_volume_mount.device.path is defined
-        - media_volume_mount.device.path | default('', true) | trim | length > 0
+        - media_volume_mount.device.path | default('', true) | trim | length > 0
 
     - name: Assert Variables
       assert:
         that:
           # after selecting all (truthy) mount option flags, we should only have one left
-          - mount_option_flags | select() | list | length <= 1
+          - mount_option_flags | select() | list | length <= 1
         fail_msg: "Cannot specify multiple options for configuring the media volume!"
         quiet: yes
       vars:
