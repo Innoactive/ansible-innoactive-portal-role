@@ -60,6 +60,8 @@ reverse_proxy_image_version: 2.2
 session_management_image_version: latest
 cloudxr_management_image_version: latest
 customization_image_version: latest
+# whether customization image version is newer than 1.2.0
+customization_image_version_gt_1_2_0: "{{ customization_image_version.startswith('latest') or customization_image_version is version('1.2.0', '>') }}"
 
 mailserver_image: namshi/smtp:latest
 message_queue_image: redis:5
@@ -68,7 +70,8 @@ database_image: postgres:9.6
 portal_backend_image: registry.docker.innoactive.de/{{ hub_image | default('portal_backend') }}:{{ portal_backend_image_version }}
 portal_image: registry.docker.innoactive.de/portal_frontend:{{ portal_image_version }}
 reverse_proxy_image: traefik:{{ reverse_proxy_image_version }}
-customization_image: registry.docker.innoactive.de/hub_customization:{{ customization_image_version }}
+# Customization service's image name changed from hub_customization to portal_customization after Version 1.2.0
+customization_image: registry.docker.innoactive.de/{{ customization_image_version_gt_1_2_0 | ternary("portal", "hub") }}_customization:{{ customization_image_version }}
 session_management_image: registry.docker.innoactive.de/session_management:{{ session_management_image_version }}
 cloudxr_management_image: registry.docker.innoactive.de/cloudxr-management:{{ cloudxr_management_image_version }}
 
@@ -85,7 +88,7 @@ image_versions:
 
 admin_configuration:
   hostname: "{{ admin_hostname }}"
-  alias_hostnames: "{{ admin_alias_hostnames | trim }}"
+  alias_hostnames: "{{ admin_alias_hostnames | trim }}"
   secret_key: "{{ secret_key }}"
   from_email: "{{ from_email }}"
   admin_email: "{{ admin_email }}"
@@ -111,7 +114,7 @@ portal_extra_environment_variables: {}
 
 portal_configuration:
   hostname: "{{ portal_hostname }}"
-  alias_hostnames: "{{ portal_alias_hostnames | trim }}"
+  alias_hostnames: "{{ portal_alias_hostnames | trim }}"
   oauth2_client_id: "{{ portal_oauth_client_id }}"
   sentry_dsn: "{{ portal_sentry_dsn }}"
   extra_environment_variables: "{{ portal_extra_environment_variables }}"
@@ -213,7 +216,7 @@ customization_extra_environment_variables: {}
 
 customization_configuration:
   hostname: "{{ customization_hostname }}"
-  alias_hostnames: "{{ customization_alias_hostnames | trim }}"
+  alias_hostnames: "{{ customization_alias_hostnames | trim }}"
   oauth2_client_id: "{{ customization_oauth_client_id }}"
   oauth2_client_secret: "{{ customization_oauth_client_secret }}"
   extra_environment_variables: "{{ customization_extra_environment_variables }}"

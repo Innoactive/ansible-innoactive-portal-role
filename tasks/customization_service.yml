@@ -55,8 +55,8 @@
   vars:
     # ensure alternative domains are supported in both old and new formats (old.domain and customization.portal.old.domain)
     alternative_customization_hostnames: "{{ customization_configuration.alias_hostnames | map('regex_replace', '^(.*)$', '\\1') | list }}"
-    alias_customization_hostnames: "{{ alternative_customization_hostnames | map('regex_replace', '^(.*)$', '`\\1`') | join(',') }}"
-  when: customization_configuration.alias_hostnames | default([]) | length > 0
+    alias_customization_hostnames: "{{ alternative_customization_hostnames | map('regex_replace', '^(.*)$', '`\\1`') | join(',') }}"
+  when: customization_configuration.alias_hostnames | default([]) | length > 0
 
 - name: Start Customization Service
   vars:
@@ -69,7 +69,10 @@
       DB_USER: postgres
       OAUTH_CLIENT_ID: "{{ customization_oauth2_client_id }}"
       OAUTH_CLIENT_SECRET: "{{ customization_oauth2_client_secret }}"
-      VIRTUAL_HOST: "{{ ([customization_configuration.hostname] + customization_configuration.alias_hostnames) | join(',') | mandatory }}"
+      DJANGO_ALLOWED_HOSTS: "{{ ([customization_configuration.hostname] + customization_configuration.alias_hostnames) | join(',') | mandatory }}"
+      # Up to version <= 1.2.0, VIRTUAL_HOST was used to specify supported hostnames. For newer versions, DJANGO_ALLOWED_HOSTS is being used.
+      # FIXME: Remove VIRTUAL_HOST once support for Customization versions <= 1.2.0 is dropped
+      VIRTUAL_HOST: "{{ DJANGO_ALLOWED_HOSTS }}"
     traefik_labels:
       traefik.enable: "true"
       traefik.http.routers.customization.rule: Host(`{{ customization_configuration.hostname }}`)
@@ -88,7 +91,7 @@
     exposed_ports:
       - "80"
     env: "{{ default_environment_variables | combine(customization_configuration.extra_environment_variables) }}"
-    labels: "{{ traefik_labels | combine(alternative_domain_labels) }}"
+    labels: "{{ traefik_labels | combine(alternative_domain_labels) }}"
     comparisons:
       # correctly recreate container when any environment variable or labels is changed or added / removed
       env: strict
