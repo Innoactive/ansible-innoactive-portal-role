@@ -40,8 +40,8 @@
       TRAEFIK_CERTIFICATESRESOLVERS_lets-encrypt_ACME_STORAGE: /letsencrypt/acme.json
       TRAEFIK_CERTIFICATESRESOLVERS_lets-encrypt_ACME_HTTPCHALLENGE: "true"
       TRAEFIK_CERTIFICATESRESOLVERS_lets-encrypt_ACME_HTTPCHALLENGE_ENTRYPOINT: http
-    letsencrypt_staging_env_vars: "{{ traefik_letsencrypt_environment_variables | default({}) }}"
-    traefik_dashboard_env_vars: "{{ traefik_dashboard_environment_variables | default({}) }}"
+    letsencrypt_staging_env_vars: "{{ traefik_letsencrypt_environment_variables | default({}) }}"
+    traefik_dashboard_env_vars: "{{ traefik_dashboard_environment_variables | default({}) }}"
     traefik_labels:
       # Define a middleware that can redirect from http to https
       traefik.enable: "true"
@@ -57,7 +57,7 @@
     restart_policy: unless-stopped
     published_ports: "{{ ['80:80','443:443'] + (traefik.dashboard | ternary(['8080:8080'],[])) }}"
     env: "{{ env_vars | combine(letsencrypt_staging_env_vars) | combine(traefik_dashboard_env_vars) | combine(traefik.extra_env_vars) }}"
-    labels: "{{ traefik_labels | combine(letsencrypt | ternary(http_to_https_redirect_labels, {})) | combine(traefik.extra_labels) }}"
+    labels: "{{ traefik_labels | combine(letsencrypt | ternary(http_to_https_redirect_labels, {})) | combine(traefik.extra_labels) }}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # <== Volume for docker admin
       - "{{ volume_names.tls_certificates }}:/letsencrypt" # <== Volume for certs (TLS)

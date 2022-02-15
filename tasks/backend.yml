@@ -10,9 +10,9 @@
 
 - name: Collect environment variables for the main application server
   set_fact:
-    traefik_admin_alternative_hostnames: "{{ admin_configuration.alias_hostnames | map('regex_replace', '^(.*)$', '`\\1`') | join(',') }}"
+    traefik_admin_alternative_hostnames: "{{ admin_configuration.alias_hostnames | map('regex_replace', '^(.*)$', '`\\1`') | join(',') }}"
     base_server_environment_variables:
-      DJANGO_ALLOWED_HOSTS: "{{ ([admin_configuration.hostname] + admin_configuration.alias_hostnames) | join(',') | mandatory }}"
+      DJANGO_ALLOWED_HOSTS: "{{ ([admin_configuration.hostname] + admin_configuration.alias_hostnames) | join(',') | mandatory }}"
       DJANGO_SECRET_KEY: "{{ admin_configuration.secret_key | mandatory }}"
       FROM_EMAIL: "{{ admin_configuration.from_email | default('admin@' + portal_configuration.hostname, true) }}"
       RAVEN_DSN: "{{ admin_configuration.sentry_dsn | default('') }}"
@@ -45,7 +45,7 @@
       traefik.http.routers.web-api-alternative.tls.certresolver: "{{ traefik.certificate_resolver }}"
       traefik.http.routers.web-api-alternative.priority: "100"
 
-  when: admin_configuration.alias_hostnames | default([]) | length > 0
+  when: admin_configuration.alias_hostnames | default([]) | length > 0
 
 - name: Start Django Application Server
   vars:
@@ -71,7 +71,7 @@
     restart_policy: unless-stopped
     volumes: "{{ base_volumes + admin_configuration.extra_volumes }}"
     env: "{{ base_server_environment_variables | combine(admin_configuration.extra_environment_variables) }}"
-    labels: "{{ traefik_labels | combine(alternative_admin_domain_labels) }}"
+    labels: "{{ traefik_labels | combine(alternative_admin_domain_labels) }}"
     comparisons:
       # correctly recreate container when any environment variable or labels is changed or added / removed
       env: strict
