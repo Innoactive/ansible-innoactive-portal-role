@@ -45,8 +45,8 @@
       traefik.http.routers.portal-alternative.tls: "{{ traefik.enable_tls | ternary('true', 'false') }}"
       traefik.http.routers.portal-alternative.tls.certresolver: "{{ traefik.certificate_resolver }}"
   vars:
-    traefik_portal_alternative_hostnames: "{{ portal_configuration.alias_hostnames | map('regex_replace', '^(.*)$', '`\\1`') | join(',') }}"
-  when: portal_configuration.alias_hostnames | default([]) | length > 0
+    traefik_portal_alternative_hostnames: "{{ portal_configuration.alias_hostnames | map('regex_replace', '^(.*)$', '`\\1`') | join(',') }}"
+  when: portal_configuration.alias_hostnames | default([]) | length > 0
 
 - name: Start Portal container
   vars:
@@ -74,7 +74,7 @@
     container_default_behavior: no_defaults
     pull: "{{ portal_version_is_latest }}"
     env: "{{ default_environment_variables | combine(portal_configuration.extra_environment_variables) }}"
-    labels: "{{ traefik_labels | combine(alternative_portal_domain_labels) }}"
+    labels: "{{ traefik_labels | combine(alternative_portal_domain_labels) }}"
 
     networks_cli_compatible: true
     networks:

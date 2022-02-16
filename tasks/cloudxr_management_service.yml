@@ -9,21 +9,19 @@
     exposed_ports:
       - 5000:5000
     env:
-      Instance: "{{ cloudxr_configuration.instance }}"
-      MachineMaxKeepAliveAge: "{{ cloudxr_configuration.max_keep_avlive_age }}"
       Sentry__Dsn: "{{ cloudxr_configuration.sentry_dsn }}"
       Sentry__ServerName: "{{ portal_configuration.hostname }}"
-      DefaultRegion: "{{ cloudxr_configuration.defaultRegion }}"
-      Azure__Enabled: "{{ cloudxr_configuration.azure_enabled }}"
+      Azure__Enabled: "{{ cloudxr_configuration.azure_enabled | ternary('true', 'false') }}"
       Azure__ClientId: "{{ cloudxr_configuration.azure_client_id }}"
       Azure__Secret: "{{ cloudxr_configuration.azure_client_secret }}"
       Azure__Subscription: "{{ cloudxr_configuration.azure_subscription }}"
       Azure__TenantId: "{{ cloudxr_configuration.azure_tenant_id }}"
-      AWS__Enabled: "{{ cloudxr_configuration.aws_enabled }}"
+      Azure__Instance: "{{ cloudxr_configuration.azure_instance }}"
+      AWS__Enabled: "{{ cloudxr_configuration.aws_enabled | ternary('true', 'false') }}"
       AWS__AccessKeyId: "{{ cloudxr_configuration.aws_access_key_id }}"
       AWS__SecretAccessKey: "{{ cloudxr_configuration.aws_secret_access_key }}"
-      AWS__Regions: "{{ cloudxr_configuration.aws_regions }}"
-      Serilog__MinimumLevel: "{{ cloudxr_configuration.log_level | default('Warning', true) }}"
+      AWS__Instance: "{{ cloudxr_configuration.aws_instance }}"
+      Serilog__MinimumLevel__Default: "{{ cloudxr_configuration.log_level | default('Warning', true) }}"
       ASPNETCORE_ENVIRONMENT: "{{ cloudxr_configuration.environment | default('Production', true) }}"
 
     networks_cli_compatible: true
