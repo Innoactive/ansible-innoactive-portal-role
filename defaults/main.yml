@@ -108,6 +108,7 @@ portal_oauth_client_id:
 portal_sentry_dsn:
 portal_signaling_service: ""
 portal_extra_environment_variables: {}
+portal_google_maps_api_key: 
 
 portal_configuration:
   hostname: "{{ portal_hostname }}"
@@ -116,6 +117,7 @@ portal_configuration:
   sentry_dsn: "{{ portal_sentry_dsn }}"
   extra_environment_variables: "{{ portal_extra_environment_variables }}"
   signaling_service: "{{ portal_signaling_service | default('wss://' + portal_hostname, true) }}"
+  google_maps_api_key: "{{ portal_google_maps_api_key }}"
 
 # CloudXR Management Service
 cloudxr_enabled:
