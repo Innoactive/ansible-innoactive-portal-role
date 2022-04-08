@@ -12,10 +12,10 @@ docker_registry:
 # Main Portal Backend Configuration parameters
 admin_hostname:
 admin_alias_hostnames: []
-secret_key:
+secret_key: "{{ undef(hint='You must specify a secret key for hashing / encryption') }}"
 from_email:
-admin_email:
-admin_password:
+admin_email: "{{ undef(hint='You must specify an e-mail address for the default admin user') }}"
+admin_password: "{{ undef(hint='You must specify a password for the default admin user') }}"
 create_admin_user: true
 setup_database: true
 setup_control_panel: "{{ setup_wmc | default(True) }}"
@@ -86,10 +86,10 @@ image_versions:
 admin_configuration:
   hostname: "{{ admin_hostname }}"
   alias_hostnames: "{{ admin_alias_hostnames | trim }}"
-  secret_key: "{{ secret_key }}"
+  secret_key: "{{ secret_key | mandatory }}"
   from_email: "{{ from_email }}"
-  admin_email: "{{ admin_email }}"
-  admin_password: "{{ admin_password }}"
+  admin_email: "{{ admin_email | mandatory }}"
+  admin_password: "{{ admin_password | mandatory }}"
   setup_database: "{{ setup_database }}"
   setup_control_panel: "{{ setup_control_panel }}"
   setup_portal_frontend: "{{ setup_portal_frontend }}"

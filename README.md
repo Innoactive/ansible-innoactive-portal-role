@@ -318,11 +318,11 @@ If custom CORS origin(s) are required it can be set here separated by `,` (comma
 
     session_management_oauth_client_id:
 
-**Mandatory** the OAuth clientID
+OAuth client id used to authenticatte against Portal Backend
 
     session_management_oauth_client_secret:
 
-**Mandatory** the OAuth client secret
+OAuth client secret used to authenticatte against Portal Backend
 
     session_management_ip_stack_api_token
 
