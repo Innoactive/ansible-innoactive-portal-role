@@ -15,6 +15,7 @@
     session_management_hostname: session-management.portal.localhost
     admin_email: admin@innoactive.de
     admin_password: sup3rs3cur3pa55w0rdf0rt3st1ng
+    session_management_ip_stack_api_token: invalid-token-but-not-empty
     extra_volumes:
       - "test:/test"
     # change the default prefix to easily identify test containers / services

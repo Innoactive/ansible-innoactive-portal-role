@@ -108,7 +108,7 @@ portal_oauth_client_id:
 portal_sentry_dsn:
 portal_signaling_service: ""
 portal_extra_environment_variables: {}
-portal_google_maps_api_key: 
+portal_google_maps_api_key:
 
 portal_configuration:
   hostname: "{{ portal_hostname }}"
@@ -162,7 +162,7 @@ session_management_log_level:
 session_management_cors_origin:
 session_management_oauth_client_id:
 session_management_oauth_client_secret:
-session_management_ip_stack_api_token:
+session_management_ip_stack_api_token: "{{ undef(hint='You must specify an API token for IPStack') }}"
 session_management_adaptive_instance_scaling_enabled:
 session_management_adaptive_instance_scaling_user_scale_ratio:
 session_management_adaptive_instance_scaling_max_instances_per_region:
@@ -176,7 +176,7 @@ session_management_configuration:
   environment: "{{ session_management_environment  }}"
   log_level: "{{ session_management_log_level }}"
   cors_origins: "{{ session_management_cors_origin }}"
-  ip_stack_api_token: "{{ session_management_ip_stack_api_token }}"
+  ip_stack_api_token: "{{ session_management_ip_stack_api_token | mandatory }}"
   adaptive_instance_scaling:
     enabled: "{{ session_management_adaptive_instance_scaling_enabled | default(true) }}"
     user_scale_ratio: "{{ session_management_adaptive_instance_scaling_user_scale_ratio | default(1, true) }}"
