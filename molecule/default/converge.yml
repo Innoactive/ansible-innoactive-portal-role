@@ -25,9 +25,12 @@
   roles:
     - role: geerlingguy.docker
       vars:
-        # since we'll already have docker in our test environment, we skip the
-        # respective role
+        # since we'll already have docker in our test environment, we only install dependencies but not the service itself
         docker_service_state: stopped
         docker_service_enabled: false
         docker_install_compose: false
+    - role: geerlingguy.pip
+      vars:
+        pip_install_packages:
+          - name: docker
     - role: ../../../.
