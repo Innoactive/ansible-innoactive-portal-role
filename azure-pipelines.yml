@@ -8,7 +8,7 @@ pr:
       - develop
 
 pool:
-  vmImage: "ubuntu-latest"
+  vmImage: "ubuntu-20.04"
 
 stages:
   - stage: Lint
@@ -18,19 +18,18 @@ stages:
         displayName: Lint Commits
         steps:
           - script: |
-                npm install @commitlint/cli commitlint-azure-pipelines-cli @commitlint/config-conventional
-                npx \
-                -p @commitlint/cli \
-                -p commitlint-azure-pipelines-cli \
-                -p @commitlint/config-conventional \
-                commitlint-azure-pipelines --config .commitlintrc.json
+              npm install @commitlint/cli commitlint-azure-pipelines-cli @commitlint/config-conventional
+              npx \
+              -p @commitlint/cli \
+              -p commitlint-azure-pipelines-cli \
+              -p @commitlint/config-conventional \
+              commitlint-azure-pipelines --config .commitlintrc.json
 
   - stage: Integration
     jobs:
       - job: test
         displayName: Test
         steps:
-
           - task: UsePythonVersion@0
             inputs:
               versionSpec: "3.9"
@@ -64,8 +63,8 @@ stages:
               DOCKER_REGISTRY_PASSWORD: $(DOCKER_REGISTRY_PASSWORD)
               HCLOUD_TOKEN: $(HCLOUD_TOKEN)
               INSTANCE_NAME_SUFFIX: $(Build.BuildId)
-              PY_COLORS: '1'
-              ANSIBLE_FORCE_COLOR: '1'
+              PY_COLORS: "1"
+              ANSIBLE_FORCE_COLOR: "1"
 
           - task: Bash@3
             displayName: "Test saas"
@@ -77,8 +76,8 @@ stages:
               DOCKER_REGISTRY_PASSWORD: $(DOCKER_REGISTRY_PASSWORD)
               HCLOUD_TOKEN: $(HCLOUD_TOKEN)
               INSTANCE_NAME_SUFFIX: $(Build.BuildId)
-              PY_COLORS: '1'
-              ANSIBLE_FORCE_COLOR: '1'
+              PY_COLORS: "1"
+              ANSIBLE_FORCE_COLOR: "1"
 
           - task: Bash@3
             displayName: "Test with cifs"
@@ -90,8 +89,8 @@ stages:
               DOCKER_REGISTRY_PASSWORD: $(DOCKER_REGISTRY_PASSWORD)
               HCLOUD_TOKEN: $(HCLOUD_TOKEN)
               INSTANCE_NAME_SUFFIX: $(Build.BuildId)
-              PY_COLORS: '1'
-              ANSIBLE_FORCE_COLOR: '1'
+              PY_COLORS: "1"
+              ANSIBLE_FORCE_COLOR: "1"
 
   - stage: Release
     condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
