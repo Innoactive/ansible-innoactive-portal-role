@@ -52,7 +52,7 @@ stages:
             displayName: "Install pipenv dependencies"
             inputs:
               targetType: "inline"
-              script: "pipenv install --system"
+              script: "pipenv sync --system --dev"
 
           - task: Bash@3
             displayName: "Molecule test"
