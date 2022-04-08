@@ -20,6 +20,7 @@ provisioner:
   playbooks:
     converge: converge.yml
     cleanup: cleanup.yml
+    prepare: prepare.yml
   env:
     ANSIBLE_ROLES_PATH: $HOME/.ansible/roles
     DOCKER_REGISTRY_USERNAME: ${DOCKER_REGISTRY_USERNAME}
