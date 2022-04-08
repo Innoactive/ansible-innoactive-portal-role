@@ -136,7 +136,7 @@ Optional key-value pair to set additional environment variables on the traefik c
 
     traefik_extra_labels
 
-Optional key-value pair to set additional labels on the traefik container.  Defaults to `{}`
+Optional key-value pair to set additional labels on the traefik container. Defaults to `{}`
 
 #### Media Files
 
@@ -248,7 +248,7 @@ The log level. This defaults to `Warning`
 
     cloudxr_instance:
 
-The instance (customer).  Same as cloud instance tag.
+The instance (customer). Same as cloud instance tag.
 
     cloudxr_azure_instance:
 
@@ -543,6 +543,10 @@ The username to use when authenticating against registry.docker.innoactive.de.
     DOCKER_REGISTRY_PASSWORD
 
 The password to use when authenticating against registry.docker.innoactive.de.
+
+You will need to install the dependencies from `Pipfile` on your system as molecule's docker driver will use the system python.
+
+To do so, you'll need to run `pipenv sync --system`.
 
 ### Docker
 
