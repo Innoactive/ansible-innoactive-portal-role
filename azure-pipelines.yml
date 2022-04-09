@@ -39,6 +39,11 @@ stages:
   - stage: Integration
     jobs:
       - job: test
+        strategy:
+          matrix:
+            ${{ each scenario in parameters.scenarios }}:
+              ${{ scenario }}:
+                MOLECULE_SCENARIO_NAME: ${{ scenario }}
         displayName: Test
         steps:
           - task: UsePythonVersion@0
@@ -52,20 +57,14 @@ stages:
               targetType: "inline"
               script: "pip install pipenv"
 
-          - task: Bash@3
-            displayName: pipenv version
-            inputs:
-              targetType: "inline"
-              script: "pipenv --version"
-
           - task: Cache@2
+            displayName: Cache pipenv packages
             inputs:
               key: 'python | "$(Agent.OS)" | Pipfile.lock'
               restoreKeys: |
                 python | "$(Agent.OS)"
                 python
               path: $(PIPENV_CACHE_DIR)
-            displayName: Cache pipenv packages
 
           - task: Bash@3
             displayName: "Install pipenv dependencies"
@@ -73,19 +72,19 @@ stages:
               targetType: "inline"
               script: "pipenv sync --system --dev"
 
-          - ${{ each scenario in parameters.scenarios }}:
-              - task: Bash@3
-                displayName: Molecule Tests (${{ scenario }})
-                inputs:
-                  targetType: "inline"
-                  script: molecule test -s ${{ scenario }}
-                env:
-                  DOCKER_REGISTRY_USERNAME: $(DOCKER_REGISTRY_USERNAME)
-                  DOCKER_REGISTRY_PASSWORD: $(DOCKER_REGISTRY_PASSWORD)
-                  HCLOUD_TOKEN: $(HCLOUD_TOKEN)
-                  INSTANCE_NAME_SUFFIX: $(Build.BuildId)
-                  PY_COLORS: "1"
-                  ANSIBLE_FORCE_COLOR: "1"
+          - task: Bash@3
+            displayName: Molecule Tests ($(MOLECULE_SCENARIO_NAME))
+            inputs:
+              targetType: "inline"
+              script: molecule test
+            env:
+              DOCKER_REGISTRY_USERNAME: $(DOCKER_REGISTRY_USERNAME)
+              DOCKER_REGISTRY_PASSWORD: $(DOCKER_REGISTRY_PASSWORD)
+              HCLOUD_TOKEN: $(HCLOUD_TOKEN)
+              INSTANCE_NAME_SUFFIX: $(Build.BuildId)
+              PY_COLORS: "1"
+              ANSIBLE_FORCE_COLOR: "1"
+              MOLECULE_SCENARIO_NAME: $(MOLECULE_SCENARIO_NAME)
 
   - stage: Release
     condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
