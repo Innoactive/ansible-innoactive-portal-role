@@ -18,6 +18,9 @@ parameters:
       - saas
       - with_cifs
 
+variables:
+  PIPENV_CACHE_DIR: $(Pipeline.Workspace)/.pipenv
+
 stages:
   - stage: Lint
     displayName: Lint
@@ -54,6 +57,15 @@ stages:
             inputs:
               targetType: "inline"
               script: "pipenv --version"
+
+          - task: Cache@2
+            inputs:
+              key: 'python | "$(Agent.OS)" | Pipfile.lock'
+              restoreKeys: |
+                python | "$(Agent.OS)"
+                python
+              path: $(PIPENV_CACHE_DIR)
+            displayName: Cache pipenv packages
 
           - task: Bash@3
             displayName: "Install pipenv dependencies"
