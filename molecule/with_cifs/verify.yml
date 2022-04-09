@@ -21,7 +21,6 @@
       assert:
         that:
           - ansible_facts.services.smbd.state == "running"
-          - ansible_facts.services.smbd.status == "enabled"
 
     - name: Get information about mountpoint
       stat:
