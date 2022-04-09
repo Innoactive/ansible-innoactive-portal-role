@@ -10,6 +10,14 @@ pr:
 pool:
   vmImage: "ubuntu-20.04"
 
+parameters:
+  - name: scenarios
+    type: object
+    default:
+      - default
+      - saas
+      - with_cifs
+
 stages:
   - stage: Lint
     displayName: Lint
@@ -53,44 +61,19 @@ stages:
               targetType: "inline"
               script: "pipenv sync --system --dev"
 
-          - task: Bash@3
-            displayName: "Molecule test"
-            inputs:
-              targetType: "inline"
-              script: "molecule test"
-            env:
-              DOCKER_REGISTRY_USERNAME: $(DOCKER_REGISTRY_USERNAME)
-              DOCKER_REGISTRY_PASSWORD: $(DOCKER_REGISTRY_PASSWORD)
-              HCLOUD_TOKEN: $(HCLOUD_TOKEN)
-              INSTANCE_NAME_SUFFIX: $(Build.BuildId)
-              PY_COLORS: "1"
-              ANSIBLE_FORCE_COLOR: "1"
-
-          - task: Bash@3
-            displayName: "Test saas"
-            inputs:
-              targetType: "inline"
-              script: "molecule test -s saas"
-            env:
-              DOCKER_REGISTRY_USERNAME: $(DOCKER_REGISTRY_USERNAME)
-              DOCKER_REGISTRY_PASSWORD: $(DOCKER_REGISTRY_PASSWORD)
-              HCLOUD_TOKEN: $(HCLOUD_TOKEN)
-              INSTANCE_NAME_SUFFIX: $(Build.BuildId)
-              PY_COLORS: "1"
-              ANSIBLE_FORCE_COLOR: "1"
-
-          - task: Bash@3
-            displayName: "Test with cifs"
-            inputs:
-              targetType: "inline"
-              script: "molecule test -s with_cifs"
-            env:
-              DOCKER_REGISTRY_USERNAME: $(DOCKER_REGISTRY_USERNAME)
-              DOCKER_REGISTRY_PASSWORD: $(DOCKER_REGISTRY_PASSWORD)
-              HCLOUD_TOKEN: $(HCLOUD_TOKEN)
-              INSTANCE_NAME_SUFFIX: $(Build.BuildId)
-              PY_COLORS: "1"
-              ANSIBLE_FORCE_COLOR: "1"
+          - ${{ each scenario in parameters.scenarios }}:
+              - task: Bash@3
+                displayName: Molecule Tests (${{ scenario }})
+                inputs:
+                  targetType: "inline"
+                  script: molecule test -s ${{ scenario }}
+                env:
+                  DOCKER_REGISTRY_USERNAME: $(DOCKER_REGISTRY_USERNAME)
+                  DOCKER_REGISTRY_PASSWORD: $(DOCKER_REGISTRY_PASSWORD)
+                  HCLOUD_TOKEN: $(HCLOUD_TOKEN)
+                  INSTANCE_NAME_SUFFIX: $(Build.BuildId)
+                  PY_COLORS: "1"
+                  ANSIBLE_FORCE_COLOR: "1"
 
   - stage: Release
     condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
