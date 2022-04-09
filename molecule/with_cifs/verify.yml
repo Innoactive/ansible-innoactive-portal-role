@@ -9,6 +9,8 @@
 
   tasks:
     - include_tasks: "{{ item }}"
+      vars:
+        root_dir: "{{ playbook_dir }}/../default"
       with_fileglob:
         - "../default/tests/*.yml"
 

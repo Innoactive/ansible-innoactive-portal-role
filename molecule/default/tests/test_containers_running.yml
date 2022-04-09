@@ -1,7 +1,7 @@
 ---
 - block:
     - name: Test docker containers are running
-      include_tasks: tests/tasks/test_docker_container_running.yml
+      include_tasks: "{{ root_dir }}/tests/tasks/test_docker_container_running.yml"
       vars:
         container_name: "{{ item }}"
       loop:
