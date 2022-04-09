@@ -1,0 +1,11 @@
+---
+- name: Get installd pip packages
+  community.general.pip_package_info:
+    clients:
+      - pip3
+  register: pip_packages_result
+
+- name: Test docker pip package is installed
+  assert:
+    that:
+      - "'docker' in pip_packages_result.packages.pip3"

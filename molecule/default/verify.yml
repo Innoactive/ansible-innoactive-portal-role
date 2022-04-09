@@ -1,0 +1,10 @@
+---
+# Using ansible to verify the setup
+- name: Verify
+  hosts: all
+  gather_facts: no
+
+  tasks:
+    - include_tasks: "{{ item }}"
+      with_fileglob:
+        - "tests/*.yml"

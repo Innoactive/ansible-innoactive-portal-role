@@ -7,7 +7,6 @@ verify_ssl = true
 pylint = "*"
 molecule = {extras = ["hetznercloud"],version = "*"}
 autopep8 = "*"
-pytest-testinfra = "*"
 molecule-hetznercloud = "*"
 molecule-docker = "*"
 yamllint = "*"

@@ -1,0 +1,10 @@
+---
+- name: Get list of installed packages
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: Test docker package and pip3 are installed
+  assert:
+    that:
+      - "'docker-ce' in ansible_facts.packages"
+      - "'python3-pip' in ansible_facts.packages"

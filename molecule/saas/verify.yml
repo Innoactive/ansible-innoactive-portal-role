@@ -1,0 +1,35 @@
+---
+# Using ansible to verify the setup
+- name: Verify
+  hosts: all
+  gather_facts: no
+
+  vars:
+    mountpoint: /mnt/hub-media-storage
+
+  tasks:
+    - include_tasks: "{{ item }}"
+      with_fileglob:
+        - "../default/tests/*.yml"
+
+    - name: Get information about mountpoint
+      stat:
+        path: "{{ mountpoint }}"
+      register: mountpoint_result
+
+    - name: Test that the mount exists
+      assert:
+        that:
+          - mountpoint_result.stat.exists
+          - mountpoint_result.stat.isdir is defined
+          - mountpoint_result.stat.isdir
+
+    - name: Get information about file in mount
+      stat:
+        path: "{{ mountpoint }}/test.txt"
+      register: mountpoint_file_result
+
+    - name: Test that the mount exists
+      assert:
+        that:
+          - mountpoint_file_result.stat.exists

@@ -23,10 +23,4 @@
     # since the default case (using docker) mounts files from the local machine, we need to override the path
     signalling_proxy_configuration_path: "{{ playbook_dir }}/../../files/signalling-proxy/"
   roles:
-    - role: geerlingguy.docker
-      vars:
-        # since we'll already have docker in our test environment, we only install dependencies but not the service itself
-        docker_service_state: stopped
-        docker_service_enabled: false
-        docker_install_compose: false
     - role: ../../../.
