@@ -10,6 +10,17 @@ pr:
 pool:
   vmImage: "ubuntu-latest"
 
+parameters:
+  - name: scenarios
+    type: object
+    default:
+      - default
+      - saas
+      - with_cifs
+
+variables:
+  PIPENV_CACHE_DIR: $(Pipeline.Workspace)/.pipenv
+
 stages:
   - stage: Lint
     displayName: Lint
@@ -18,19 +29,23 @@ stages:
         displayName: Lint Commits
         steps:
           - script: |
-                npm install @commitlint/cli commitlint-azure-pipelines-cli @commitlint/config-conventional
-                npx \
-                -p @commitlint/cli \
-                -p commitlint-azure-pipelines-cli \
-                -p @commitlint/config-conventional \
-                commitlint-azure-pipelines --config .commitlintrc.json
+              npm install @commitlint/cli commitlint-azure-pipelines-cli @commitlint/config-conventional
+              npx \
+              -p @commitlint/cli \
+              -p commitlint-azure-pipelines-cli \
+              -p @commitlint/config-conventional \
+              commitlint-azure-pipelines --config .commitlintrc.json
 
   - stage: Integration
     jobs:
       - job: test
+        strategy:
+          matrix:
+            ${{ each scenario in parameters.scenarios }}:
+              ${{ scenario }}:
+                MOLECULE_SCENARIO_NAME: ${{ scenario }}
         displayName: Test
         steps:
-
           - task: UsePythonVersion@0
             inputs:
               versionSpec: "3.9"
@@ -42,56 +57,34 @@ stages:
               targetType: "inline"
               script: "pip install pipenv"
 
-          - task: Bash@3
-            displayName: pipenv version
+          - task: Cache@2
+            displayName: Cache pipenv packages
             inputs:
-              targetType: "inline"
-              script: "pipenv --version"
+              key: 'python | "$(Agent.OS)" | Pipfile.lock'
+              restoreKeys: |
+                python | "$(Agent.OS)"
+                python
+              path: $(PIPENV_CACHE_DIR)
 
           - task: Bash@3
             displayName: "Install pipenv dependencies"
             inputs:
               targetType: "inline"
-              script: "pipenv install --system"
+              script: "pipenv sync --system --dev"
 
           - task: Bash@3
-            displayName: "Molecule test"
+            displayName: Molecule Tests ($(MOLECULE_SCENARIO_NAME))
             inputs:
               targetType: "inline"
-              script: "molecule test"
+              script: molecule test -s $(MOLECULE_SCENARIO_NAME)
             env:
               DOCKER_REGISTRY_USERNAME: $(DOCKER_REGISTRY_USERNAME)
               DOCKER_REGISTRY_PASSWORD: $(DOCKER_REGISTRY_PASSWORD)
               HCLOUD_TOKEN: $(HCLOUD_TOKEN)
               INSTANCE_NAME_SUFFIX: $(Build.BuildId)
-              PY_COLORS: '1'
-              ANSIBLE_FORCE_COLOR: '1'
-
-          - task: Bash@3
-            displayName: "Test saas"
-            inputs:
-              targetType: "inline"
-              script: "molecule test -s saas"
-            env:
-              DOCKER_REGISTRY_USERNAME: $(DOCKER_REGISTRY_USERNAME)
-              DOCKER_REGISTRY_PASSWORD: $(DOCKER_REGISTRY_PASSWORD)
-              HCLOUD_TOKEN: $(HCLOUD_TOKEN)
-              INSTANCE_NAME_SUFFIX: $(Build.BuildId)
-              PY_COLORS: '1'
-              ANSIBLE_FORCE_COLOR: '1'
-
-          - task: Bash@3
-            displayName: "Test with cifs"
-            inputs:
-              targetType: "inline"
-              script: "molecule test -s with_cifs"
-            env:
-              DOCKER_REGISTRY_USERNAME: $(DOCKER_REGISTRY_USERNAME)
-              DOCKER_REGISTRY_PASSWORD: $(DOCKER_REGISTRY_PASSWORD)
-              HCLOUD_TOKEN: $(HCLOUD_TOKEN)
-              INSTANCE_NAME_SUFFIX: $(Build.BuildId)
-              PY_COLORS: '1'
-              ANSIBLE_FORCE_COLOR: '1'
+              PY_COLORS: "1"
+              ANSIBLE_FORCE_COLOR: "1"
+              MOLECULE_SCENARIO_NAME: $(MOLECULE_SCENARIO_NAME)
 
   - stage: Release
     condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master'))

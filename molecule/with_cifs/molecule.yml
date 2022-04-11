@@ -6,7 +6,7 @@ dependency:
 driver:
   name: hetznercloud
 lint: |
-    yamllint .
+  yamllint .
 platforms:
   - name: molecule-hub${INSTANCE_NAME_SUFFIX}-cifs
     server_type: cx11
@@ -30,18 +30,7 @@ provisioner:
     prepare: prepare.yml
     converge: converge.yml
     destroy: ../saas/destroy.yml
-  lint: |
-    ansible-lint
+  lint: ansible-lint
 verifier:
-  name: testinfra
-  directory: ./tests/
-  additional_files_or_dirs:
-    - ../default/tests/*
-  env:
-    # yamllint disable rule:line-length
-    # get rid of the DeprecationWarning messages of third-party libs,
-    # see https://docs.pytest.org/en/latest/warnings.html#deprecationwarning-and-pendingdeprecationwarning
-    # yamllint enable rule:line-length
-    PYTHONWARNINGS: "ignore:.*U.*mode is deprecated:DeprecationWarning"
-  lint: |
-    flake8
+  name: ansible
+  lint: ansible-lint

@@ -1,0 +1,9 @@
+---
+- name: Get infos on container {{ container_name }}
+  docker_container_info:
+    name: "{{ container_name }}"
+  register: container_info_result
+- name: Test container {{ container_name }} is running
+  assert:
+    that:
+      - container_info_result.container.State.Running

@@ -15,6 +15,7 @@
     session_management_hostname: session-management.portal.localhost
     admin_email: admin@innoactive.de
     admin_password: sup3rs3cur3pa55w0rdf0rt3st1ng
+    session_management_ip_stack_api_token: invalid-token-but-not-empty
     extra_volumes:
       - "test:/test"
     # change the default prefix to easily identify test containers / services
@@ -22,12 +23,4 @@
     # since the default case (using docker) mounts files from the local machine, we need to override the path
     signalling_proxy_configuration_path: "{{ playbook_dir }}/../../files/signalling-proxy/"
   roles:
-    - role: geerlingguy.docker
-      vars:
-        # since we'll already have docker in our test environment, we skip the
-        # respective role
-        docker_service_state: stopped
-        docker_service_enabled: false
-        docker_install_compose: false
-      become: true
     - role: ../../../.

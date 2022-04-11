@@ -11,19 +11,19 @@
       shell: docker ps -aq --filter='name={{ stack_prefix }}*'
       register: found_containers
     - name: Remove the containers found by the above command
-      shell: 'docker stop {{ item }} && docker rm -fv {{ item }}'
-      with_items: '{{ found_containers.stdout_lines }}'
+      shell: "docker stop {{ item }} && docker rm -fv {{ item }}"
+      with_items: "{{ found_containers.stdout_lines }}"
 
     - name: Check for created volumes
       shell: docker volume ls -q --filter='name={{ stack_prefix }}*'
       register: found_volumes
     - name: Remove the volumes found by the above command
-      shell: 'docker volume rm -f {{ item }}'
-      with_items: '{{ found_volumes.stdout_lines }}'
+      shell: "docker volume rm -f {{ item }}"
+      with_items: "{{ found_volumes.stdout_lines }}"
 
     - name: Check for created networks
       shell: docker network ls -q --filter='name={{ stack_prefix }}*'
       register: found_networks
     - name: Remove the networks found by the above command
-      shell: 'docker network rm {{ item }}'
-      with_items: '{{ found_networks.stdout_lines }}'
+      shell: "docker network rm {{ item }}"
+      with_items: "{{ found_networks.stdout_lines }}"

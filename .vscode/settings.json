@@ -1,0 +1,9 @@
+{
+  "yaml.schemas": {
+    "https://raw.githubusercontent.com/ansible-community/schemas/main/f/molecule.json": "file:///home/burnedikt/projects/ansible-innoactive-portal-role/molecule/default/molecule.yml"
+  },
+  "files.associations": {
+    "azure-pipelines.yml": "azure-pipelines",
+    "**/*.yml": "ansible"
+  }
+}
