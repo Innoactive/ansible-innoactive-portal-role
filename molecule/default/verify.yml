@@ -1,0 +1,12 @@
+---
+# Using ansible to verify the setup
+- name: Verify
+  hosts: all
+  gather_facts: no
+
+  tasks:
+    - include_tasks: "{{ item }}"
+      vars:
+        root_dir: "{{ playbook_dir }}"
+      with_fileglob:
+        - "tests/*.yml"
