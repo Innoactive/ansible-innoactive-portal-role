@@ -177,6 +177,7 @@ session_management_configuration:
   log_level: "{{ session_management_log_level }}"
   cors_origins: "{{ session_management_cors_origin }}"
   ip_stack_api_token: "{{ session_management_ip_stack_api_token | mandatory }}"
+  cloud_rendering_enabled: "{{ cloudxr_configuration.enabled }}"
   adaptive_instance_scaling:
     enabled: "{{ session_management_adaptive_instance_scaling_enabled | default(true) }}"
     user_scale_ratio: "{{ session_management_adaptive_instance_scaling_user_scale_ratio | default(1, true) }}"
