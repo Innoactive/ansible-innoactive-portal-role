@@ -27,6 +27,7 @@
       PORTAL_URL: "{{ admin_configuration.protocol }}://{{ portal_configuration.hostname }}"
       CLOUD_RENDERING_CLIENT_APPLICATION_CLIENT_ID: "{{ desktop_client_configuration.remote_oauth2_client_id }}"
       DEVICE_AUTHORIZATION_VERIFICATION_URL: "{{ admin_configuration.protocol }}://{{ portal_configuration.hostname }}/connect-hmd"
+      GOOGLE_TAG_MANAGER_ID: "{{ admin_configuration.google_tag_manager_id | default('') }}"
 
 - name: Support alternative hostnames
   set_fact:
