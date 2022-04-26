@@ -59,7 +59,8 @@
       SPA_portalSignalingService: "{{ portal_configuration.signaling_service }}"
       SPA_desktopClientOAuth2ClientId: "{{ desktop_client_configuration.oauth2_client_id }}"
       SPA_desktopClientOAuth2ClientSecret: "{{ desktop_client_configuration.oauth2_client_secret }}"
-      SPA_googleMapsApiKey: "{{ portal_configuration.google_maps_api_key }}"
+      SPA_googleMapsApiKey: "{{ portal_configuration.google_maps_api_key | default('') }}"
+      SPA_gtmId: "{{ portal_configuration.google_tag_manager_id | default('')  }}"
     traefik_labels:
       traefik.enable: "true"
       traefik.http.routers.portal.rule: Host(`{{ portal_configuration.hostname }}`)

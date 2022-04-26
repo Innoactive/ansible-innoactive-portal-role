@@ -102,6 +102,10 @@ DSN for [Sentry](https://sentry.io/welcome/) to automatically track runtime erro
 
 Tracking ID of a Google Analytics Property to monitor usage of the Portal Backend.
 
+    portal_google_tag_manager_id:
+
+Optional Google Tag Manager Id. When set, Portal Backend / Control Panel will be setup to load any Tags associated with the Google Tag Manager Container identified by this id.
+
     extra_environment_variables: {}
 
 Optional mapping of additional environment variables to be passed on to the Portal Backend (e.g. to unlock hidden features).
@@ -400,6 +404,14 @@ an oauth client will automatically be retrieved.
     portal_sentry_dsn:
 
 DSN for [Sentry](https://sentry.io/welcome/) to automatically track runtime errors within the Portal.
+
+    portal_google_maps_api_key:
+
+API Key for Google Maps Javascript SDK. Obtain as described [here](https://developers.google.com/maps/documentation/javascript/get-api-key#creating-api-keys).
+
+    portal_google_tag_manager_id:
+
+Optional Google Tag Manager Id. When set, Portal Frontend will be setup to load any Tags associated with the Google Tag Manager Container identified by this id.
 
     portal_extra_environment_variables: {}
 
