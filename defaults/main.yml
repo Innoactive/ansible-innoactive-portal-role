@@ -64,7 +64,7 @@ google_tag_manager_id:
 
 mailserver_image: namshi/smtp:latest
 message_queue_image: redis:7.0
-database_image: postgres:14.2
+database_image: postgres:9.6
 # legacy parameter to specify portal backend image is hub_image. Defaults to registry.docker.innoactive.de/portal_backend:latest
 portal_backend_image: registry.docker.innoactive.de/{{ hub_image | default('portal_backend') }}:{{ portal_backend_image_version }}
 portal_image: registry.docker.innoactive.de/portal_frontend:{{ portal_image_version }}
