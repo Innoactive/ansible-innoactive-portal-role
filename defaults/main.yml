@@ -56,14 +56,14 @@ traefik:
 # legacy parameter for portal_backend_image_version is hub_image_version
 portal_backend_image_version: "{{ hub_image_version | default('latest') }}"
 portal_image_version: latest
-reverse_proxy_image_version: 2.2
+reverse_proxy_image_version: 2.6.6
 session_management_image_version: latest
 cloudxr_management_image_version: latest
 customization_image_version: latest
 google_tag_manager_id:
 
 mailserver_image: namshi/smtp:latest
-message_queue_image: redis:5
+message_queue_image: redis:7.0
 database_image: postgres:9.6
 # legacy parameter to specify portal backend image is hub_image. Defaults to registry.docker.innoactive.de/portal_backend:latest
 portal_backend_image: registry.docker.innoactive.de/{{ hub_image | default('portal_backend') }}:{{ portal_backend_image_version }}
