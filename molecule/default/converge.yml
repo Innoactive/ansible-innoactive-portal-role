@@ -9,8 +9,7 @@
     setup_control_panel: false
     letsencrypt: false
     secret_key: not-secret-at-all-but-okay-for-tests
-    admin_hostname: admin.portal.localhost
-    portal_hostname: portal.localhost
+    portal_domain: portal.localhost
     customization_hostname: customization.portal.localhost
     session_management_hostname: session-management.portal.localhost
     admin_email: admin@innoactive.de
