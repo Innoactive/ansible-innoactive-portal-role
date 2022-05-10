@@ -1,0 +1,13 @@
+- hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    bla: "{{ undef(hint='You must specify an API token for IPStack') }}"
+    blubb: "{{ bla | mandatory }}"
+
+  tasks:
+    - debug:
+        var: test
+      vars:
+        test: "{{ bla | mandatory }}"

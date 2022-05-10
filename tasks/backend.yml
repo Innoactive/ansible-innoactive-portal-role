@@ -10,11 +10,10 @@
 
 - name: Collect environment variables for the main application server
   set_fact:
-    traefik_admin_alternative_hostnames: "{{ admin_configuration.alias_hostnames | map('regex_replace', '^(.*)$', '`\\1`') | join(',') }}"
     base_server_environment_variables:
-      DJANGO_ALLOWED_HOSTS: "{{ ([admin_configuration.hostname] + admin_configuration.alias_hostnames) | join(',') | mandatory }}"
+      DOMAIN: "{{ admin.configuration.domain }}"
       DJANGO_SECRET_KEY: "{{ admin_configuration.secret_key | mandatory }}"
-      FROM_EMAIL: "{{ admin_configuration.from_email | default('admin@' + portal_configuration.hostname, true) }}"
+      FROM_EMAIL: "{{ admin_configuration.from_email | default('admin@' + admin_configuration.domain, true) }}"
       RAVEN_DSN: "{{ admin_configuration.sentry_dsn | default('') }}"
       GOOGLE_ANALYTICS_TRACKING_ID: "{{ admin_configuration.google_analytics_id | default('') }}"
       EMAIL_HOST: "{{ mail_configuration.smtp.host }}"
@@ -24,46 +23,18 @@
       EMAIL_USE_TLS: "{{ mail_configuration.smtp.use_tls | ternary('True', 'False') | string }}"
       EMAIL_USE_SSL: "{{ mail_configuration.smtp.use_ssl | ternary('True', 'False') | string }}"
       CUSTOMIZATION_SERVICE_API_URL: "{{ admin_configuration.protocol }}://{{ customization_configuration.hostname }}/api"
-      PORTAL_URL: "{{ admin_configuration.protocol }}://{{ portal_configuration.hostname }}"
       CLOUD_RENDERING_CLIENT_APPLICATION_CLIENT_ID: "{{ desktop_client_configuration.remote_oauth2_client_id }}"
-      DEVICE_AUTHORIZATION_VERIFICATION_URL: "{{ admin_configuration.protocol }}://{{ portal_configuration.hostname }}/connect-hmd"
       GOOGLE_TAG_MANAGER_ID: "{{ admin_configuration.google_tag_manager_id | default('') }}"
-
-- name: Support alternative hostnames
-  set_fact:
-    alternative_admin_hostnames_traefik_labels:
-      # redirect alternative domains to primary
-      traefik.http.middlewares.redirect-alternative.redirectregex.regex: "(.*?://)([^/]+)(.*)"
-      traefik.http.middlewares.redirect-alternative.redirectregex.replacement: "${1}{{ admin_configuration.hostname }}${3}"
-      traefik.http.routers.web-alternative.rule: Host({{ traefik_admin_alternative_hostnames }})
-      traefik.http.routers.web-alternative.middlewares: redirect-alternative
-      traefik.http.routers.web-alternative.tls: "{{ traefik.enable_tls | ternary('true', 'false') }}"
-      traefik.http.routers.web-alternative.tls.certresolver: "{{ traefik.certificate_resolver }}"
-
-      # API, OAuth and Websocket Connections / Django-Channels
-      traefik.http.routers.web-api-alternative.rule: Host({{ traefik_admin_alternative_hostnames }}) && PathPrefix(`/ws`,`/api`,`/oauth`)
-      traefik.http.routers.web-api-alternative.tls: "{{ traefik.enable_tls | ternary('true', 'false') }}"
-      traefik.http.routers.web-api-alternative.tls.certresolver: "{{ traefik.certificate_resolver }}"
-      traefik.http.routers.web-api-alternative.priority: "100"
-
-  when: admin_configuration.alias_hostnames | default([]) | length > 0
 
 - name: Start Django Application Server
   vars:
     traefik_labels:
       traefik.enable: "true"
-      traefik.http.routers.web.rule: Host(`{{ admin_configuration.hostname }}`)
+      traefik.http.routers.web.rule: HostRegexp(`admin.{subdomain:[\w-_]+}.{{ admin_configuration.domain }}`,`api.{{ admin_configuration.domain }}`,`admin.{{ admin_configuration.domain }}`)
       traefik.http.routers.web.tls: "{{ traefik.enable_tls | ternary('true', 'false') }}"
       traefik.http.routers.web.tls.certresolver: "{{ traefik.certificate_resolver }}"
-
-      # Websocket Connections / Django-Channels
-      traefik.http.routers.channels.rule: Host(`{{ admin_configuration.hostname }}`) && PathPrefix(`/ws`)
-      traefik.http.routers.channels.tls: "{{ traefik.enable_tls | ternary('true', 'false') }}"
-      traefik.http.routers.channels.tls.certresolver: "{{ traefik.certificate_resolver }}"
-    alternative_admin_domain_labels: "{{ alternative_admin_hostnames_traefik_labels | default({}) }}"
     base_volumes:
       - "{{ volume_names.media }}:/media"
-    redirect_http_labels: "{{ http_redirect_traefik_labels | default({}) }}"
   docker_container:
     name: "{{ container_names.backend }}"
     image: "{{ image_versions.portal_backend }}"
@@ -72,7 +43,7 @@
     restart_policy: unless-stopped
     volumes: "{{ base_volumes + admin_configuration.extra_volumes }}"
     env: "{{ base_server_environment_variables | combine(admin_configuration.extra_environment_variables) }}"
-    labels: "{{ traefik_labels | combine(alternative_admin_domain_labels) }}"
+    labels: "{{ traefik_labels | combine(admin_configuration.extra_labels) }}"
     comparisons:
       # correctly recreate container when any environment variable or labels is changed or added / removed
       env: strict
@@ -110,8 +81,8 @@
   shell: "{{ lookup('template', 'run_in_django_shell.sh.j2') }}" # noqa 305
   vars:
     python_script_name: change_site_name_and_domain
-    site_name: "{{ admin_configuration.hostname[:49] }}"
-    domain: "{{ admin_configuration.hostname }}"
+    site_name: "admin.{{ admin_configuration.domain[:49] }}"
+    domain: "admin.{{ admin_configuration.domain }}"
   register: site_update_output
   changed_when: site_update_output.stdout | trim | bool
   tags:

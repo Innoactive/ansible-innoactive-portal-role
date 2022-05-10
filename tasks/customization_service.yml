@@ -10,9 +10,9 @@
         client_id: "{{ customization_configuration.oauth2_client_id }}"
         client_secret: "{{ customization_configuration.oauth2_client_secret }}"
         redirect_uris:
-          - "{{ admin_configuration.protocol }}://%s/services/customization/hub/callback/' % '{{ admin_configuration.hostname }}"
-          - "{{ admin_configuration.protocol }}://%s/microservices/customization/hub/callback/' % '{{ admin_configuration.hostname }}"
-          - "{{ admin_configuration.protocol }}://%s/hub_services/customization/hub/callback/' % '{{ admin_configuration.hostname }}"
+          - "{{ admin_configuration.protocol }}://%s/services/customization/hub/callback/' % 'admin.{{ admin_configuration.domain }}"
+          - "{{ admin_configuration.protocol }}://%s/microservices/customization/hub/callback/' % 'admin.{{ admin_configuration.domain }}"
+          - "{{ admin_configuration.protocol }}://%s/hub_services/customization/hub/callback/' % 'admin.{{ admin_configuration.domain }}"
           - "{{ admin_configuration.protocol }}://%s/hub/callback/' % '{{ customization_configuration.hostname }}"
       register: customization_oauth2_client_output
       changed_when: customization_oauth2_client_output.stdout | from_json | json_query('changed')
@@ -37,32 +37,11 @@
   docker_volume:
     name: "{{ volume_names.customization }}"
 
-- name: Support alternative hostnames
-  set_fact:
-    alternative_customization_hostnames_traefik_labels:
-      # redirect alternative domains to primary
-      traefik.http.middlewares.redirect-alternative-customization.redirectregex.regex: "(.*?://)([^/]+)(.*)"
-      traefik.http.middlewares.redirect-alternative-customization.redirectregex.replacement: "${1}{{ customization_configuration.hostname }}${3}"
-      traefik.http.routers.customization-alternative.rule: Host({{ alias_customization_hostnames }})
-      traefik.http.routers.customization-alternative.middlewares: redirect-alternative-customization
-      traefik.http.routers.customization-alternative.tls: "{{ traefik.enable_tls | ternary('true', 'false') }}"
-      traefik.http.routers.customization-alternative.tls.certresolver: "{{ traefik.certificate_resolver }}"
-
-      # API (cannot be redirected, because of failing CORS)
-      traefik.http.routers.customization-alternative-post.rule: Host({{ alias_customization_hostnames }}) && PathPrefix(`/api`)
-      traefik.http.routers.customization-alternative-post.tls: "{{ traefik.enable_tls | ternary('true', 'false') }}"
-      traefik.http.routers.customization-alternative-post.tls.certresolver: "{{ traefik.certificate_resolver }}"
-  vars:
-    # ensure alternative domains are supported in both old and new formats (old.domain and customization.portal.old.domain)
-    alternative_customization_hostnames: "{{ customization_configuration.alias_hostnames | map('regex_replace', '^(.*)$', '\\1') | list }}"
-    alias_customization_hostnames: "{{ alternative_customization_hostnames | map('regex_replace', '^(.*)$', '`\\1`') | join(',') }}"
-  when: customization_configuration.alias_hostnames | default([]) | length > 0
-
 - name: Start Customization Service
   vars:
-    CUSTOMIZATION_SERVICE_ALLOWED_HOSTS: "{{ ([customization_configuration.hostname] + customization_configuration.alias_hostnames) | join(',') | mandatory }}"
+    CUSTOMIZATION_SERVICE_ALLOWED_HOSTS: "{{ customization_configuration.hostname | mandatory }}"
     default_environment_variables:
-      API_ROOT: "{{ admin_configuration.protocol }}://{{ admin_configuration.hostname }}"
+      API_ROOT: "{{ admin_configuration.protocol }}://admin.{{ admin_configuration.domain }}"
       CUSTOMIZATION_API_ROOT: "{{ admin_configuration.protocol }}://{{ customization_configuration.hostname }}/api"
       DB_HOST: db
       DB_NAME: customization
@@ -80,8 +59,6 @@
       traefik.http.routers.customization.rule: Host(`{{ customization_configuration.hostname }}`)
       traefik.http.routers.customization.tls: "{{ traefik.enable_tls | ternary('true', 'false') }}"
       traefik.http.routers.customization.tls.certresolver: "{{ traefik.certificate_resolver }}"
-    alternative_domain_labels: "{{ alternative_customization_hostnames_traefik_labels | default({}) }}"
-    redirect_http_labels: "{{ http_redirect_traefik_labels | default({}) }}"
   docker_container:
     name: "{{ container_names.customization }}"
     image: "{{ image_versions.customization }}"
@@ -93,7 +70,7 @@
     exposed_ports:
       - "80"
     env: "{{ default_environment_variables | combine(customization_configuration.extra_environment_variables) }}"
-    labels: "{{ traefik_labels | combine(alternative_domain_labels) }}"
+    labels: "{{ traefik_labels | combine(customization_configuration.extra_labels) }}"
     comparisons:
       # correctly recreate container when any environment variable or labels is changed or added / removed
       env: strict

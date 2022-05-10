@@ -41,27 +41,13 @@ The password to use to authenticate against the specified docker registry.
 
 ### Innoactive Portal
 
-    portal_hostname:
+    portal_domain:
 
-**Mandatory** hostname under which the Portal will be available (this needs to be publicly reachable).
-
-    portal_alias_hostnames: []
-
-Alternative or legacy hostnames array. Users accessing it will be redirected to portal_hostname.
-
-    admin_hostname:
-
-**Mandatory** hostname under which the portal control panel will be available.
-
-    admin_alias_hostnames: []
+**Mandatory** Domain under which the Portal's Backend, Control Panel and Frontend will be acessible (on a per organization basis à la `<organization>.<portal_domain>`).
 
 Alternative or legacy hostnames array. Users accessing it will be redirected to admin_hostname.
 
     customization_hostname:
-
-**Mandatory** hostname under shich the customization service will be available.
-
-    customization_alias_hostnames: []
 
 Alternative or legacy hostnames array. Users accessing it will be redirected to customization_hostname.
 
@@ -109,6 +95,10 @@ Optional Google Tag Manager Id. When set, Portal Backend / Control Panel will be
     extra_environment_variables: {}
 
 Optional mapping of additional environment variables to be passed on to the Portal Backend (e.g. to unlock hidden features).
+
+    extra_labels: {}
+
+Optional mapping of additional labels to be passed on to the Portal Backend container.
 
     extra_volumes: []
 
@@ -417,6 +407,10 @@ Optional Google Tag Manager Id. When set, Portal Frontend will be setup to load 
 
 Optional mapping of additional environment variables to be passed on to the Portal (e.g. to unlock hidden features).
 
+    portal_extra_labels: {}
+
+Optional mapping of additional labels to be set on the Portal container.
+
 #### Portal Customization Service
 
     customization_image_version
@@ -444,6 +438,10 @@ an oauth client will automatically be retrieved.
     customization_extra_environment_variables: {}
 
 Optional mapping of additional environment variables to be passed on to the Portal Backend (e.g. to unlock hidden features).
+
+    customization_extra_labels: {}
+
+Optional mapping of additionallabels to be set on the Customization container.
 
 ### Mail Setup
 
