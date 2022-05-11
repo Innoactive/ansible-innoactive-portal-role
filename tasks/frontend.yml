@@ -38,7 +38,7 @@
     default_environment_variables:
       SPA_portalDomain: "{{ portal_configuration.domain }}"
       SPA_sentryDSN: "{{ portal_configuration.sentry_dsn }}"
-      SPA_portalBackendRootUrl: "{{ admin_configuration.protocol }}://api.{{ admin_configuration.domain }}"
+      SPA_portalBackendRootUrl: "{{ admin_configuration.protocol }}://{{ admin_configuration.api_hostname }}"
       SPA_portalOAuth2ClientId: "{{ portal_frontend_oauth2_client_id }}"
       SPA_portalCustomizationRootUrl: "{{ customization_api_root | default('', true) }}"
       SPA_portalCloudRenderingSessionManagementRootUrl: "{{ admin_configuration.protocol }}://{{ session_management_configuration.hostname }}"
