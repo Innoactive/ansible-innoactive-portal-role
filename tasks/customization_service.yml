@@ -10,9 +10,9 @@
         client_id: "{{ customization_configuration.oauth2_client_id }}"
         client_secret: "{{ customization_configuration.oauth2_client_secret }}"
         redirect_uris:
-          - "{{ admin_configuration.protocol }}://%s/services/customization/hub/callback/' % 'admin.{{ admin_configuration.domain }}"
-          - "{{ admin_configuration.protocol }}://%s/microservices/customization/hub/callback/' % 'admin.{{ admin_configuration.domain }}"
-          - "{{ admin_configuration.protocol }}://%s/hub_services/customization/hub/callback/' % 'admin.{{ admin_configuration.domain }}"
+          - "{{ admin_configuration.protocol }}://%s/services/customization/hub/callback/' % '{{ admin_configuration.admin_hostname }}"
+          - "{{ admin_configuration.protocol }}://%s/microservices/customization/hub/callback/' % '{{ admin_configuration.admin_hostname }}"
+          - "{{ admin_configuration.protocol }}://%s/hub_services/customization/hub/callback/' % '{{ admin_configuration.admin_hostname }}"
           - "{{ admin_configuration.protocol }}://%s/hub/callback/' % '{{ customization_configuration.hostname }}"
       register: customization_oauth2_client_output
       changed_when: customization_oauth2_client_output.stdout | from_json | json_query('changed')
@@ -41,7 +41,7 @@
   vars:
     CUSTOMIZATION_SERVICE_ALLOWED_HOSTS: "{{ customization_configuration.hostname | mandatory }}"
     default_environment_variables:
-      API_ROOT: "{{ admin_configuration.protocol }}://admin.{{ admin_configuration.domain }}"
+      API_ROOT: "{{ admin_configuration.protocol }}://{{ admin_configuration.api_hostname }}"
       CUSTOMIZATION_API_ROOT: "{{ admin_configuration.protocol }}://{{ customization_configuration.hostname }}/api"
       DB_HOST: db
       DB_NAME: customization

@@ -72,7 +72,7 @@
       - name: "{{ network_names.main }}"
         aliases:
           - traefik
-          - "admin.{{ admin_configuration.domain }}"
-          - "api.{{ admin_configuration.domain }}"
+          - "{{ admin_configuration.api_hostname }}"
+          - "{{ admin_configuration.admin_hostname }}"
           - "{{ customization_configuration.hostname }}"
   register: reverse_proxy_result

@@ -102,6 +102,8 @@ admin_configuration:
   extra_labels: "{{ extra_labels }}"
   extra_volumes: "{{ extra_volumes }}"
   google_tag_manager_id: "{{ google_tag_manager_id }}"
+  api_hostname: "api.{{ portal_domain }}"
+  admin_hostname: "admin.{{ portal_domain }}"
 
 # Portal Configuration
 portal_oauth_client_id:

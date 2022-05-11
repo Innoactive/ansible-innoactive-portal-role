@@ -30,7 +30,7 @@
   vars:
     traefik_labels:
       traefik.enable: "true"
-      traefik.http.routers.web.rule: HostRegexp(`admin.{subdomain:[\w-_]+}.{{ admin_configuration.domain }}`,`api.{{ admin_configuration.domain }}`,`admin.{{ admin_configuration.domain }}`)
+      traefik.http.routers.web.rule: HostRegexp(`admin.{subdomain:[\w-_]+}.{{ admin_configuration.domain }}`,{{ admin_configuration.api_hostname }}`,`{{ admin_configuration.admin_hostname }}`)
       traefik.http.routers.web.tls: "{{ traefik.enable_tls | ternary('true', 'false') }}"
       traefik.http.routers.web.tls.certresolver: "{{ traefik.certificate_resolver }}"
     base_volumes:
@@ -81,8 +81,8 @@
   shell: "{{ lookup('template', 'run_in_django_shell.sh.j2') }}" # noqa 305
   vars:
     python_script_name: change_site_name_and_domain
-    site_name: "admin.{{ admin_configuration.domain[:49] }}"
-    domain: "admin.{{ admin_configuration.domain }}"
+    site_name: "{{ admin_configuration.admin_hostname[:49] }}"
+    domain: "{{ admin_configuration.admin_hostname }}"
   register: site_update_output
   changed_when: site_update_output.stdout | trim | bool
   tags:
