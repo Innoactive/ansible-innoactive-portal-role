@@ -10,7 +10,7 @@
       - 5000:5000
     env:
       Sentry__Dsn: "{{ cloudxr_configuration.sentry_dsn }}"
-      Sentry__ServerName: "{{ portal_configuration.hostname }}"
+      Sentry__ServerName: "{{ portal_domain }}"
       Azure__Enabled: "{{ cloudxr_configuration.azure_enabled | ternary('true', 'false') }}"
       Azure__ClientId: "{{ cloudxr_configuration.azure_client_id }}"
       Azure__Secret: "{{ cloudxr_configuration.azure_client_secret }}"

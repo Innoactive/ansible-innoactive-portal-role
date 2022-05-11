@@ -49,7 +49,7 @@
       IpLookupService__ApiToken: "{{ session_management_configuration.ip_stack_api_token }}"
       CloudXRManagement__BaseUrl: "http://{{ container_names.cloudxr_management }}:5000"
       Sentry__Dsn: "{{ session_management_configuration.sentry_dsn }}"
-      Sentry__ServerName: "{{ portal_configuration.hostname }}"
+      Sentry__ServerName: "{{ portal_domain }}"
       AdaptiveInstanceScaling__Enabled: "{{ session_management_configuration.adaptive_instance_scaling.enabled | ternary('true', 'false') }}"
       AdaptiveInstanceScaling__UserScaleRatio: "{{ session_management_configuration.adaptive_instance_scaling.user_scale_ratio }}"
       AdaptiveInstanceScaling__MaxInstancesPerRegion: "{{ session_management_configuration.adaptive_instance_scaling.max_instances_per_region }}"

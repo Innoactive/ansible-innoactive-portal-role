@@ -10,7 +10,7 @@
         client_id: "{{ portal_configuration.oauth2_client_id }}"
         client_secret: ""
         redirect_uris:
-          - "{{ admin_configuration.protocol }}://%s/oauth/callback' % '{{ portal_configuration.hostname }}"
+          - "{{ admin_configuration.protocol }}://%s/oauth/callback' % '{{ portal_domain }}"
       register: portal_frontend_oauth2_client_output
       changed_when: portal_frontend_oauth2_client_output.stdout | from_json | json_query('changed')
       # ansible lint has an issue where it cannot bypass rules (like 305) within blocks
