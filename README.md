@@ -41,27 +41,11 @@ The password to use to authenticate against the specified docker registry.
 
 ### Innoactive Portal
 
-    portal_hostname:
+    portal_domain:
 
-**Mandatory** hostname under which the Portal will be available (this needs to be publicly reachable).
-
-    portal_alias_hostnames: []
-
-Alternative or legacy hostnames array. Users accessing it will be redirected to portal_hostname.
-
-    admin_hostname:
-
-**Mandatory** hostname under which the portal control panel will be available.
-
-    admin_alias_hostnames: []
-
-Alternative or legacy hostnames array. Users accessing it will be redirected to admin_hostname.
+**Mandatory** Domain under which the Portal's Backend, Control Panel and Frontend will be acessible (on a per organization basis à la `<organization>.<portal_domain>`).
 
     customization_hostname:
-
-**Mandatory** hostname under shich the customization service will be available.
-
-    customization_alias_hostnames: []
 
 Alternative or legacy hostnames array. Users accessing it will be redirected to customization_hostname.
 
@@ -109,6 +93,10 @@ Optional Google Tag Manager Id. When set, Portal Backend / Control Panel will be
     extra_environment_variables: {}
 
 Optional mapping of additional environment variables to be passed on to the Portal Backend (e.g. to unlock hidden features).
+
+    extra_labels: {}
+
+Optional mapping of additional labels to be passed on to the Portal Backend container.
 
     extra_volumes: []
 
@@ -392,10 +380,6 @@ The OAuth2 Client Secret that the Remote (Cloud Rendering) Launcher uses.
 
 Whether or not to setup the Portal frontend for this instance. (Legacy parameter: `setup_discovery_portal: true`)
 
-    portal_hostname: "portal.{{ admin_configuration.primay_hostname  }}"
-
-The hostname under which the Portal frontend should be publicly availabe. This defaults to `portal.<hostname-of-portal-instance>`.
-
     portal_oauth_client_id:
 
 Allows to explicitly define the oauth client id to be used by the portal to communicate with the Portal backend. If not defined,
@@ -416,6 +400,10 @@ Optional Google Tag Manager Id. When set, Portal Frontend will be setup to load 
     portal_extra_environment_variables: {}
 
 Optional mapping of additional environment variables to be passed on to the Portal (e.g. to unlock hidden features).
+
+    portal_extra_labels: {}
+
+Optional mapping of additional labels to be set on the Portal container.
 
 #### Portal Customization Service
 
@@ -444,6 +432,10 @@ an oauth client will automatically be retrieved.
     customization_extra_environment_variables: {}
 
 Optional mapping of additional environment variables to be passed on to the Portal Backend (e.g. to unlock hidden features).
+
+    customization_extra_labels: {}
+
+Optional mapping of additionallabels to be set on the Customization container.
 
 ### Mail Setup
 
@@ -536,10 +528,9 @@ users too:
             setup_database: true
             setup_control_panel: true
             letsencrypt: true
+            portal_domain: innoactive.io
             secret_key: not-secret-at-all-but-okay-for-tests
             admin_email: admin@innoactive.de
-            portal_hostname: portal.my.hostname.com
-            admin_hostname: admin.portal.my.hostname.com
             customization_hostname: customization.portal.my.hostname.com
 
 ## Testing

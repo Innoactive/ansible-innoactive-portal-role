@@ -18,10 +18,10 @@
   when: traefik.dashboard
   set_fact:
     traefik_dashboard_environment_variables:
-      TREAFIK_API: 'true'
-      TRAEFIK_API_INSECURE: 'true'
-      TRAEFIK_API_DASHBOARD: 'true'
-      TRAEFIK_API_DEBUG: 'true'
+      TREAFIK_API: "true"
+      TRAEFIK_API_INSECURE: "true"
+      TRAEFIK_API_DASHBOARD: "true"
+      TRAEFIK_API_DEBUG: "true"
 
 - name: Start Reverse Proxy (traefik)
   vars:
@@ -72,7 +72,7 @@
       - name: "{{ network_names.main }}"
         aliases:
           - traefik
-          - "{{ admin_configuration.hostname }}"
+          - "{{ admin_configuration.api_hostname }}"
+          - "{{ admin_configuration.admin_hostname }}"
           - "{{ customization_configuration.hostname }}"
-          - "{{ portal_configuration.hostname }}"
   register: reverse_proxy_result

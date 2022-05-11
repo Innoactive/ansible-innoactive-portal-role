@@ -11,10 +11,9 @@
     # do not issue certificates from production letsencrypt server
     letsencrypt_test: true
     secret_key: not-secret-at-all-but-okay-for-tests
-    admin_hostname: "admin.portal.{{ public_hostname }}"
-    portal_hostname: "portal.{{ public_hostname }}"
-    customization_hostname: "customization.portal.{{ public_hostname }}"
-    session_management_hostname: session-management.portal.{{ public_hostname }}"
+    portal_domain: "{{ public_hostname }}"
+    customization_hostname: "customization.{{ public_hostname }}"
+    session_management_hostname: session-management.{{ public_hostname }}"
     admin_email: admin@innoactive.de
     admin_password: sup3rs3cur3pa55w0rdf0rt3st1ng
     session_management_ip_stack_api_token: invalid-token-but-not-empty

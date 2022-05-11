@@ -10,7 +10,7 @@
         client_id: "{{ portal_configuration.oauth2_client_id }}"
         client_secret: ""
         redirect_uris:
-          - "{{ admin_configuration.protocol }}://%s/oauth/callback' % '{{ portal_configuration.hostname }}"
+          - "{{ admin_configuration.protocol }}://%s/oauth/callback' % '{{ portal_domain }}"
       register: portal_frontend_oauth2_client_output
       changed_when: portal_frontend_oauth2_client_output.stdout | from_json | json_query('changed')
       # ansible lint has an issue where it cannot bypass rules (like 305) within blocks
@@ -33,26 +33,12 @@
     customization_api_root: "{{ admin_configuration.protocol }}://{{ customization_configuration.hostname }}"
   when: admin_configuration.setup_customization_service
 
-- name: Support alternative hostnames
-  set_fact:
-    alternative_portal_hostnames_traefik_labels:
-      # redirect alternative domains to primary
-      # GET & HEAD (can be redirected)
-      traefik.http.middlewares.redirect-alternative-portal.redirectregex.regex: "(.*?://)([^/]+)(.*)"
-      traefik.http.middlewares.redirect-alternative-portal.redirectregex.replacement: "${1}{{ portal_configuration.hostname }}${3}"
-      traefik.http.routers.portal-alternative.rule: Host({{ traefik_portal_alternative_hostnames }}) && Method(`GET`,`HEAD`)
-      traefik.http.routers.portal-alternative.middlewares: redirect-alternative-portal
-      traefik.http.routers.portal-alternative.tls: "{{ traefik.enable_tls | ternary('true', 'false') }}"
-      traefik.http.routers.portal-alternative.tls.certresolver: "{{ traefik.certificate_resolver }}"
-  vars:
-    traefik_portal_alternative_hostnames: "{{ portal_configuration.alias_hostnames | map('regex_replace', '^(.*)$', '`\\1`') | join(',') }}"
-  when: portal_configuration.alias_hostnames | default([]) | length > 0
-
 - name: Start Portal container
   vars:
     default_environment_variables:
+      SPA_portalDomain: "{{ portal_configuration.domain }}"
       SPA_sentryDSN: "{{ portal_configuration.sentry_dsn }}"
-      SPA_portalBackendRootUrl: "{{ admin_configuration.protocol }}://{{ admin_configuration.hostname }}"
+      SPA_portalBackendRootUrl: "{{ admin_configuration.protocol }}://{{ admin_configuration.api_hostname }}"
       SPA_portalOAuth2ClientId: "{{ portal_frontend_oauth2_client_id }}"
       SPA_portalCustomizationRootUrl: "{{ customization_api_root | default('', true) }}"
       SPA_portalCloudRenderingSessionManagementRootUrl: "{{ admin_configuration.protocol }}://{{ session_management_configuration.hostname }}"
@@ -63,11 +49,9 @@
       SPA_gtmId: "{{ portal_configuration.google_tag_manager_id | default('')  }}"
     traefik_labels:
       traefik.enable: "true"
-      traefik.http.routers.portal.rule: Host(`{{ portal_configuration.hostname }}`)
+      traefik.http.routers.portal.rule: HostRegexp(`{subdomain:[\w-_]+}.{{ portal_configuration.domain }}`)
       traefik.http.routers.portal.tls: "{{ traefik.enable_tls | ternary('true', 'false') }}"
       traefik.http.routers.portal.tls.certresolver: "{{ traefik.certificate_resolver }}"
-    alternative_portal_domain_labels: "{{ alternative_portal_hostnames_traefik_labels | default({}) }}"
-    redirect_http_labels: "{{ http_redirect_traefik_labels | default({}) }}"
   docker_container:
     name: "{{ container_names.portal_frontend }}"
     image: "{{ image_versions.portal }}"
@@ -76,8 +60,7 @@
     container_default_behavior: no_defaults
     pull: "{{ portal_version_is_latest }}"
     env: "{{ default_environment_variables | combine(portal_configuration.extra_environment_variables) }}"
-    labels: "{{ traefik_labels | combine(alternative_portal_domain_labels) }}"
-
+    labels: "{{ traefik_labels | combine(portal_configuration.extra_labels) }}"
     networks_cli_compatible: true
     networks:
       - name: "{{ network_names.main }}"
@@ -113,7 +96,7 @@
           - "{{ nginx_config_file_path }}:/etc/nginx/conf.d/default.conf"
         labels:
           traefik.enable: "true"
-          traefik.http.routers.signalling-ws-proxy.rule: Host(`{{ portal_configuration.hostname }}`) && PathPrefix(`/signalling/`)
+          traefik.http.routers.signalling-ws-proxy.rule: HostRegexp(`{subdomain:[\w-_]+}.{{ portal_configuration.domain }}`) && PathPrefix(`/signalling/`)
           traefik.http.routers.signalling-ws-proxy.entrypoints: http
           traefik.http.routers.signalling-ws-proxy.tls: "true"
           traefik.http.routers.signalling-ws-proxy.tls.certresolver: lets-encrypt

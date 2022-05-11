@@ -10,8 +10,7 @@ docker_registry:
   password: "{{ registry_password }}"
 
 # Main Portal Backend Configuration parameters
-admin_hostname:
-admin_alias_hostnames: []
+portal_domain: "{{ undef(hint='You must specify the base domain for Portal') }}"
 secret_key: "{{ undef(hint='You must specify a secret key for hashing / encryption') }}"
 from_email:
 admin_email: "{{ undef(hint='You must specify an e-mail address for the default admin user') }}"
@@ -26,6 +25,7 @@ sentry_dsn:
 # Google Analytics configuration
 google_analytics_tracking_id:
 extra_environment_variables: {}
+extra_labels: {}
 extra_volumes: []
 
 # Secure Communications (SSL / TLS)
@@ -85,8 +85,7 @@ image_versions:
   cloudxr_management: "{{ cloudxr_management_image }}"
 
 admin_configuration:
-  hostname: "{{ admin_hostname }}"
-  alias_hostnames: "{{ admin_alias_hostnames | trim }}"
+  domain: "{{ portal_domain }}"
   secret_key: "{{ secret_key | mandatory }}"
   from_email: "{{ from_email }}"
   admin_email: "{{ admin_email | mandatory }}"
@@ -100,26 +99,28 @@ admin_configuration:
   protocol: "{{ 'https' if traefik.enable_tls else 'http' }}"
   create_admin_user: "{{ create_admin_user }}"
   extra_environment_variables: "{{ extra_environment_variables }}"
+  extra_labels: "{{ extra_labels }}"
   extra_volumes: "{{ extra_volumes }}"
   google_tag_manager_id: "{{ google_tag_manager_id }}"
+  api_hostname: "api.{{ portal_domain }}"
+  admin_hostname: "admin.{{ portal_domain }}"
 
 # Portal Configuration
-portal_hostname:
-portal_alias_hostnames: []
 portal_oauth_client_id:
 portal_sentry_dsn:
 portal_signaling_service: ""
 portal_extra_environment_variables: {}
+portal_extra_labels: {}
 portal_google_maps_api_key:
 portal_google_tag_manager_id:
 
 portal_configuration:
-  hostname: "{{ portal_hostname }}"
-  alias_hostnames: "{{ portal_alias_hostnames | trim }}"
+  domain: "{{ portal_domain }}"
   oauth2_client_id: "{{ portal_oauth_client_id }}"
   sentry_dsn: "{{ portal_sentry_dsn }}"
   extra_environment_variables: "{{ portal_extra_environment_variables }}"
-  signaling_service: "{{ portal_signaling_service | default('wss://' + portal_hostname, true) }}"
+  extra_labels: "{{ portal_extra_labels }}"
+  signaling_service: "{{ portal_signaling_service | default('wss://signaling.' + portal_domain, true) }}"
   google_maps_api_key: "{{ portal_google_maps_api_key }}"
   google_tag_manager_id: "{{ portal_google_tag_manager_id }}"
 
@@ -213,17 +214,17 @@ desktop_client_configuration:
 
 # Customization Configuration
 customization_hostname:
-customization_alias_hostnames: []
 customization_oauth_client_id:
 customization_oauth_client_secret:
 customization_extra_environment_variables: {}
+customization_extra_labels: {}
 
 customization_configuration:
   hostname: "{{ customization_hostname }}"
-  alias_hostnames: "{{ customization_alias_hostnames | trim }}"
   oauth2_client_id: "{{ customization_oauth_client_id }}"
   oauth2_client_secret: "{{ customization_oauth_client_secret }}"
   extra_environment_variables: "{{ customization_extra_environment_variables }}"
+  extra_labels: "{{ customization_extra_labels }}"
 
 # Mail Configuration
 smtp_host:
