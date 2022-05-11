@@ -11,7 +11,7 @@
 - name: Collect environment variables for the main application server
   set_fact:
     base_server_environment_variables:
-      DOMAIN: "{{ admin.configuration.domain }}"
+      DOMAIN: "{{ admin_configuration.domain }}"
       DJANGO_SECRET_KEY: "{{ admin_configuration.secret_key | mandatory }}"
       FROM_EMAIL: "{{ admin_configuration.from_email | default('admin@' + admin_configuration.domain, true) }}"
       RAVEN_DSN: "{{ admin_configuration.sentry_dsn | default('') }}"
