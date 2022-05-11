@@ -55,7 +55,7 @@
       AdaptiveInstanceScaling__MaxInstancesPerRegion: "{{ session_management_configuration.adaptive_instance_scaling.max_instances_per_region }}"
       AdaptiveInstanceScaling__ConnectionIsIdleAfterMin: "{{ session_management_configuration.adaptive_instance_scaling.connection_is_idle_after_min }}"
       SessionWorkers__CloudRenderedSession__Enabled: "{{  session_management_configuration.cloud_rendering_enabled | ternary('true', 'false') }}"
-      CorsOrigins: "{{ session_management_configuration.cors_origins | default(admin_configuration.protocol + '://' + portal_hostname, true) }}"
+      CorsOrigins: "{{ session_management_configuration.cors_origins | default(admin_configuration.protocol + '://*.' + portal_domain, true) }}"
       Serilog__MinimumLevel__Default: "{{ session_management_configuration.log_level | default('Warning', true) }}"
       ASPNETCORE_ENVIRONMENT: "{{ session_management_configuration.environment | default('Production', true) }}"
 
